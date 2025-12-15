@@ -25,8 +25,8 @@ import {
   TraceSpan,
 } from '@/d.ts';
 import setting from '@/store/setting';
-import { uploadFileToOSS } from '@/util/aliyun';
-import notification from '@/util/notification';
+import { uploadFileToOSS } from '@/common/network/aliyun';
+import notification from '@/util/ui/notification';
 import request from '@/util/request';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
 import _executeSQL from './executeSQL';
@@ -48,7 +48,7 @@ export async function uploadTableObject(file: File, sessionId: string) {
   const form = new FormData();
   form.append('file', file);
   const res = await request.post(url, {
-    body: form,
+    data: form,
   });
   return res?.data;
 }
@@ -356,7 +356,7 @@ export async function runSQLLint(
   sessionId: string,
   delimiter: string,
   scriptContent: string,
-): Promise<ISQLLintReuslt[]> {
+): Promise<{ checkResults: ISQLLintReuslt[]; affectedRows: number }> {
   const res = await request.post(
     `/api/v2/datasource/sessions/${generateSessionSid(sessionId)}/sqlCheck`,
     {
@@ -366,7 +366,7 @@ export async function runSQLLint(
       },
     },
   );
-  return res?.data?.contents;
+  return res?.data;
 }
 export async function runMultipleSQLLint(
   data: {

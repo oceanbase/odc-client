@@ -172,12 +172,12 @@ export const AuditEventMetaMap = {
     defaultMessage: '库权限管理',
   }), //'库权限管理'
   [AuditEventActionType.APPLY_TABLE_PERMISSION]: formatMessage({
-    id: 'src.constant.A016D539',
-    defaultMessage: '申请表权限',
+    id: 'src.constant.CFB6ECD2',
+    defaultMessage: '申请表/视图权限',
   }),
   [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: formatMessage({
-    id: 'src.constant.16E15B2D',
-    defaultMessage: '表权限管理',
+    id: 'src.constant.C3495416',
+    defaultMessage: '表/视图权限管理',
   }),
   [AuditEventType.AUTOMATION_RULE_MANAGEMENT]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.B7B36187',
@@ -708,6 +708,14 @@ export const AuditEventActionMap = {
     id: 'odc.Record.RecordPage.interface.CreateAProject',
     defaultMessage: '创建项目',
   }),
+  [AuditEventActionType.ARCHIVE_PROJECT]: formatMessage({
+    id: 'src.constant.25970C7E',
+    defaultMessage: '归档项目',
+  }),
+  [AuditEventActionType.DELETE_PROJECT]: formatMessage({
+    id: 'src.constant.3E60E665',
+    defaultMessage: '删除项目',
+  }),
   //创建项目
   // 审计事件操作
   [AuditEventActionType.CREATE_EXPORT_RESULT_SET_TASK]: formatMessage({
@@ -796,36 +804,36 @@ export const AuditEventActionMap = {
     defaultMessage: '回收库权限',
   }), //'回收库权限管理'
   [AuditEventActionType.APPLY_TABLE_PERMISSION]: formatMessage({
-    id: 'src.constant.6F5D437C',
-    defaultMessage: '申请表权限',
+    id: 'src.constant.71D62B8C',
+    defaultMessage: '申请表/视图权限',
   }),
   [AuditEventActionType.CREATE_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
-    id: 'src.constant.7CFF0BF7',
-    defaultMessage: '创建申请表权限',
+    id: 'src.constant.7E594AFE',
+    defaultMessage: '创建申请表/视图权限',
   }),
   [AuditEventActionType.APPROVE_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
-    id: 'src.constant.EB58961E',
-    defaultMessage: '同意申请表权限',
+    id: 'src.constant.34E5C626',
+    defaultMessage: '同意申请表/视图权限',
   }),
   [AuditEventActionType.REJECT_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
-    id: 'src.constant.77379A9D',
-    defaultMessage: '拒绝申请表权限',
+    id: 'src.constant.2DFACC51',
+    defaultMessage: '拒绝申请表/视图权限',
   }),
   [AuditEventActionType.STOP_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
-    id: 'src.constant.6AF8D624',
-    defaultMessage: '停止申请表权限',
+    id: 'src.constant.CE89B9A5',
+    defaultMessage: '停止申请表/视图权限',
   }),
   [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: formatMessage({
-    id: 'src.constant.B59F26E3',
-    defaultMessage: '表权限管理',
+    id: 'src.constant.9E69D9A7',
+    defaultMessage: '表/视图权限管理',
   }),
   [AuditEventActionType.GRANT_TABLE_PERMISSION]: formatMessage({
-    id: 'src.constant.E15D0656',
-    defaultMessage: '新增表权限管理',
+    id: 'src.constant.072ADD11',
+    defaultMessage: '新增表/视图权限管理',
   }),
   [AuditEventActionType.REVOKE_TABLE_PERMISSION]: formatMessage({
-    id: 'src.constant.7DC84DC5',
-    defaultMessage: '回收表权限管理',
+    id: 'src.constant.1A7AEA14',
+    defaultMessage: '回收表/视图权限管理',
   }),
   // 自动授权规则
   [AuditEventActionType.CREATE_AUTOMATION_RULE]: formatMessage({
@@ -941,17 +949,17 @@ export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
       const children =
         metas[type]?.map((value) => {
           return {
-            title: AuditEventActionMap[value],
+            title: eventMeta?.find((i) => i.action === value)?.actionName,
             key: value,
             value,
           };
         }) ?? [];
       filter.push({
-        text: AuditEventMetaMap[type],
+        text: eventMeta?.find((i) => i.type === type)?.typeName,
         value: type,
       });
       return {
-        title: AuditEventMetaMap[type],
+        title: eventMeta?.find((i) => i.type === type)?.typeName,
         key: type,
         value: type,
         children: children,

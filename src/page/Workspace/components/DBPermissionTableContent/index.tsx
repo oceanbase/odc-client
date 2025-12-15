@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
   IUnauthorizedDBResources,
   TablePermissionType,
@@ -6,7 +22,7 @@ import {
 import { DatabasePermissionType } from '@/d.ts/database';
 import { ColumnType } from 'antd/es/table';
 import { formatMessage } from '@/util/intl';
-import { permissionOptionsMap } from '@/component/Task/ApplyDatabasePermission';
+import { permissionOptionsMap } from '@/component/Task/modals/ApplyDatabasePermission';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
 import { ModalStore } from '@/store/modal';
@@ -57,8 +73,8 @@ const getColumns = (
     {
       dataIndex: 'tableName',
       title: formatMessage({
-        id: 'src.page.Workspace.components.SQLResultSet.73CA790E',
-        defaultMessage: '表',
+        id: 'src.page.Workspace.components.DBPermissionTableContent.04E65667',
+        defaultMessage: '表/视图',
       }),
       ellipsis: true,
     },
@@ -105,12 +121,12 @@ const getColumns = (
               }); /* 无法申请数据库权限：数据库没有归属项目 */
           tableTooltip = _.projectId
             ? formatMessage({
-                id: 'src.page.Workspace.components.SQLResultSet.455E73CE',
-                defaultMessage: '无法申请表权限：没有加入数据库所属项目',
+                id: 'src.page.Workspace.components.DBPermissionTableContent.3F2FBE3A',
+                defaultMessage: '无法申请表/视图权限：没有加入数据库所属项目',
               })
             : formatMessage({
-                id: 'src.page.Workspace.components.SQLResultSet.3BA312DB',
-                defaultMessage: '无法申请表权限：表所属数据库没有归属项目',
+                id: 'src.page.Workspace.components.DBPermissionTableContent.610249E6',
+                defaultMessage: '无法申请表/视图权限：表所属数据库没有归属项目',
               });
         }
         return (
@@ -144,8 +160,8 @@ const getColumns = (
                 }}
               >
                 {formatMessage({
-                  id: 'src.page.Workspace.components.SQLResultSet.44FA6D77',
-                  defaultMessage: '申请表权限',
+                  id: 'src.page.Workspace.components.DBPermissionTableContent.66D27AFB',
+                  defaultMessage: '申请表/视图权限',
                 })}
               </Action.Link>
             }

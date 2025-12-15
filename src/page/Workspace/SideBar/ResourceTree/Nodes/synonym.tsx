@@ -45,9 +45,7 @@ export function SynonymTreeData(
   };
   if (synonyms) {
     treeData.children = synonyms.map((synonym) => {
-      const key = `${database.id}-${
-        isPublic ? dbSession?.database?.publicSynonymVersion : dbSession?.database?.synonymVersion
-      }-${dbName}-sequence-${synonym.synonymName}`;
+      const key = `${database.id}-${dbName}-synonym-${isPublic}-${synonym.synonymName}`;
       return {
         title: synonym.synonymName,
         key,
@@ -63,7 +61,7 @@ export function SynonymTreeData(
           />
         ),
 
-        doubleClick(session, node, databaseFrom) {
+        doubleClick(session, node) {
           openSynonymViewPage(
             synonym.synonymName,
             isPublic ? SynonymType.PUBLIC : SynonymType.COMMON,

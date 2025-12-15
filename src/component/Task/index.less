@@ -12,8 +12,15 @@
     line-height: 24px;
     opacity: 0.85;
   }
-
   :global {
+    .ant-spin-nested-loading {
+      height: 100%;
+      .ant-spin-container {
+        .ant-table-wrapper {
+          height: 100%;
+        }
+      }
+    }
     .ant-input-search {
       width: 178px;
     }
@@ -23,17 +30,23 @@
     .ant-table-tbody > tr > td > .ant-table-wrapper:only-child .ant-table {
       margin-top: 0;
     }
+    .ant-pagination-next[aria-disabled='false'] {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+    }
+    .ant-pagination-disabled {
+      .anticon {
+        color: var(--icon-color-disable);
+      }
+    }
   }
 }
 
-.approvalModal {
-  .block:global(.ant-space) {
-    width: 100%;
-  }
-  :global {
-    .ant-modal-body {
-      padding: 20px;
-    }
+.tableRow:hover {
+  .hoverLink {
+    color: #1890ff !important;
+    cursor: pointer;
   }
 }
 
@@ -56,6 +69,9 @@
 .connectionPopover {
   padding: 0;
   :global {
+    .ant-popover-inner {
+      padding: 0;
+    }
     .ant-popover-inner-content {
       padding: 0;
     }
@@ -145,7 +161,7 @@
   padding-top: 6px;
   .groupName {
     padding-top: 6px;
-    color: var(--text-color-placeholder);
+    color: var(--text-color-hint);
     line-height: 28px;
   }
   .groupItem {
@@ -160,9 +176,19 @@
       background-color: var(--hover-color);
     }
     &.selected {
-      color: var(--text-color-link);
-      background-color: var(--brand-blue1-color);
+      :global {
+        .ant-typography {
+          line-height: 28px;
+          color: var(--text-color-link);
+        }
+      }
+      background-color: var(--focus-color);
       border-radius: 2px;
+    }
+    :global {
+      .ant-typography {
+        line-height: 28px;
+      }
     }
   }
 }
@@ -173,5 +199,51 @@
   width: 138px;
   &:hover {
     background-color: var(--hover-color);
+  }
+}
+
+.batchOperationDropdown {
+  :global {
+    .ant-dropdown-menu {
+      .ant-dropdown-menu-item {
+        padding: 0;
+        .ant-dropdown-menu-title-content {
+          .ant-btn {
+            width: 100%;
+            justify-content: left;
+          }
+        }
+      }
+    }
+  }
+}
+
+.taskNameColumn {
+  color: var(--text-color-secondary);
+  padding: 5px 0px 5px 6px;
+  .columns {
+    display: flex;
+    gap: 8px;
+  }
+  .taskName {
+    font-weight: 600;
+    color: black;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .creator {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .project {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
   }
 }

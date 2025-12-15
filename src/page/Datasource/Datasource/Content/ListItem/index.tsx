@@ -19,7 +19,8 @@ import Icon from '@ant-design/icons';
 import classNames from 'classnames';
 import React from 'react';
 import styles from './index.less';
-
+import { ConnectType } from '@/d.ts';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { ReactComponent as ClusterSvg } from '@/svgr/graphic_cluster.svg';
 import { ReactComponent as HostSvg } from '@/svgr/graphic_server.svg';
 import { ReactComponent as TenantSvg } from '@/svgr/graphic_tenant.svg';
@@ -34,6 +35,7 @@ interface IProps {
   action: React.ReactElement;
   env: React.ReactElement;
   isConnecting?: boolean;
+  connectType: ConnectType;
 }
 
 const ListItem: React.FC<IProps> = function ({
@@ -44,6 +46,7 @@ const ListItem: React.FC<IProps> = function ({
   action,
   isConnecting,
   env,
+  connectType,
 }) {
   return (
     <Spin spinning={isConnecting}>
@@ -97,16 +100,30 @@ const ListItem: React.FC<IProps> = function ({
         </Tooltip>
         {!haveOCP() && (
           <Tooltip
+            overlayClassName={styles.datasourceTooltip}
             title={
               <Space>
                 {
-                  formatMessage(
-                    {
-                      id: 'odc.Content.ListItem.HostPortHost',
-                      defaultMessage: '主机:端口: {host}',
-                    },
-                    { host },
-                  ) /*主机:端口: {host}*/
+                  isConnectTypeBeFileSystemGroup(connectType) ? (
+                    <>
+                      <span>
+                        {formatMessage({
+                          id: 'src.page.Datasource.Datasource.Content.ListItem.0C5CA730',
+                          defaultMessage: '文件URL:',
+                        })}
+                      </span>
+                      <span>{host ?? '-'}</span>
+                    </>
+                  ) : (
+                    formatMessage(
+                      {
+                        id: 'odc.Content.ListItem.HostPortHost',
+                        defaultMessage: '主机:端口: {host}',
+                      },
+                      { host },
+                    )
+                  )
+                  /*主机:端口: {host}*/
                 }
               </Space>
             }

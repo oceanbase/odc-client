@@ -18,7 +18,7 @@ import { getConnectionDetailResponse } from '@/common/network/connection';
 import { getDatabase } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { toInteger } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import SessionStore from './session';
@@ -96,6 +96,7 @@ export class SessionManagerStore {
     datasourceId: ConnectionId,
     databaseid: number,
     isMaster: boolean = false,
+    recordDbAccessHistory: boolean = false,
   ): Promise<SessionStore | null | 'NotFound'> {
     if (isMaster && databaseid) {
       const masterSession = this.sessionMap.get(this.masterSession.get(databaseid));
@@ -180,7 +181,7 @@ export class SessionManagerStore {
     // if(database.type === DBType.LOGICAL){
     //   return
     // }
-    const session = await SessionStore.createInstance(datasource, database);
+    const session = await SessionStore.createInstance(datasource, database, recordDbAccessHistory);
     runInAction(() => {
       if (session) {
         this.sessionMap.set(session.sessionId, session);

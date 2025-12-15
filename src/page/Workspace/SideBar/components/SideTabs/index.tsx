@@ -17,7 +17,7 @@
 import Icon from '@ant-design/icons';
 import { Space } from 'antd';
 import classNames from 'classnames';
-import React, { ReactElement, useRef } from 'react';
+import React, { ReactElement, useRef, useState } from 'react';
 
 import Action from '@/component/Action';
 import { useControllableValue } from 'ahooks';
@@ -45,18 +45,12 @@ export interface ITab {
 
 interface IProps {
   tabs: ITab[];
-  selectTabKey?: string;
   leftAction?: React.ReactNode;
-  setSelectTabKey?: (v: string) => void;
 }
 
 export default function SideTabs(props: IProps) {
   const tabs = props.tabs;
-  const [selectTabKey, setSelectTabKey] = useControllableValue(props, {
-    defaultValue: tabs?.[0]?.key,
-    valuePropName: 'selectTabKey',
-    trigger: 'setSelectTabKey',
-  });
+  const [selectTabKey, setSelectTabKey] = useState<string>(tabs?.[0]?.key);
   const loadedKeys = useRef<Set<string>>(new Set());
   const selectTab: ITab = tabs.find((tab) => tab.key === selectTabKey);
   loadedKeys.current.add(selectTabKey);
@@ -84,7 +78,7 @@ export default function SideTabs(props: IProps) {
             );
           })}
         </Space>
-        <Action.Group size={selectTab.groupSize}>
+        <Action.Group size={selectTab?.groupSize}>
           {selectTab?.actions?.map((action) => {
             if ('render' in action) {
               return action.render();
@@ -100,12 +94,12 @@ export default function SideTabs(props: IProps) {
       <div className={styles.content}>
         {tabs
           .map((tab) => {
-            if (loadedKeys.current.has(tab.key) || selectTab.key === tab.key) {
+            if (loadedKeys.current.has(tab.key) || selectTab?.key === tab.key) {
               return (
                 <div
                   key={tab.key}
                   className={styles.component}
-                  style={{ zIndex: selectTab.key === tab.key ? 'unset' : -9999 }}
+                  style={{ zIndex: selectTab?.key === tab.key ? 'unset' : -9999 }}
                 >
                   {tab?.render?.()}
                 </div>

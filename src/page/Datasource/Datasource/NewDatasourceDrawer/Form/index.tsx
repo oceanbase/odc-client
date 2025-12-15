@@ -23,22 +23,26 @@ import {
 import { testConnection } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { ConnectTypeText } from '@/constant/label';
-import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
+import { AccountType, ConnectType, IConnectionTestErrorType, DatasourceGroup } from '@/d.ts';
 import { IDatasource, IDataSourceType } from '@/d.ts/datasource';
 import login from '@/store/login';
 import { haveOCP } from '@/util/env';
-import { formatMessage } from '@/util/intl';
+import { formatMessage, getLocalDocs } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { useRequest } from 'ahooks';
-import { Form, FormInstance, Input, Select, Space, Typography } from 'antd';
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { Form, FormInstance, Input, Select, Space, Typography, Alert, Button } from 'antd';
+import { forwardRef, useImperativeHandle, useState, useMemo } from 'react';
 import Account from './Account';
 import AddressItems from './AddressItems';
 import DatasourceFormContext from './context';
 import ExtraConfig from './ExtraConfig';
 import ParseURLItem from './ParseURLItem';
 import ProjectItem from './ProjectItem';
+import CloudStorageForm from './CloudStorageForm';
+import odc from '@/plugins/odc';
+
 const Option = Select.Option;
 export interface IFormRef {
   form: FormInstance<IDatasource>;
@@ -112,56 +116,101 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
       return;
     }
     if (!res?.data?.active) {
-      switch (res?.data?.errorCode) {
-        case IConnectionTestErrorType.CONNECT_TYPE_NOT_MATCH:
-        case IConnectionTestErrorType.ILLEGAL_CONNECT_TYPE: {
-          // const a = form.getFieldInstance
-          form.setFields([
-            {
-              errors: [res?.data?.errorMessage],
-              name: ['host'],
-            },
-          ]);
-          break;
-        }
-        case IConnectionTestErrorType.UNKNOWN_HOST:
-        case IConnectionTestErrorType.HOST_UNREACHABLE: {
-          // const a = form.getFieldInstance
-          form.setFields([
-            {
-              errors: [res?.data?.errorMessage],
-              name: ['host'],
-            },
-          ]);
-          break;
-        }
-        case IConnectionTestErrorType.UNKNOWN_PORT: {
-          // const a = form.getFieldInstance
-          form.setFields([
-            {
-              errors: [res?.data?.errorMessage],
-              name: ['port'],
-            },
-          ]);
-          break;
-        }
-        case IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED: {
-          setTestResult({
-            errorCode: IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED,
-            errorMessage: res?.data?.errorMessage,
-            active: false,
-            type: null,
-          });
-          break;
+      if (haveOCP()) {
+        setTestResult({
+          errorCode: IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED,
+          errorMessage: res?.data?.errorMessage,
+          active: false,
+          type: null,
+        });
+      } else {
+        switch (res?.data?.errorCode) {
+          case IConnectionTestErrorType.CONNECT_TYPE_NOT_MATCH:
+          case IConnectionTestErrorType.ILLEGAL_CONNECT_TYPE: {
+            // const a = form.getFieldInstance
+            form.setFields([
+              {
+                errors: [res?.data?.errorMessage],
+                name: ['host'],
+              },
+            ]);
+            break;
+          }
+          case IConnectionTestErrorType.UNKNOWN_HOST:
+          case IConnectionTestErrorType.HOST_UNREACHABLE: {
+            // const a = form.getFieldInstance
+            form.setFields([
+              {
+                errors: [res?.data?.errorMessage],
+                name: ['host'],
+              },
+            ]);
+            break;
+          }
+          case IConnectionTestErrorType.UNKNOWN_PORT: {
+            // const a = form.getFieldInstance
+            form.setFields([
+              {
+                errors: [res?.data?.errorMessage],
+                name: ['port'],
+              },
+            ]);
+            break;
+          }
+          case IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED: {
+            setTestResult({
+              errorCode: IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED,
+              errorMessage: res?.data?.errorMessage,
+              active: false,
+              type: null,
+            });
+            break;
+          }
         }
       }
     }
     setTestResult(res?.data);
   }
+
   const connectTypeList: ConnectType[] = type
     ? getAllConnectTypes(getDsByConnectType(type))
     : getAllConnectTypes(IDataSourceType.OceanBase);
   const dsc = getDataSourceModeConfig(type)?.connection;
+
+  const AlertMessage = useMemo(() => {
+    if (isConnectTypeBeFileSystemGroup(type)) {
+      return (
+        <Alert
+          message={formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.C8E3BD0E',
+            defaultMessage: '对象存储仅支持数据归档',
+          })}
+          type="info"
+          showIcon
+          style={{
+            marginBottom: '12px',
+          }}
+          action={
+            <a
+              href={
+                odc.appConfig?.docs.url || getLocalDocs('100.create-a-personal-connection.html')
+              }
+              target={'_blank'}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              {formatMessage({
+                id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.FE0F7CF3',
+                defaultMessage: '查看详情',
+              })}
+            </a>
+          }
+        />
+      );
+    }
+  }, [type]);
+
   return (
     <DatasourceFormContext.Provider
       value={{
@@ -172,8 +221,10 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         originDatasource,
         dataSourceConfig: dsc,
         disableTheme,
+        setTestResult,
       }}
     >
+      {AlertMessage}
       <Form
         initialValues={{
           type,
@@ -227,7 +278,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                   }}
                 />
 
-                {ConnectTypeText[type] || ''}
+                {ConnectTypeText(type) || ''}
               </Space>
             </Typography.Paragraph>
           </Typography>
@@ -263,7 +314,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             {connectTypeList?.map((item) => {
               return (
                 <Option key={item} value={item}>
-                  {ConnectTypeText[item]}
+                  {ConnectTypeText(item)}
                 </Option>
               );
             })}
@@ -283,7 +334,6 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                     autoType={!isEdit}
                   />
                 )}
-
                 <AddressItems />
                 {dsc?.defaultSchema ? (
                   <Form.Item
@@ -308,6 +358,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                   </Form.Item>
                 ) : null}
                 <Account isEdit={isEdit} />
+                <CloudStorageForm isEdit={isEdit} />
                 <Form.Item
                   rules={[
                     {

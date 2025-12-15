@@ -16,7 +16,14 @@
 
 import { TablePermissionType } from '@/d.ts/table';
 import { DatabasePermissionType } from './database';
+import { TaskExecStrategy } from '.';
 
+export enum ProjectTabType {
+  /** 全部项目 */
+  ALL = 'all',
+  /** 归档项目 */
+  ARCHIVED = 'archived',
+}
 export enum ProjectRole {
   DEVELOPER = 'DEVELOPER',
   DBA = 'DBA',
@@ -43,6 +50,7 @@ export interface IProject {
     name: string;
     role: ProjectRole;
     userEnabled: boolean;
+    derivedFromGlobalProjectRole: boolean;
   }[];
   currentUserResourceRoles: ProjectRole[];
   builtin: boolean;

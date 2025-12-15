@@ -19,8 +19,9 @@ import { PASSWORD_REGEX, SPACE_REGEX, PASSWORD_VALIDATE_MESSAGE } from '@/consta
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { generateAndDownloadFile, generateRandomPassword } from '@/util/utils';
-import { validTrimEmptyWithWarn } from '@/util/valid';
+import { generateRandomPassword } from '@/util/utils';
+import { generateAndDownloadFile } from '@/util/data/file';
+import { validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import type { RadioChangeEvent } from 'antd';
 import {
@@ -402,7 +403,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   defaultMessage: '新建用户',
                 }) // 新建用户
           }
-          className={styles.userModal}
+          rootClassName={styles.userModal}
           footer={
             <Space>
               <Button
@@ -629,11 +630,11 @@ class FormModal extends React.PureComponent<IProps, IState> {
                                 //请输姓名
                               },
                               {
-                                max: 64,
+                                max: 128,
                                 message: formatMessage({
                                   id: 'odc.components.FormUserModal.TheNameCannotExceedCharacters.2',
-                                  defaultMessage: '姓名不超过 64 个字符',
-                                }), //姓名不超过 64 个字符
+                                  defaultMessage: '姓名不超过 128 个字符',
+                                }), //姓名不超过 128 个字符
                               },
                               {
                                 validator: validTrimEmptyWithWarn(
@@ -707,7 +708,10 @@ class FormModal extends React.PureComponent<IProps, IState> {
                               /* 随机密码 */
                             }
                           </Button>
-                          <DeleteOutlined onClick={() => this.handleRemove(name, remove)} />
+                          <DeleteOutlined
+                            className={styles.icon}
+                            onClick={() => this.handleRemove(name, remove)}
+                          />
                         </Space>
                       ))}
 
@@ -716,7 +720,8 @@ class FormModal extends React.PureComponent<IProps, IState> {
                           type="dashed"
                           onClick={() => add(clone(defaultUserInfo))}
                           block
-                          icon={<PlusOutlined />}
+                          className={styles.addUser}
+                          icon={<PlusOutlined className={styles.icon} />}
                         >
                           {
                             formatMessage({

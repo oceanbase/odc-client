@@ -17,28 +17,17 @@
 import Action from '@/component/Action';
 import { IConnectionTestErrorType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { validTrimEmptyWithWarn } from '@/util/valid';
+import { validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import { Col, Form, Input, Row, Select, Space, Typography } from 'antd';
 import React, { useContext, useMemo, useState } from 'react';
 import DatasourceFormContext from '../context';
 import FormItemGroup from '../FormItemGroup';
 import UserInput from './UserInput';
+import ErrorTip from '../components/ErrorTip';
 
 interface IProps {
   isEdit: boolean;
 }
-
-export const ErrorTip: React.FC<{
-  errorMessage: string;
-}> = ({ errorMessage }) => {
-  return (
-    !!errorMessage && (
-      <div>
-        <Typography.Text type="danger">{errorMessage}</Typography.Text>
-      </div>
-    )
-  );
-};
 
 const PrivateAccount: React.FC<IProps> = function (props) {
   const { isEdit } = props;

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -16,41 +17,80 @@
 
 import { IProject, ProjectRole } from '@/d.ts/project';
 import Icon from '@ant-design/icons';
-import { Space } from 'antd';
+import { Checkbox, Tooltip } from 'antd';
 import classNames from 'classnames';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useMemo } from 'react';
 import styles from './index.less';
-
+import type { SelectProject } from '@/page/Project/components/DeleteProjectModal.tsx';
 import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
 import { ReactComponent as UserSvg } from '@/svgr/user.svg';
 
 interface IProps {
   data: IProject;
   onClick: (p: IProject) => void;
+  action: React.ReactElement;
+  onSelectChange?: (isSelected: boolean, params: any) => void;
+  selectProjectList: SelectProject[];
 }
 
 export default forwardRef(function ListItem(
-  { data, onClick }: IProps,
+  { data, onClick, action, onSelectChange, selectProjectList }: IProps,
   ref: React.Ref<HTMLDivElement>,
 ) {
+  const onChange = (e) => {
+    onSelectChange(e.target.checked, {
+      id: data.id,
+      name: data.name,
+    });
+  };
+
+  const isDisabledCheckbox = useMemo(() => {
+    return !data?.currentUserResourceRoles?.includes(ProjectRole.OWNER);
+  }, [data?.currentUserResourceRoles]);
+
   return (
-    <div
-      ref={ref}
-      className={classNames(styles.item, { [styles.itemDisable]: data?.archived })}
-      onClick={onClick.bind(this, data)}
-    >
-      <div className={classNames(styles.block, styles.status)}>
-        <Icon component={ProjectSvg} style={{ color: 'var(--icon-blue-color)', fontSize: 16 }} />
+    <div ref={ref} className={classNames(styles.item)} onClick={onClick.bind(this, data)}>
+      {action && (
+        <div
+          className={classNames(styles.block)}
+          style={{ marginLeft: '8px' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Tooltip
+            title={
+              isDisabledCheckbox
+                ? formatMessage({
+                    id: 'src.page.Project.Project.ListItem.84183D4F',
+                    defaultMessage: '暂无权限，请联系管理员',
+                  })
+                : undefined
+            }
+          >
+            <Checkbox
+              onChange={onChange}
+              disabled={isDisabledCheckbox}
+              checked={selectProjectList.some((item) => item.id === data.id)}
+            ></Checkbox>
+          </Tooltip>
+        </div>
+      )}
+      <div className={classNames(styles.block, styles.name)}>
+        <Icon
+          component={ProjectSvg}
+          style={{ color: 'var(--icon-blue-color)', fontSize: 16, padding: '0px 8px 0px 12px' }}
+        />
+        {data.name}
       </div>
-      <div className={classNames(styles.block, styles.name)}>{data.name}</div>
       <div className={classNames(styles.block, styles.desc)}>{data.description || '-'}</div>
       <div className={classNames(styles.block, styles.users)}>
         <Icon style={{ color: 'var(--icon-color-disable)', marginRight: 5 }} component={UserSvg} />
-        {data.members
-          ?.filter((item) => item.role === ProjectRole.OWNER)
-          ?.map((a) => a.name)
-          ?.join(', ') || '-'}
+        {Array.from(
+          new Set(
+            data.members?.filter((item) => item.role === ProjectRole.OWNER)?.map((a) => a.name),
+          ),
+        )?.join(', ') || '-'}
       </div>
+      {action && <div className={classNames(styles.block, styles.action)}>{action}</div>}
     </div>
   );
 });

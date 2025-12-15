@@ -16,6 +16,8 @@
 
 import { IPage, PageType } from '@/d.ts';
 import { getTitleByParams } from '@/page/Workspace/components/TaskPage';
+import { getScheduleTitleByParams } from '@/page/Workspace/components/SchedulePage';
+import { getTitleByParams as getCreateScheduleTitleByParams } from '@/page/Workspace/components/CreateSchedule';
 import { BatchCompilePage, OBClientPage, SQLPage } from '@/store/helper/page/pages';
 import { SQLConfirmPage } from '@/store/helper/page/pages/create';
 import { AnonymousPage } from '@/store/helper/page/pages/pl';
@@ -27,8 +29,8 @@ const titleText = {
     defaultMessage: '会话管理',
   }),
   [PageType.SESSION_PARAM]: formatMessage({
-    id: 'workspace.header.session.params',
-    defaultMessage: '会话属性',
+    id: 'src.component.WindowManager.2A36DA18',
+    defaultMessage: '全局变量',
   }),
   [PageType.RECYCLE_BIN]: formatMessage({
     id: 'workspace.header.recycle',
@@ -104,6 +106,12 @@ export function getPageTitleText(page: IPage) {
     }
     case PageType.TASKS: {
       return getTitleByParams(params);
+    }
+    case PageType.SCHEDULES: {
+      return getScheduleTitleByParams(params);
+    }
+    case PageType.CREATE_SCHEDULES: {
+      return getCreateScheduleTitleByParams(params);
     }
     default: {
       return title;

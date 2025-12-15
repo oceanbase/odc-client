@@ -41,11 +41,10 @@ export const FilterContent: React.FC<IProps> = (props) => {
         <Space size={0} key={index}>
           {filterTitle && <span>{filterTitle}</span>}
           <Select
-            showArrow
-            dropdownMatchSelectWidth={dropdownWidth}
+            popupMatchSelectWidth={dropdownWidth}
             defaultValue={defaultValue}
             value={filterValue?.[name]}
-            bordered={false}
+            variant="borderless"
             options={options}
             onChange={(value) => {
               props.onFilterChange(name, value);

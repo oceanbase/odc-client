@@ -42,6 +42,7 @@ export const ACTION_GROUPS = {
       ['SQL_COMMIT', 'SQL_ROLLBACK'],
       ['SQL_EXEC', 'SQL_EXEC_SECTION', 'SQL_STOP', 'SQL_LINT', 'SQL_PLAN'],
       ...TEXT_ACTION_GROUPS,
+      ['AIComplete'],
     ],
     right: [['SQL_SAVE', 'SQL_CONFIG']],
   },

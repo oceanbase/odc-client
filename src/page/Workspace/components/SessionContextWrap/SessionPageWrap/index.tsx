@@ -23,7 +23,6 @@ import styles from './index.less';
 
 interface IProps extends PropsWithChildren<any> {
   databaseId: number;
-  databaseFrom: 'project' | 'datasource';
   readonly?: boolean;
   useMaster?: boolean;
   supportLocation?: boolean;
@@ -32,17 +31,12 @@ interface IProps extends PropsWithChildren<any> {
 export function SessionPage({
   children,
   databaseId,
-  databaseFrom,
   readonly,
   useMaster,
   supportLocation,
 }: IProps) {
   return (
-    <SessionContextWrap
-      useMaster={useMaster}
-      defaultDatabaseId={databaseId}
-      defaultMode={databaseFrom || 'datasource'}
-    >
+    <SessionContextWrap useMaster={useMaster} defaultDatabaseId={databaseId}>
       {({ session }) => {
         return (
           <div className={styles.sessionWrap}>
@@ -66,7 +60,6 @@ export default function WrapSessionPage(
   return function WrapComponent(props) {
     return (
       <SessionPage
-        databaseFrom={props?.params?.databaseFrom}
         databaseId={props?.params?.databaseId}
         readonly={readonly}
         useMaster={useMaster}

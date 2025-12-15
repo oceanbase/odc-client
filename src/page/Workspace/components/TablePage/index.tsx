@@ -45,7 +45,7 @@ import { getQuoteTableName } from '@/util/utils';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 
 interface IProps {
   pageKey: string;
@@ -72,6 +72,7 @@ export enum PropsTab {
 }
 
 const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, settingStore }) {
+  const { isExternalTable } = params;
   const [table, setTable] = useState<Partial<ITableModel>>(null);
   const version = useRef(0);
   const [topTab, setTopTab] = useState(TopTab.PROPS);
@@ -99,7 +100,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
     if (isLogicalDatabase(session?.odcDatabase)) {
       newTable = await getLogicTableInfo(session?.odcDatabase?.id, params?.tableId);
     } else {
-      newTable = await getTableInfo(params.tableName, dbName, session?.sessionId);
+      newTable = await getTableInfo(params.tableName, dbName, session?.sessionId, isExternalTable);
     }
     if (newTable) {
       version.current++;
@@ -210,7 +211,8 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
             getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
               TaskType.EXPORT,
             ) &&
-            !isLogicalDatabase(session?.odcDatabase) ? (
+            !isLogicalDatabase(session?.odcDatabase) &&
+            !isExternalTable ? (
               <Toolbar.Button
                 text={
                   formatMessage({ id: 'odc.components.TablePage.Export', defaultMessage: '导出' }) //导出
@@ -263,7 +265,13 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                           defaultMessage: '基本信息',
                         }),
                         key: PropsTab.INFO,
-                        children: <ShowTableBaseInfoForm pageKey={pageKey} dbType={dbType} />,
+                        children: (
+                          <ShowTableBaseInfoForm
+                            pageKey={pageKey}
+                            dbType={dbType}
+                            isExternalTable={params.isExternalTable}
+                          />
+                        ),
                       },
                       {
                         label: formatMessage({
@@ -273,11 +281,12 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                         key: PropsTab.COLUMN,
                         children: (
                           <Spin spinning={false}>
-                            <TableColumns />
+                            <TableColumns isExternalTable={params.isExternalTable} />
                           </Spin>
                         ),
                       },
-                      {
+                      // 外表不展示索引
+                      !isExternalTable && {
                         key: PropsTab.INDEX,
                         label: formatMessage({
                           id: 'workspace.window.table.propstab.index',
@@ -289,19 +298,22 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                           </Spin>
                         ),
                       },
-                      enableConstraint && {
-                        children: (
-                          <Spin spinning={false}>
-                            <TableConstraints />
-                          </Spin>
-                        ),
+                      // 外表不展示约束
+                      enableConstraint &&
+                        !isExternalTable && {
+                          children: (
+                            <Spin spinning={false}>
+                              <TableConstraints />
+                            </Spin>
+                          ),
 
-                        key: PropsTab.CONSTRAINT,
-                        label: formatMessage({
-                          id: 'workspace.window.table.propstab.constraint',
-                          defaultMessage: '约束',
-                        }),
-                      },
+                          key: PropsTab.CONSTRAINT,
+                          label: formatMessage({
+                            id: 'workspace.window.table.propstab.constraint',
+                            defaultMessage: '约束',
+                          }),
+                        },
+
                       showPartition
                         ? {
                             key: PropsTab.PARTITION,
@@ -339,6 +351,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                       tableName={table?.info?.tableName}
                       pageKey={pageKey}
                       key={version.current}
+                      isExternalTable={params.isExternalTable}
                     />
                   ) : null,
               },

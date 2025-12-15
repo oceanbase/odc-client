@@ -41,7 +41,7 @@ import { useColumns } from './columns';
 const defaultIndex: ITableIndex = {
   name: null,
   method: TableIndexMehod.BTREE,
-  scope: TableIndexScope.GLOBAL,
+  scope: TableIndexScope.LOCAL,
   columns: [],
   visible: true,
   type: TableIndexType.NORMAL,
@@ -77,7 +77,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
   const gridColumns: any[] = useColumns(tableContext.columns, session);
   const gridRef = useRef<DataGridRef>();
   const rows = useMemo(() => {
-    return tableContext.indexes.map((index, idx) => {
+    return tableContext?.indexes?.map((index, idx) => {
       return {
         ...index,
         key: `${index.name || ''}@@${idx}`,

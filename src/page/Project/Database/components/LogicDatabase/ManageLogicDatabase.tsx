@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import { render } from '@/app';
 import {
@@ -17,7 +33,7 @@ import { IResponseData } from '@/d.ts';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { ILogicalDatabase, ILogicalTable, InconsistentPhysicalTable } from '@/d.ts/logicalDatabase';
 import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { gotoSQLWorkspace } from '@/util/route';
 import Icon, { ExclamationCircleFilled } from '@ant-design/icons';
 import {
@@ -35,7 +51,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import type { FixedType } from 'rc-table/es/interface';
 import datasourceStatus from '@/store/datasourceStatus';
 
@@ -256,14 +272,18 @@ const physicalDbColumns = [
       defaultMessage: '数据库名称',
     }),
     dataIndex: 'name',
-    width: 100,
+    width: 130,
     fixed: 'left' as FixedType,
     render(value, record) {
       return (
         <>
           <Space size={2}>
             <DataBaseStatusIcon item={record} />
-            {value}
+            <Tooltip title={value}>
+              <Typography.Text ellipsis style={{ maxWidth: 100 }}>
+                {value}
+              </Typography.Text>
+            </Tooltip>
           </Space>
         </>
       );

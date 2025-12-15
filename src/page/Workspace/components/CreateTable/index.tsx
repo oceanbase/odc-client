@@ -41,9 +41,9 @@ import { CreateTablePage } from '@/store/helper/page/pages/create';
 import modal, { ModalStore } from '@/store/modal';
 import page from '@/store/page';
 import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { useRequest } from 'ahooks';
 import { inject, observer } from 'mobx-react';
 import SessionContext from '../SessionContextWrap/context';
@@ -59,6 +59,7 @@ interface IProps {
   sessionManagerStore?: SessionManagerStore;
   modalStore?: ModalStore;
   params: CreateTablePage['pageParams'];
+  isExternalTable?: boolean;
 }
 
 const defaultInfo: TableInfo = {
@@ -76,6 +77,7 @@ const CreateTable: React.FC<IProps> = function ({
   params,
   sessionManagerStore,
   modalStore,
+  isExternalTable,
 }) {
   const [info, setInfo] = useState<TableInfo>(defaultInfo);
   const [columns, setColumns] = useState<TableColumn[]>([defaultColumn]);
@@ -212,7 +214,7 @@ const CreateTable: React.FC<IProps> = function ({
                 id: 'odc.components.CreateTable.Column',
                 defaultMessage: '列',
               }),
-              children: <Columns />,
+              children: <Columns isExternalTable={isExternalTable} />,
             },
             {
               key: TableTabType.INDEX,

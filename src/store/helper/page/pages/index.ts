@@ -29,6 +29,7 @@ import {
   TriggerState,
   TypePropsTab,
 } from '@/d.ts';
+import { SchedulePageType } from '@/d.ts/schedule';
 import {
   PropsTab as FunctionPropsTab,
   TopTab as FunctionTopTab,
@@ -47,6 +48,10 @@ import {
   PropsTab as ViewPropsTab,
   TopTab as ViewTopTab,
 } from '@/page/Workspace/components/ViewPage';
+import {
+  PropsTab as MaterializedViewPropsTab,
+  TopTab as MaterializedViewTopTab,
+} from '@/page/Workspace/components/MaterializedViewPage';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
@@ -83,7 +88,6 @@ export class SQLPage extends Page {
     scriptId?: ScriptId;
     cid: number;
     fromTask?: boolean;
-    databaseFrom: 'datasource' | 'project';
     pageIndex?: number;
     dbName?: string;
   } & Partial<IScriptMeta>;
@@ -112,12 +116,7 @@ export class SQLPage extends Page {
       }
     }
   }
-  constructor(
-    databaseId: number,
-    script?: IScript,
-    fromTask: boolean = false,
-    databaseFrom: 'project' | 'datasource' = 'datasource',
-  ) {
+  constructor(databaseId: number, script?: IScript, fromTask: boolean = false) {
     super();
     this.pageType = PageType.SQL;
     if (script) {
@@ -127,7 +126,6 @@ export class SQLPage extends Page {
         ...script?.scriptMeta,
         scriptText: script.content,
         scriptId: script.scriptMeta?.id,
-        databaseFrom,
         cid: databaseId,
       };
     } else {
@@ -138,7 +136,6 @@ export class SQLPage extends Page {
         pageIndex: pageIndex,
         scriptText: '',
         cid: databaseId,
-        databaseFrom,
         fromTask,
       };
     }
@@ -149,7 +146,6 @@ export class TutorialPage extends Page {
     docId: string;
     scriptText: string;
     cid: number;
-    databaseFrom: 'datasource';
   };
   constructor(docId: string, databaseId: number) {
     super();
@@ -160,7 +156,6 @@ export class TutorialPage extends Page {
       docId,
       cid: databaseId,
       scriptText: '',
-      databaseFrom: 'datasource',
     };
   }
 }
@@ -178,6 +173,22 @@ export class TaskPage extends Page {
     };
   }
 }
+
+export class SchedulePage extends Page {
+  constructor(type: SchedulePageType) {
+    super();
+    this.pageKey = type;
+    this.pageType = PageType.SCHEDULES;
+    this.pageTitle = formatMessage({
+      id: 'src.store.helper.page.pages.A23C5058',
+      defaultMessage: '作业',
+    });
+    this.pageParams = {
+      type,
+    };
+  }
+}
+
 export class SessionManagePage extends Page {
   public pageParams: {
     cid: number;
@@ -229,11 +240,11 @@ export class RecycleBinPage extends Page {
 export class TablePage extends Page {
   public pageParams: {
     databaseId: number;
-    databaseFrom: 'datasource';
     tableName: string;
     topTab: TableTopTab;
     propsTab: TablePropsTab;
     tableId: number;
+    isExternalTable: boolean;
   };
   constructor(
     databaseId: number,
@@ -241,6 +252,7 @@ export class TablePage extends Page {
     topTab: TableTopTab = TableTopTab.PROPS,
     propsTab: TablePropsTab = TablePropsTab.INFO,
     tableId: number,
+    isExternalTable?: boolean,
   ) {
     super();
     this.pageType = PageType.TABLE;
@@ -248,11 +260,11 @@ export class TablePage extends Page {
     this.pageTitle = tableName;
     this.pageParams = {
       databaseId,
-      databaseFrom: 'datasource',
       tableName,
       topTab,
       propsTab,
       tableId,
+      isExternalTable,
     };
   }
 }
@@ -281,6 +293,36 @@ export class ViewPage extends Page {
     };
   }
 }
+
+export class MaterializedViewPage extends Page {
+  public pageParams: {
+    databaseId: number;
+    materializedViewName: string;
+    topTab: MaterializedViewTopTab;
+    propsTab: MaterializedViewPropsTab;
+    dbName: string;
+  };
+  constructor(
+    databaseId: number,
+    materializedViewName: string,
+    topTab: MaterializedViewTopTab = MaterializedViewTopTab.PROPS,
+    propsTab: MaterializedViewPropsTab = MaterializedViewPropsTab.INFO,
+    dbName: string,
+  ) {
+    super();
+    this.pageType = PageType.MATERIALIZED_VIEW;
+    this.pageKey = `materializedViewPage-viewName:${materializedViewName}-dbid:${databaseId}`;
+    this.pageTitle = materializedViewName;
+    this.pageParams = {
+      databaseId,
+      materializedViewName,
+      topTab,
+      propsTab,
+      dbName,
+    };
+  }
+}
+
 export class FunctionPage extends Page {
   public pageParams: {
     databaseId: number;
@@ -452,8 +494,9 @@ export class SQLResultSetPage extends Page {
   public pageParams: {
     resultSets: IResultSet[];
     databaseId: number;
+    sqlContent: string;
   };
-  constructor(databaseId: number, resultSets: IResultSet[], title: string) {
+  constructor(databaseId: number, resultSets: IResultSet[], title: string, sqlContent: string) {
     super();
     this.pageKey = 'sql_resultset_view-' + generateUniqKey();
     this.pageTitle = title;
@@ -461,9 +504,29 @@ export class SQLResultSetPage extends Page {
     this.pageParams = {
       resultSets,
       databaseId,
+      sqlContent,
     };
   }
 }
+export class ExternalResourcePage extends Page {
+  public pageParams: {
+    databaseId: number;
+    resourceName: string;
+    propsTab: string;
+  };
+  constructor(databaseId: number, resourceName: string, propsTab: string = 'INFO') {
+    super();
+    this.pageType = PageType.EXTERNAL_RESOURCE;
+    this.pageKey = `externalResourcePage-resourceName:${resourceName}-dbid:${databaseId}`;
+    this.pageTitle = resourceName;
+    this.pageParams = {
+      databaseId,
+      resourceName,
+      propsTab,
+    };
+  }
+}
+
 export class OBClientPage extends Page {
   public pageParams: {
     time: number;

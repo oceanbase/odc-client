@@ -44,6 +44,7 @@ interface IProps {
   partNumber?: number;
   expression?: string;
   onSave: (partitions: Partial<TablePartition>) => void;
+  customRenderOptions?: (item) => JSX.Element;
 }
 
 export interface IFormPartition extends ITablePartition {
@@ -141,7 +142,7 @@ class CreateTablePartitionRuleForm extends Component<
   };
 
   private renderPartitions() {
-    const { columns, dataTypes, addMode } = this.props;
+    const { columns, dataTypes, addMode, customRenderOptions } = this.props;
     const { partitionType } = this.state;
     const singleColumnFormItem = addMode ? null : (
       <Form.Item
@@ -161,11 +162,16 @@ class CreateTablePartitionRuleForm extends Component<
         ]}
       >
         <Select disabled={addMode} allowClear style={{ width: 240 }}>
-          {(columns || []).map((c) => (
-            <Option key={c.name} value={c.name}>
-              {c.name}
-            </Option>
-          ))}
+          {(columns || []).map((c) => {
+            if (customRenderOptions) {
+              return customRenderOptions(c);
+            }
+            return (
+              <Option key={c.name} value={c.name}>
+                {c.name}
+              </Option>
+            );
+          })}
         </Select>
       </Form.Item>
     );

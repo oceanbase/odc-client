@@ -15,11 +15,11 @@
  */
 
 import Toolbar from '@/component/Toolbar';
-import { IPartitionType } from '@/d.ts';
+import { ConnectionMode, IPartitionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
-import { Form, Input, InputNumber, Space } from 'antd';
+import { Space, Typography } from 'antd';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { partitionNameMap } from '../../CreateTable/Partition/CreateTablePartitionRuleForm';
 import TablePageContext from '../context';
@@ -29,8 +29,6 @@ import { generateUniqKey } from '@/util/utils';
 import { cloneDeep } from 'lodash';
 import EditToolbar from '../../CreateTable/EditToolbar';
 import {
-  ITableHashPartition,
-  ITableKeyPartition,
   ITableListColumnsPartition,
   ITableListPartition,
   ITableModel,
@@ -73,8 +71,11 @@ const TablePartitions: React.FC<IProps> = function ({}) {
     addNewPartitions: () => Promise<Partial<TablePartition>>;
   }>();
   const gridRef = useRef<DataGridRef>();
+  const subpartitionsGridRef = useRef<DataGridRef>();
   const table = tableContext?.table;
   const partitions = editPartitions || table?.partitions;
+  const subpartitions = table?.subpartitions;
+  const subpartitionType = table?.subpartitions?.partType;
   const { partType } = partitions || {};
 
   const formItemLayout = {
@@ -106,16 +107,73 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       width: 110,
       editable: false,
     },
+    ![IPartitionType.HASH, IPartitionType.KEY]?.includes(partType)
+      ? {
+          key: 'partValues',
+          name: getTitleByPartType(partType),
+          resizable: true,
+          sortable: false,
+          editable: (row) => !!row?.isNew,
+          editor: TextEditor,
+        }
+      : null,
+  ]?.filter(Boolean);
 
+  const subpartitionsColumns = [
     {
-      key: 'partValues',
-      name: getTitleByPartType(partType),
+      key: 'parentName',
+      name: formatMessage({
+        id: 'src.page.Workspace.components.TablePage.Partitions.30EACD95',
+        defaultMessage: '一级分区名称',
+      }),
       resizable: true,
       sortable: false,
-      editable: (row) => !!row?.isNew,
-      editor: TextEditor,
     },
-  ];
+    {
+      key: 'name',
+      name: formatMessage({
+        id: 'src.page.Workspace.components.TablePage.Partitions.E6EE95C1',
+        defaultMessage: '二级分区名称',
+      }),
+      resizable: true,
+      sortable: false,
+    },
+    {
+      key: 'position',
+      name: formatMessage({
+        id: 'src.page.Workspace.components.TablePage.Partitions.AD70BB60',
+        defaultMessage: '顺序',
+      }),
+      resizable: true,
+      sortable: false,
+      width: 110,
+    },
+    ![IPartitionType.HASH, IPartitionType.KEY]?.includes(subpartitionType)
+      ? {
+          key: 'partValues',
+          name: getTitleByPartType(subpartitionType),
+          resizable: true,
+          sortable: false,
+        }
+      : null,
+  ]?.filter(Boolean);
+
+  const getSingleListPartitionKeyValue = (item) => item?.map((item) => item?.value);
+  const getMultiListPartitionKeyValue = (columns, item) =>
+    item.map((value) => {
+      return columns.reduce((prev, current, index) => {
+        prev[current.columnName] = item.value;
+        return prev;
+      }, {});
+    });
+  const getSingleRangePartitionKeyValue = (item) => {
+    return item.value;
+  };
+  const getMultiRangePartitionKeyValue = (columns, item) =>
+    columns.reduce((prev, current) => {
+      prev[current.columnName] = item.value;
+      return prev;
+    }, {});
 
   async function handleAddColumn() {
     const values = await addPartitionRef.current?.addNewPartitions();
@@ -127,7 +185,21 @@ const TablePartitions: React.FC<IProps> = function ({}) {
           (newPartitions as ITableListPartition).partitions = (
             newPartitions as ITableListPartition
           ).partitions.concat(
-            values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
+            values.partitions?.map((part) => {
+              return Object.assign(
+                { key: generateUniqKey() },
+                {
+                  ...part,
+                  valueForColumnDisplay:
+                    session.odcDatabase?.dataSource?.dialectType === ConnectionMode.OB_ORACLE
+                      ? getMultiListPartitionKeyValue(
+                          (partitions as ITableListPartition)?.columns,
+                          part,
+                        )
+                      : getSingleListPartitionKeyValue(part),
+                },
+              );
+            }),
           );
           setEditPartitions(newPartitions);
           return;
@@ -136,7 +208,21 @@ const TablePartitions: React.FC<IProps> = function ({}) {
           (newPartitions as ITableRangePartition).partitions = (
             newPartitions as ITableRangePartition
           ).partitions.concat(
-            values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
+            values.partitions?.map((part) => {
+              return Object.assign(
+                { key: generateUniqKey() },
+                {
+                  ...part,
+                  valueForColumnDisplay:
+                    session.odcDatabase?.dataSource?.dialectType === ConnectionMode.OB_ORACLE
+                      ? getMultiRangePartitionKeyValue(
+                          (partitions as ITableRangePartition)?.columns,
+                          part,
+                        )
+                      : getSingleRangePartitionKeyValue(part),
+                },
+              );
+            }),
           );
           setEditPartitions(newPartitions);
           return;
@@ -185,85 +271,23 @@ const TablePartitions: React.FC<IProps> = function ({}) {
   };
 
   useEffect(() => {
-    const rows = getRowsByPartType(partType, partitions);
+    const rows = getRowsByPartType(
+      partType,
+      partitions,
+      session.odcDatabase?.dataSource?.dialectType,
+    );
+    const subpartitionsRows = getRowsByPartType(
+      subpartitionType,
+      subpartitions,
+      session.odcDatabase?.dataSource?.dialectType,
+    );
     gridRef.current?.setRows?.(rows ?? []);
-  }, [partType, partitions]);
+    subpartitionsGridRef?.current?.setRows?.(subpartitionsRows ?? []);
+  }, [partType, partitions, subpartitions]);
 
   switch (partType) {
-    case IPartitionType.KEY: {
-      const { columns, partNumber } = partitions as ITableKeyPartition;
-      return (
-        <Form {...formItemLayout} className={styles.form}>
-          <Form.Item
-            label={formatMessage({
-              id: 'workspace.window.createTable.partition.type',
-              defaultMessage: '分区方法',
-            })}
-          >
-            <Input
-              style={{ width: 240 }}
-              value={(partType && partitionNameMap[partType]) || partType}
-              disabled={true}
-            />
-          </Form.Item>
-          <Form.Item
-            label={formatMessage({
-              id: 'workspace.window.createTable.partition.expression',
-              defaultMessage: '表达式',
-            })}
-          >
-            <Input
-              style={{ width: 240 }}
-              value={columns?.map((c) => c.columnName)?.join(',')}
-              disabled={true}
-            />
-          </Form.Item>
-          <Form.Item
-            label={formatMessage({
-              id: 'workspace.window.createTable.partition.partNumber',
-              defaultMessage: '分区数量',
-            })}
-          >
-            <InputNumber value={partNumber} disabled={true} />
-          </Form.Item>
-        </Form>
-      );
-    }
-    case IPartitionType.HASH: {
-      const { expression, partNumber } = partitions as ITableHashPartition;
-      return (
-        <Form {...formItemLayout} className={styles.form}>
-          <Form.Item
-            label={formatMessage({
-              id: 'workspace.window.createTable.partition.type',
-              defaultMessage: '分区方法',
-            })}
-          >
-            <Input
-              style={{ width: 240 }}
-              value={(partType && partitionNameMap[partType]) || partType}
-              disabled={true}
-            />
-          </Form.Item>
-          <Form.Item
-            label={formatMessage({
-              id: 'workspace.window.createTable.partition.expression',
-              defaultMessage: '表达式',
-            })}
-          >
-            <Input style={{ width: 240 }} value={expression} disabled={true} />
-          </Form.Item>
-          <Form.Item
-            label={formatMessage({
-              id: 'workspace.window.createTable.partition.partNumber',
-              defaultMessage: '分区数量',
-            })}
-          >
-            <InputNumber value={partNumber} disabled={true} />
-          </Form.Item>
-        </Form>
-      );
-    }
+    case IPartitionType.KEY:
+    case IPartitionType.HASH:
     case IPartitionType.LIST:
     case IPartitionType.LIST_COLUMNS:
     case IPartitionType.RANGE:
@@ -273,11 +297,17 @@ const TablePartitions: React.FC<IProps> = function ({}) {
         | ITableListColumnsPartition
         | ITableRangePartition
         | ITableRangeColumnsPartition;
-      const isRangeOrListPartition =
-        partType === IPartitionType.RANGE || partType === IPartitionType.LIST;
-      const isColumnsPartition =
-        partType === IPartitionType.RANGE_COLUMNS || partType === IPartitionType.LIST_COLUMNS;
-      const rows = getRowsByPartType(partType, partitions);
+      const rows = getRowsByPartType(
+        partType,
+        partitions,
+        session.odcDatabase?.dataSource?.dialectType,
+      );
+      const subpartitionsRows = getRowsByPartType(
+        subpartitionType,
+        subpartitions,
+        session.odcDatabase?.dataSource?.dialectType,
+      );
+      console.log('subpartitionsRows', subpartitionsRows);
       return (
         <div className={styles.container}>
           <TableCardLayout
@@ -315,22 +345,29 @@ const TablePartitions: React.FC<IProps> = function ({}) {
                 }}
               >
                 <Toolbar>
-                  <ToolbarButton
-                    text={formatMessage({ id: 'workspace.header.create', defaultMessage: '新建' })}
-                    icon={<PlusOutlined />}
-                    onClick={handleAddColumn}
-                  />
+                  {![IPartitionType.HASH, IPartitionType.KEY]?.includes(partType) ? (
+                    <>
+                      <ToolbarButton
+                        text={formatMessage({
+                          id: 'workspace.header.create',
+                          defaultMessage: '新建',
+                        })}
+                        icon={<PlusOutlined />}
+                        onClick={handleAddColumn}
+                      />
 
-                  <ToolbarButton
-                    text={
-                      formatMessage({
-                        id: 'odc.TablePage.Partitions.Delete',
-                        defaultMessage: '删除',
-                      }) //删除
-                    }
-                    icon={DeleteOutlined}
-                    onClick={handleDeleteColumn}
-                  />
+                      <ToolbarButton
+                        text={
+                          formatMessage({
+                            id: 'odc.TablePage.Partitions.Delete',
+                            defaultMessage: '删除',
+                          }) //删除
+                        }
+                        icon={DeleteOutlined}
+                        onClick={handleDeleteColumn}
+                      />
+                    </>
+                  ) : null}
 
                   <Toolbar.Button
                     icon={<SyncOutlined />}
@@ -345,54 +382,103 @@ const TablePartitions: React.FC<IProps> = function ({}) {
             }
           >
             <div style={{ lineHeight: '40px', height: 40, padding: '0px 12px' }}>
-              <Space size={'large'}>
+              <Space size={'large'} align="center">
+                <Typography.Text strong>
+                  {formatMessage({
+                    id: 'src.page.Workspace.components.TablePage.Partitions.3FB355F5',
+                    defaultMessage: '一级分区',
+                  })}
+                </Typography.Text>
                 <span>
-                  {
-                    formatMessage(
-                      {
-                        id: 'odc.TablePage.Partitions.PartitionMethodPartitionnamemapparttype',
-                        defaultMessage: '分区方法: {partitionNameMapPartType}',
-                      },
-                      { partitionNameMapPartType: partitionNameMap[partType] },
-                    ) /*分区方法: {partitionNameMapPartType}*/
-                  }
+                  {formatMessage(
+                    {
+                      id: 'src.page.Workspace.components.TablePage.Partitions.189B7E31',
+                      defaultMessage: '分区类型: {partitionNameMapPartType}',
+                    },
+                    { partitionNameMapPartType: partitionNameMap[partType] },
+                  )}
                 </span>
-                {isRangeOrListPartition && (
-                  <span>
-                    {
-                      formatMessage({
-                        id: 'odc.TablePage.Partitions.Expression',
-                        defaultMessage: '表达式:',
-                      }) /*表达式:*/
-                    }
+                <span>
+                  {formatMessage({
+                    id: 'src.page.Workspace.components.TablePage.Partitions.89FFF404',
+                    defaultMessage: '分区键:',
+                  })}
 
-                    {(partitions as ITableListPartition).expression}
-                  </span>
-                )}
-
-                {isColumnsPartition && (
-                  <span>
-                    {
-                      formatMessage({
-                        id: 'odc.TablePage.Partitions.Column',
-                        defaultMessage: '列：',
-                      }) /*列:*/
-                    }{' '}
-                    {(partitions as ITableListColumnsPartition).columns
+                  {(partitions as ITableListPartition)?.expression ||
+                    (partitions as ITableListColumnsPartition)?.columns
                       ?.map((column) => column?.columnName)
-                      ?.join(',')}
-                  </span>
-                )}
+                      ?.join(',') ||
+                    '-'}
+                </span>
               </Space>
             </div>
             <EditableTable
               gridRef={gridRef}
-              minHeight={`calc(100% - 40px)`}
+              minHeight={'300px'}
               rowKey="key"
               initialColumns={rdgColumns}
               initialRows={rows as any}
               onSelectChange={handleSelectCell}
             />
+
+            {subpartitionsRows?.length > 0 ? (
+              <>
+                <div style={{ lineHeight: '40px', height: 40, padding: '0px 12px' }}>
+                  <Space size={'large'} align="center">
+                    <Typography.Text strong>
+                      {formatMessage({
+                        id: 'src.page.Workspace.components.TablePage.Partitions.59AC9434',
+                        defaultMessage: '二级分区',
+                      })}
+                    </Typography.Text>
+                    <span>
+                      {formatMessage(
+                        {
+                          id: 'src.page.Workspace.components.TablePage.Partitions.7DB0502E',
+                          defaultMessage: '分区类型: {partitionNameMapSubpartitionType}',
+                        },
+                        { partitionNameMapSubpartitionType: partitionNameMap[subpartitionType] },
+                      )}
+                    </span>
+                    <span>
+                      {formatMessage({
+                        id: 'src.page.Workspace.components.TablePage.Partitions.79A4B409',
+                        defaultMessage: '分区键:',
+                      })}
+
+                      {(subpartitions as ITableListPartition)?.expression ||
+                        (subpartitions as ITableListColumnsPartition)?.columns
+                          ?.map((column) => column?.columnName)
+                          ?.join(',') ||
+                        '-'}
+                    </span>
+                    <span>
+                      {formatMessage({
+                        id: 'src.page.Workspace.components.TablePage.Partitions.B3C734DB',
+                        defaultMessage: '二级分区模板化:',
+                      })}
+                      {subpartitions?.subpartitionTemplated
+                        ? formatMessage({
+                            id: 'src.page.Workspace.components.TablePage.Partitions.67A2BC68',
+                            defaultMessage: '是',
+                          })
+                        : formatMessage({
+                            id: 'src.page.Workspace.components.TablePage.Partitions.31C167AC',
+                            defaultMessage: '否',
+                          })}
+                    </span>
+                  </Space>
+                </div>
+                <EditableTable
+                  gridRef={subpartitionsGridRef}
+                  minHeight={'300px'}
+                  rowKey="key"
+                  initialColumns={subpartitionsColumns}
+                  initialRows={subpartitionsRows as any}
+                  readonly={true}
+                />
+              </>
+            ) : null}
           </TableCardLayout>
           <AddPartitionModal ref={addPartitionRef} />
         </div>

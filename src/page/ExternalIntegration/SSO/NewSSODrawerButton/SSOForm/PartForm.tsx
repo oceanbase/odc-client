@@ -18,12 +18,31 @@ import HelpDoc from '@/component/helpDoc';
 import {
   IAuthorizationGrantType,
   IClientAuthenticationMethod,
+  ISSOConfig,
   IUserInfoAuthenticationMethod,
+  SAMLType,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Form, Input, InputNumber, Select, Space, Switch, Typography } from 'antd';
+import {
+  Checkbox,
+  Form,
+  FormInstance,
+  Input,
+  InputNumber,
+  message,
+  Select,
+  Space,
+  Switch,
+  Typography,
+  Tooltip,
+} from 'antd';
 import React from 'react';
-import { requiredRule } from '.';
+import { requiredRule, SAMLCheckBoxConfigType } from '.';
+import copyToCB from 'copy-to-clipboard';
+import { CopyOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import styles from './partForm.less';
+
+const { TextArea } = Input;
 
 export const OAUTH2PartForm: React.FC<{
   isEdit: boolean;
@@ -529,7 +548,7 @@ export const LDAPPartForm: React.FC<{
                 defaultMessage:
                   '用户查询的过滤条件，可以基于用户的属性（如用户名、邮箱、部门等）来过滤搜索结果',
               }) /*"用户查询的过滤条件，可以基于用户的属性（如用户
-           名、邮箱、部门等）来过滤搜索结果"*/
+          名、邮箱、部门等）来过滤搜索结果"*/
             }
           >
             userSearchFilter
@@ -565,7 +584,7 @@ export const LDAPPartForm: React.FC<{
                 defaultMessage:
                   '指定在搜索用户（user）时使用的起始点或基准点，用于限定在哪个部分或组织单位下搜索用户对象',
               }) /*"指定在搜索用户（user）时使用的起始点或基准点，
-           用于限定在哪个部分或组织单位下搜索用户对象"*/
+          用于限定在哪个部分或组织单位下搜索用户对象"*/
             }
           >
             userSearchBase
@@ -871,6 +890,370 @@ export const OIDCPartForm: React.FC<{
           })} /*自动生成*/
         />
       </Form.Item>
+    </>
+  );
+};
+
+export const SAMLPartForm: React.FC<{
+  isEdit: boolean;
+  showExtraConfigForSAML: boolean;
+  setShowExtraConfigForSAML: (show: boolean) => void;
+  updateSAMLCheckBoxConfig: (type: SAMLType, checked: boolean, value?: string) => void;
+  SAMLCheckBoxConfig: SAMLCheckBoxConfigType;
+  registrationId: string;
+  formConfig: FormInstance<ISSOConfig>;
+}> = ({
+  isEdit,
+  showExtraConfigForSAML,
+  setShowExtraConfigForSAML,
+  updateSAMLCheckBoxConfig,
+  SAMLCheckBoxConfig,
+  formConfig,
+}) => {
+  const metadataUriValue = Form.useWatch(['ssoParameter', 'metadataUri'], formConfig);
+  const providerEntityIdValue = Form.useWatch(['ssoParameter', 'providerEntityId'], formConfig);
+
+  const getProviderEntityId = () => {
+    if (isEdit) {
+      return !!providerEntityIdValue;
+    } else {
+      return !metadataUriValue;
+    }
+  };
+
+  return (
+    <>
+      <Typography.Title level={5}>
+        {formatMessage({
+          id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.995D697E',
+          defaultMessage: 'SAML 信息',
+        })}
+      </Typography.Title>
+      <Form.Item
+        name={['ssoParameter', 'acsLocation']}
+        label="SP Endpoint"
+        tooltip={formatMessage({
+          id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.28FAAB4B',
+          defaultMessage: '用户接受 SSO 服务响应',
+        })}
+        rules={[
+          {
+            required: true,
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.1C7B19EE',
+              defaultMessage: '请输入配置名称以生成 SP Endpoint',
+            }),
+          },
+        ]}
+      >
+        <TextArea
+          autoSize={{
+            minRows: 2,
+            maxRows: 3,
+          }}
+          disabled
+          placeholder={formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.8841571A',
+            defaultMessage: '自动生成，{baseUrl}/login/saml2/sso/{registrationId}',
+          })}
+        />
+      </Form.Item>
+      <Form.Item
+        name={['ssoParameter', 'acsEntityId']}
+        label="ACS EntityID"
+        rules={[
+          {
+            required: true,
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.8D6A20C0',
+              defaultMessage: '请输入配置名称以生成 ACS EntityID',
+            }),
+          },
+        ]}
+      >
+        <TextArea
+          autoSize={{
+            minRows: 2,
+            maxRows: 3,
+          }}
+          disabled
+          placeholder={formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.CC5C7D3D',
+            defaultMessage: '自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}',
+          })}
+        />
+      </Form.Item>
+      <Form.Item
+        rules={[
+          {
+            required: showExtraConfigForSAML ? false : true,
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.FB29759B',
+              defaultMessage: '未配置时，需要补充高级选项中的 SSO 相关配置信息',
+            }),
+          },
+        ]}
+        name={['ssoParameter', 'metadataUri']}
+        label="Metadata URI"
+        tooltip={formatMessage({
+          id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.07BABB3C',
+          defaultMessage: '元数据 URL',
+        })}
+      >
+        <Input
+          style={{
+            width: '100%',
+          }}
+          placeholder={'如：https://odctestsaml.authing.cn/api/v2/saml-idp/xxxxxxx/metadata'}
+        />
+      </Form.Item>
+      <Space
+        style={{
+          marginBottom: 12,
+          marginTop: 10,
+        }}
+      >
+        <span
+          style={{
+            fontWeight: 'bold',
+          }}
+        >
+          {
+            formatMessage({
+              id: 'odc.NewSSODrawerButton.SSOForm.AdvancedOptions',
+              defaultMessage: '高级选项',
+            }) /*高级选项*/
+          }
+        </span>
+        <Switch
+          size="small"
+          checked={showExtraConfigForSAML}
+          onChange={(v) => setShowExtraConfigForSAML(v)}
+        />
+      </Space>
+      <div
+        style={{
+          display: showExtraConfigForSAML ? 'block' : 'none',
+        }}
+      >
+        <Form.Item
+          name={['ssoParameter', 'providerEntityId']}
+          label="Provider EntityID"
+          tooltip={formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.AFC293F1',
+            defaultMessage: '服务提供商的唯一标识',
+          })}
+          rules={[
+            {
+              required: getProviderEntityId(),
+            },
+          ]}
+        >
+          <Input style={{ width: '100%' }} />
+        </Form.Item>
+        <Form.Item
+          name={['ssoParameter', 'singlesignon']}
+          label={formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.9B0937D9',
+            defaultMessage: 'SSO 配置',
+          })}
+          rules={[requiredRule]}
+          shouldUpdate={true}
+        >
+          <p style={{ color: 'rgba(0, 0, 0, 0.45)' }}>
+            {formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.63A7B3A4',
+              defaultMessage: '未配置 Metadata URi 时，建议补充以下配置',
+            })}
+          </p>
+          <div style={{ padding: '8px 16px 6px 16px', background: '#f7f9fb', borderRadius: 2 }}>
+            <Form.Item
+              label="URL"
+              name={['ssoParameter', 'singlesignon', 'url']}
+              rules={[{ required: !metadataUriValue }]}
+            >
+              <Input
+                style={{
+                  width: '100%',
+                }}
+                placeholder={'如：https://odctestsaml.authing.cn/api/v2/saml-idp/xxxxxxx/metadata'}
+              />
+            </Form.Item>
+            <Form.Item
+              name={['ssoParameter', 'singlesignon', 'binding']}
+              label={formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.CDE05469',
+                defaultMessage: '绑定方法',
+              })}
+              initialValue={'POST'}
+              rules={[{ required: !metadataUriValue }]}
+            >
+              <Select
+                style={{
+                  width: 200,
+                }}
+                options={[
+                  {
+                    label: 'Post',
+                    value: 'POST',
+                  },
+                  {
+                    label: 'Redirect',
+                    value: 'REDIRECT',
+                  },
+                ]}
+              />
+            </Form.Item>
+            <Form.Item
+              name={['ssoParameter', 'singlesignon', 'signRequest']}
+              label={formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.31D71B2D',
+                defaultMessage: '登录请求',
+              })}
+              initialValue={true}
+              rules={[{ required: !metadataUriValue }]}
+            >
+              <Select
+                style={{
+                  width: 200,
+                }}
+                options={[
+                  {
+                    label: 'True',
+                    value: true,
+                  },
+                  {
+                    label: 'False',
+                    value: false,
+                  },
+                ]}
+              />
+            </Form.Item>
+          </div>
+        </Form.Item>
+
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <div>
+            <Checkbox
+              checked={SAMLCheckBoxConfig.signing.checked}
+              onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.signing, e.target.checked)}
+            >
+              {formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.E1797DB0',
+                defaultMessage: '签名配置',
+              })}
+
+              <Tooltip
+                title={formatMessage({
+                  id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.3EB7CEBA',
+                  defaultMessage: '用于保证 ODC 到 IDP 服务的请求不被篡改',
+                })}
+              >
+                <QuestionCircleOutlined
+                  style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }}
+                />
+              </Tooltip>
+            </Checkbox>
+
+            <div
+              className={styles.SAMLCheckBoxConfigDiv}
+              style={{
+                display: SAMLCheckBoxConfig.signing.checked ? 'block' : 'none',
+              }}
+            >
+              <a
+                onClick={() => {
+                  copyToCB(SAMLCheckBoxConfig.signing.value);
+                  message.success(
+                    formatMessage({
+                      id: 'odc.component.Log.CopiedSuccessfully',
+                      defaultMessage: '复制成功',
+                    }), //复制成功
+                  );
+                }}
+                className={styles.SAMLCopyButton}
+              >
+                <CopyOutlined />
+              </a>
+              <div className={styles.SAMLConfigContent}>{SAMLCheckBoxConfig.signing.value}</div>
+            </div>
+          </div>
+
+          <div>
+            <Checkbox
+              checked={SAMLCheckBoxConfig.verification.checked}
+              onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.verification, e.target.checked)}
+            >
+              {formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.96DF4820',
+                defaultMessage: '认证配置',
+              })}
+
+              <Tooltip
+                title={formatMessage({
+                  id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.FAFB9D5D',
+                  defaultMessage: '用于保证 IDP 到 ODC 的请求不被篡改',
+                })}
+              >
+                <QuestionCircleOutlined
+                  style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }}
+                />
+              </Tooltip>
+            </Checkbox>
+
+            <TextArea
+              rows={6}
+              value={SAMLCheckBoxConfig.verification.value}
+              onChange={(e) => {
+                updateSAMLCheckBoxConfig(SAMLType.verification, true, e.target.value);
+              }}
+              style={{
+                display: SAMLCheckBoxConfig.verification.checked ? 'block' : 'none',
+              }}
+            />
+          </div>
+          <Checkbox
+            checked={SAMLCheckBoxConfig.decryption.checked}
+            onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.decryption, e.target.checked)}
+          >
+            {formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.FAC80099',
+              defaultMessage: '解密配置',
+            })}
+
+            <Tooltip
+              title={formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.387EEC11',
+                defaultMessage: '用于保证 IDP 到 ODC 服务的请求解密',
+              })}
+            >
+              <QuestionCircleOutlined style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }} />
+            </Tooltip>
+          </Checkbox>
+          <div
+            className={styles.SAMLCheckBoxConfigDiv}
+            style={{
+              display: SAMLCheckBoxConfig.decryption.checked ? 'block' : 'none',
+            }}
+          >
+            <a
+              onClick={() => {
+                copyToCB(SAMLCheckBoxConfig.decryption.value);
+                message.success(
+                  formatMessage({
+                    id: 'odc.component.Log.CopiedSuccessfully',
+                    defaultMessage: '复制成功',
+                  }), //复制成功
+                );
+              }}
+              className={styles.SAMLCopyButton}
+            >
+              <CopyOutlined />
+            </a>
+            <div className={styles.SAMLConfigContent}>{SAMLCheckBoxConfig.decryption.value}</div>
+          </div>
+        </Space>
+      </div>
     </>
   );
 };

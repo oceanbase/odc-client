@@ -19,7 +19,7 @@ import { SortAscendingOutlined } from '@ant-design/icons';
 import { Dropdown } from 'antd';
 import React, { useContext } from 'react';
 import ParamContext, { SortType } from '../../ParamContext';
-import FilterIcon from '../FIlterIcon';
+import FilterIcon from '@/component/Button/FIlterIcon';
 
 interface IProps {}
 
@@ -69,7 +69,7 @@ const Sorter: React.FC<IProps> = function () {
         ],
       }}
     >
-      <FilterIcon isActive={!!context?.sortType}>
+      <FilterIcon isActive={!!context?.sortType} border>
         <SortAscendingOutlined />
       </FilterIcon>
     </Dropdown>

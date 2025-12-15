@@ -23,7 +23,7 @@ import { CommonUserResource } from '@/component/Manage/UserResource';
 import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Descriptions, Divider, message, Space, Tooltip } from 'antd';
 import React, { useContext, useState } from 'react';
@@ -31,6 +31,12 @@ import { ResourceContext } from '../../../context';
 import styles from '../../index.less';
 import { permissionMap, resourceManagementTypeOptions } from '../ResourceSelector/const';
 import resourceActions from '../ResourceSelector/resourceActions';
+import {
+  ALL_I_HAVE_CREATED_VALUE,
+  ALL_SELECTED_VALUE,
+  AllIHaveCreatedOption,
+  AllOption,
+} from '@/component/Manage/ResourceSelector';
 const defaultSystemOperationPermission = [
   {
     label: formatMessage({
@@ -55,11 +61,11 @@ const getColumns = (roles: IManagerRole[]) => {
       render: (name, record) => (
         <Tooltip
           placement="right"
-          color="var(--background-normal-color)"
           overlayClassName={styles.userName}
+          color="var(--background-secondry-color)"
           title={
-            <Space direction="vertical">
-              <span>
+            <Space direction="vertical" className={styles.description}>
+              <span className={styles.label}>
                 {
                   formatMessage(
                     {
@@ -67,14 +73,14 @@ const getColumns = (roles: IManagerRole[]) => {
                       defaultMessage: '姓名：{name}',
                     },
                     {
-                      name,
+                      name: <span className={styles.value}>{name}</span>,
                     },
                   )
 
                   /* 姓名：{name} */
                 }
               </span>
-              <span>
+              <span className={styles.label}>
                 {
                   formatMessage(
                     {
@@ -82,7 +88,7 @@ const getColumns = (roles: IManagerRole[]) => {
                       defaultMessage: '账号：{recordAccountName}',
                     },
                     {
-                      recordAccountName: record.accountName,
+                      recordAccountName: <span className={styles.value}>{record.accountName}</span>,
                     },
                   )
 
@@ -202,7 +208,7 @@ const getResourceColumns = (
       }),
       // 权限
       ellipsis: true,
-      width: 108,
+      width: 158,
       filters: actionOptions?.map(({ label, value }) => ({
         text: label,
         value,
@@ -386,22 +392,21 @@ const UserDetail: React.FC<{
     }
   };
 
-  const getResourceName = (type: IManagerResourceType, resourceId: number) => {
+  const getResourceLabel = (info, resourceId: string | number) => {
+    // 后端实现：resourceId为*，表示对所有资源都有权限, resourceId为CREATOR，表示对我创建的有权限
+    if (resourceId === ALL_I_HAVE_CREATED_VALUE) return AllIHaveCreatedOption.name;
+    if (resourceId === ALL_SELECTED_VALUE()) return AllOption.name;
+    return info?.name;
+  };
+
+  const getResourceName = (type: IManagerResourceType, resourceId: number | string) => {
     const resourceMap = {
       [IManagerResourceType.resource]: resource,
       [IManagerResourceType.role]: roles,
       [IManagerResourceType.user]: users,
     };
-    const info = resourceMap[type]?.find((item) => item.id === resourceId);
-    // 后端实现：resourceId为null，表示对所有资源都有权限
-    return resourceId
-      ? info?.name
-      : formatMessage({
-          id: 'odc.components.RolePage.component.AllPublicResources',
-          defaultMessage: '所有公共资源',
-        });
-
-    // 所有公共资源
+    const info = resourceMap[type]?.find((item) => item.id?.toString?.() === resourceId);
+    return getResourceLabel(info, resourceId);
   };
 
   return (
@@ -472,7 +477,7 @@ const UserDetail: React.FC<{
               showSizeChanger={false}
               showQuickJumper={false}
               pageSize={10}
-              scroll={null}
+              scroll={{ x: 688 }}
             />
           </Descriptions.Item>
         </Descriptions>
@@ -496,7 +501,7 @@ const UserDetail: React.FC<{
               )}
               dataSource={_systemOperationPermissions || []}
               disablePagination
-              scroll={null}
+              scroll={{ x: 688 }}
             />
           </Descriptions.Item>
         </Descriptions>

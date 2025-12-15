@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { SettingStore } from '@/store/setting';
+import setting, { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { SettingOutlined } from '@ant-design/icons';
 import { Popover, Row, Switch, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import DelimiterSelect from '../DelimiterSelect';
 import InputBigNumber from '../InputBigNumber';
 
@@ -36,22 +36,39 @@ interface IProps {
 
 const SQLConfig: React.FC<IProps> = function (props) {
   const { session, pageKey } = useContext(SQLConfigContext);
-  const [queryLimitValue, setQueryLimitValue] = useState(1);
+  const [queryLimitValue, setQueryLimitValue] = useState(
+    Number(setting.spaceConfigurations?.['odc.sqlexecute.default.queryLimit']),
+  );
   const [showSessionParam, setShowSessionParam] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [showMaxLimit, setShowMaxLimit] = useState(false);
   const queryLimit = session?.params?.queryLimit;
   const tableColumnInfoVisible = session?.params.tableColumnInfoVisible;
   const fullLinkTraceEnabled = session?.params.fullLinkTraceEnabled;
   const continueExecutionOnError = session?.params.continueExecutionOnError;
 
   useEffect(() => {
+    setting.getUserConfig();
+  }, []);
+
+  useEffect(() => {
     setQueryLimitValue(session?.params.queryLimit);
   }, [queryLimit]);
 
-  const handleSetQueryLimit = async () => {
-    const success = await session.setQueryLimit(queryLimitValue);
-    if (!success) {
-      setQueryLimitValue(queryLimit);
+  const handleSetQueryLimit = async (e) => {
+    /**
+     * 判断是否允许无限制，假如不允许，禁止删除
+     */
+    const maxQueryLimit = session?.params?.maxQueryLimit;
+    if (maxQueryLimit !== Number.MAX_SAFE_INTEGER && !queryLimitValue) {
+      setQueryLimitValue(session?.params.queryLimit);
+      return;
+    }
+    if (e.target.value > maxQueryLimit) {
+      setShowMaxLimit(true);
+    } else {
+      setShowMaxLimit(false);
+      await session.setQueryLimit(queryLimitValue);
     }
   };
 
@@ -122,7 +139,6 @@ const SQLConfig: React.FC<IProps> = function (props) {
             <InputBigNumber
               value={queryLimitValue}
               min="1"
-              max={props.settingStore.maxResultSetRows + ''}
               style={{
                 width: '100%',
               }}
@@ -132,20 +148,26 @@ const SQLConfig: React.FC<IProps> = function (props) {
               })}
               /*无限制*/
               onChange={(v) => {
-                if (!v) {
-                  /**
-                   * 判断是否允许无限制，假如不允许，禁止删除
-                   */
-                  const max = props.settingStore.maxResultSetRows;
-                  if (max !== Number.MAX_SAFE_INTEGER) {
-                    setQueryLimitValue(1);
-                    return;
-                  }
-                }
                 setQueryLimitValue(parseInt(v) || undefined);
               }}
               onBlur={handleSetQueryLimit}
             />
+
+            {showMaxLimit && (
+              <div
+                style={{
+                  lineHeight: '28px',
+                  color: '#ff4d4f',
+                }}
+              >
+                {formatMessage({
+                  id: 'src.component.SQLConfig.5E06ED93',
+                  defaultMessage: '不超过查询条数上限',
+                })}
+
+                {session?.params.maxQueryLimit || '-'}
+              </div>
+            )}
 
             {!queryLimitValue && (
               <div
@@ -221,12 +243,15 @@ const SQLConfig: React.FC<IProps> = function (props) {
         overlayStyle={{
           width: 170,
         }}
-        placement="bottom"
+        placement="bottomLeft"
         title=""
         content={session ? renderContent() : null}
         open={visible}
         showArrow={false}
         onOpenChange={(v) => {
+          if (v) {
+            setting.getSpaceConfig();
+          }
           setVisible(v);
         }}
       >

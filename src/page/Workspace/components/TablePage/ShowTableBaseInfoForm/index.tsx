@@ -28,7 +28,7 @@ import { columnGroupsText } from '@/constant/label';
 import CreateTableBaseInfoForm from '@/page/Workspace/components/CreateTable/BaseInfo';
 import { TablePage } from '@/store/helper/page/pages';
 import page from '@/store/page';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import type { FormInstance } from 'antd/es/form';
 import { cloneDeep } from 'lodash';
 import TableContext from '../../CreateTable/TableContext';
@@ -43,9 +43,10 @@ import {
 interface IProps {
   pageKey?: string;
   dbType?: DBType;
+  isExternalTable?: boolean;
 }
 
-const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey, dbType }) => {
+const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey, dbType, isExternalTable }) => {
   const tableContext = useContext(TablePageContext);
   const session = tableContext.session;
   const table = tableContext?.table;
@@ -157,14 +158,17 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey, dbType }) => {
         </div>
       ) : (
         <Toolbar>
-          <Toolbar.Button
-            icon={<EditOutlined />}
-            text={formatMessage({
-              id: 'odc.components.ShowTableBaseInfoForm.Editing',
-              defaultMessage: '编辑',
-            })}
-            /* 编辑 */ onClick={() => setIsEditing(true)}
-          />
+          {/* 外表不支持编辑 */}
+          {isExternalTable ? null : (
+            <Toolbar.Button
+              icon={<EditOutlined />}
+              text={formatMessage({
+                id: 'odc.components.ShowTableBaseInfoForm.Editing',
+                defaultMessage: '编辑',
+              })}
+              /* 编辑 */ onClick={() => setIsEditing(true)}
+            />
+          )}
 
           <Toolbar.Button
             icon={<SyncOutlined />}
@@ -198,6 +202,21 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey, dbType }) => {
               }),
 
               content: table?.info?.tableName,
+            },
+            {
+              label: formatMessage({
+                id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.52095769',
+                defaultMessage: '表类型',
+              }),
+              content: isExternalTable
+                ? formatMessage({
+                    id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.3C463D88',
+                    defaultMessage: '外表',
+                  })
+                : formatMessage({
+                    id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.B7A406C8',
+                    defaultMessage: '表',
+                  }),
             },
 
             {

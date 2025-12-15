@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { RequestOptionsInit } from 'umi-request';
+import { ConnectType } from '@/d.ts';
 import defaultConfig from './defaultConfig';
-
+import type { InternalAxiosRequestConfig } from 'axios';
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
 interface IODCErrorHandle {
   (
     errCode: string,
@@ -29,11 +30,15 @@ interface IODCErrorHandle {
 }
 
 interface IRequestParamsResolver {
-  (options: RequestOptionsInit, requestId): Record<string, any>;
+  (options: InternalAxiosRequestConfig, requestId): Record<string, any>;
 }
 
 interface IResponseJsonResolver {
   (response: Response, json: Record<string, any>): void;
+}
+
+interface IDataSourceSupport {
+  (type: ConnectType, config: IDataSourceModeConfig): boolean;
 }
 
 export class ODC {
@@ -51,6 +56,8 @@ export class ODC {
 
   public responseJsonResolver: IResponseJsonResolver;
 
+  public datasourceSupport: IDataSourceSupport;
+
   public addErrorHandle(handle: IODCErrorHandle) {
     this.ODCErrorHandle.add(handle);
   }
@@ -62,7 +69,10 @@ export class ODC {
   public setResponseJsonResolve(handle: IResponseJsonResolver) {
     this.responseJsonResolver = handle;
   }
-  public appConfig: any = defaultConfig;
+  public setDataSourceSupport(handle: IDataSourceSupport) {
+    this.datasourceSupport = handle;
+  }
+  public appConfig: Partial<typeof defaultConfig> = defaultConfig;
 }
 
 export default new ODC();

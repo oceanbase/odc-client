@@ -1,0 +1,80 @@
+.scheduleItem {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 90px;
+  height: 229px;
+  &:nth-child(1) {
+    margin-right: 0;
+  }
+
+  .title {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--text-color-primary);
+    text-align: center;
+    cursor: default;
+  }
+
+  .progress {
+    display: inline-flex;
+    flex-direction: column;
+    .title {
+      cursor: default;
+      font-size: 12px;
+      line-height: 20px;
+      font-weight: 600;
+    }
+    .label {
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 20px;
+      color: var(--text-color-secondary);
+      .count {
+        font-size: 12px;
+        color: var(--text-color-link);
+        line-height: 20px;
+        font-weight: 500;
+        margin-left: 4px;
+        margin-right: 4px;
+      }
+    }
+    .ringChart {
+      display: flex;
+      justify-content: center;
+      min-height: 130px;
+      align-items: center;
+    }
+  }
+  .counters {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+    .countersDivider {
+      margin: 6px 0;
+    }
+  }
+}
+
+.progressTip {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  &:nth-child(1) {
+    margin-top: 0;
+  }
+  .title {
+    font-size: 12px;
+    color: #000000a6;
+    line-height: 20px;
+  }
+  .count {
+    font-size: 12px;
+    color: #000000d9;
+    line-height: 20px;
+    text-align: right;
+    font-weight: 500;
+  }
+}

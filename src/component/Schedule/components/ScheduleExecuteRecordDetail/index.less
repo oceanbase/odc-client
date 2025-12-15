@@ -1,0 +1,20 @@
+.changeDetail {
+  height: calc(100% - 28px);
+  display: flex;
+  flex-direction: column;
+  .diffEditor {
+    position: relative;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    :global {
+      .monaco-editor {
+        .margin,
+        .monaco-editor-background {
+          background: var(--background-tertraiy-color);
+        }
+      }
+    }
+  }
+}

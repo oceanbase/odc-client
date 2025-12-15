@@ -13,39 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { getTableColumnList } from '@/common/network/table';
-import { getView } from '@/common/network/view';
-import { fieldIconMap } from '@/constant';
-import { ColumnShowType } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-import { convertDataTypeToDataShowType } from '@/util/utils';
-import Icon, { PlusOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Empty, Spin, Transfer, Tree } from 'antd';
-import update from 'immutability-helper';
-import { isEqual, uniqueId } from 'lodash';
-import { parse } from 'query-string';
-import { PureComponent } from 'react';
-import { ICON_DATABASE, ICON_TABLE, ICON_VIEW } from '../ObjectName';
-import styles from './index.less';
-import ColumnItem from './Item';
 
+import update from 'immutability-helper';
+import { parse } from 'query-string';
+import styles from './index.less';
+import React, { useEffect, useMemo, useState } from 'react';
+import { fieldIconMap } from '@/constant';
+import { ColumnShowType } from '@/d.ts';
+import { isEqual, uniqueId } from 'lodash';
+import { ICON_DATABASE, ICON_TABLE, ICON_VIEW } from '../ObjectName';
+import Icon, { PlusOutlined } from '@ant-design/icons';
+import { convertDataTypeToDataShowType } from '@/util/utils';
+import ColumnItem from './Item';
+import { getTableColumnList } from '@/common/network/table';
+import { getView } from '@/common/network/view';
+import SortableContainer, { DraggableItem } from '@/component/SortableContainer';
 const { TreeNode, DirectoryTree } = Tree;
+
 interface IProps {
   session: SessionStore;
   onSubmit: (values: any) => void;
   viewUnits: any[];
-}
-
-interface IState {
-  targetKeys: any[];
-  treeData: any[];
-  expandedKeys: any[];
-  selectMap: object;
-  keywords: string;
-  loading: boolean;
-  autoExpandParent: boolean;
 }
 
 const ColumnIcon = ({ dataShowType }: { dataShowType: ColumnShowType }) => (
@@ -60,111 +51,36 @@ const ColumnIcon = ({ dataShowType }: { dataShowType: ColumnShowType }) => (
   />
 );
 
-export default class TreeSelector extends PureComponent<IProps, IState> {
-  selectedKeys: any[];
-  constructor(props) {
-    super(props);
-    this.selectedKeys = [];
-    this.state = {
-      targetKeys: [],
-      expandedKeys: [],
-      treeData: [],
-      selectMap: {},
-      keywords: '',
-      autoExpandParent: true,
-      loading: true,
-    };
-  }
+const TreeSelector: React.FC<IProps> = React.memo((props) => {
+  const selectedKeys = [];
+  const [state, setState] = useState({
+    targetKeys: [],
+    expandedKeys: [],
+    treeData: [],
+    selectMap: {},
+    keywords: '',
+    autoExpandParent: true,
+    loading: true,
+  });
+  useEffect(() => {
+    loadTreeData(props.viewUnits);
+  }, [props.viewUnits]);
 
-  async componentDidMount() {
-    await this.loadTreeData(this.props.viewUnits);
-  }
-
-  async UNSAFE_componentWillReceiveProps(nextProps) {
-    if (!isEqual(this.props.viewUnits, nextProps.viewUnits)) {
-      await this.loadTreeData(nextProps.viewUnits);
-    }
-  }
-
-  render() {
-    const { targetKeys, loading } = this.state;
-
-    return (
-      <div>
-        <Transfer
-          targetKeys={targetKeys}
-          showSearch={!loading}
-          showSelectAll
-          className={styles['tree-transfer']}
-          titles={[
-            null,
-            <>
-              <span className={styles['header-tip']}>
-                {
-                  formatMessage({
-                    id: 'odc.component.ColumnSelector.TipYouCanClickCustom',
-                    defaultMessage: '提示：可点击自定义新建字段',
-                  }) /* 提示：可点击自定义新建字段 */
-                }
-              </span>
-              <a onClick={this.handleItemAdd}>
-                <PlusOutlined />
-                {
-                  formatMessage({
-                    id: 'odc.component.ColumnSelector.Custom',
-                    defaultMessage: '自定义',
-                  }) /* 自定义 */
-                }
-              </a>
-            </>,
-          ]}
-          locale={{
-            searchPlaceholder: formatMessage({
-              id: 'odc.component.ColumnSelector.EnterAFieldName',
-              defaultMessage: '请输入字段名称',
-            }), // 请输入字段名称
-          }}
-          onChange={this.handleTransfer}
-          onSearch={this.handleTreeSearch}
-          oneWay
-        >
-          {({ direction, selectedKeys, onItemSelectAll }) => {
-            if (direction === 'left') {
-              this.selectedKeys = selectedKeys;
-              return this.renderSourcePanel(onItemSelectAll, selectedKeys);
-            }
-            if (direction === 'right') {
-              return this.renderTargetPanel();
-            }
-          }}
-        </Transfer>
-        <Button type="primary" onClick={this.handleSubmit} style={{ marginTop: '20px' }}>
-          {
-            formatMessage({
-              id: 'odc.component.ColumnSelector.Determine',
-              defaultMessage: '确定',
-            }) /* 确定 */
-          }
-        </Button>
-      </div>
-    );
-  }
-
-  handleSelectAll = (e, onItemSelectAll) => {
+  const handleSelectAll = (e, onItemSelectAll) => {
     const { checked } = e.target;
-    const keys = this.getTreeKeys({
-      children: this.state.treeData,
+    const keys = getTreeKeys({
+      children: state.treeData,
     });
 
     onItemSelectAll(keys, checked);
   };
 
-  renderSourcePanel = (onItemSelectAll, selectedKeys) => {
-    const { targetKeys, treeData, loading, autoExpandParent } = this.state;
+  const renderSourcePanel = (onItemSelectAll, selectedKeys) => {
+    const { targetKeys, treeData, loading, autoExpandParent } = state;
     if (loading) {
       return <Spin className={styles.spin} />;
     }
-    const allKeys = this.getTreeKeys({ children: treeData });
+    const allKeys = getTreeKeys({ children: treeData });
     const selectKeysObject = {};
     selectedKeys.forEach((key) => {
       selectKeysObject[key] = true;
@@ -177,7 +93,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
           className={styles.checkboxAll}
           checked={!hasNoSelect}
           onChange={(e) => {
-            this.handleSelectAll(e, onItemSelectAll);
+            handleSelectAll(e, onItemSelectAll);
           }}
         >
           {
@@ -196,7 +112,8 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
           style={{ height: '186px', overflowY: 'auto', overflowX: 'auto' }}
           checkedKeys={selectedKeys}
           onExpand={(expandedKeys) => {
-            this.setState({
+            setState({
+              ...state,
               expandedKeys,
               autoExpandParent: false,
             });
@@ -205,43 +122,49 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
             // @ts-ignore
             const { eventKey } = item.node.props;
             const isChecked = selectedKeys.indexOf(eventKey) !== -1;
-            const keys = this.getTreeKeys(item.node);
+            const keys = getTreeKeys(item.node);
             onItemSelectAll(keys, !isChecked);
           }}
         >
-          {this.renderTree(treeData, selectedKeys)}
+          {renderTree(treeData, selectedKeys)}
         </DirectoryTree>
       </>
     );
   };
 
-  renderTargetPanel = () => {
-    const { targetKeys, loading } = this.state;
+  const renderTargetPanel = () => {
+    const { targetKeys, loading } = state;
     if (loading || !targetKeys.length) {
       return <Empty style={{ marginTop: '60px' }} image={Empty.PRESENTED_IMAGE_SIMPLE} />;
     }
     return (
       <div style={{ height: '222px', overflow: 'auto' }}>
-        {targetKeys.map((targetKey, index) => {
-          return (
-            <ColumnItem
-              key={targetKey}
-              // @ts-ignore
-              dataKey={targetKey}
-              index={index}
-              handleChange={this.handleItemChange}
-              handleMove={this.handleItemMove}
-              handleDelete={this.handleItemDelete}
-            />
-          );
-        })}
+        <SortableContainer
+          list={targetKeys}
+          onDrapEnd={(list) => {
+            setState({ ...state, targetKeys: list });
+          }}
+        >
+          {targetKeys.map((targetKey) => {
+            return (
+              <DraggableItem id={targetKey} key={targetKey}>
+                <ColumnItem
+                  key={targetKey}
+                  dataKey={targetKey}
+                  handleChange={handleItemChange}
+                  handleDelete={handleItemDelete}
+                />
+              </DraggableItem>
+            );
+          })}
+        </SortableContainer>
       </div>
     );
   };
 
-  renderTree = (treeNodes = [], selectedKeys = []) => {
-    const { keywords, targetKeys } = this.state;
-    const { session } = this.props;
+  const renderTree = (treeNodes = [], selectedKeys = []) => {
+    const { keywords, targetKeys } = state;
+    const { session } = props;
     return treeNodes.map((item) => {
       const { children, title, type, key, ...props } = item;
       const params = parse(key);
@@ -280,15 +203,15 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
           selectable={!isLeaf}
           dataRef={item}
         >
-          {this.renderTree(children, selectedKeys)}
+          {renderTree(children, selectedKeys)}
         </TreeNode>
       );
     });
   };
 
-  loadTreeData = async (viewUnits) => {
-    const { session } = this.props;
-    this.setState({ loading: true });
+  const loadTreeData = async (viewUnits) => {
+    const { session } = props;
+    setState({ ...state, loading: true });
     const treeData = [];
     const requests = [];
     const nodes = [];
@@ -344,11 +267,17 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
         });
       }
     });
-    this.setState({ treeData, loading: false, targetKeys: [] });
+    setState({ ...state, treeData, loading: false, targetKeys: [] });
   };
 
-  handleSubmit = () => {
-    const { targetKeys, selectMap } = this.state;
+  const UNSAFE_componentWillReceiveProps = async (nextProps) => {
+    if (!isEqual(props.viewUnits, nextProps.viewUnits)) {
+      await loadTreeData(nextProps.viewUnits);
+    }
+  };
+
+  const handleSubmit = () => {
+    const { targetKeys, selectMap } = state;
     const columns = [];
     targetKeys.forEach((key) => {
       const params = parse(key);
@@ -363,12 +292,11 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
         aliasName,
       });
     });
-    this.props.onSubmit(columns);
+    props.onSubmit(columns);
   };
 
-  handleTreeSearch = (_, keywords) => {
-    const { treeData } = this.state;
-    const { selectedKeys = [] } = this;
+  const handleTreeSearch = (_, keywords) => {
+    const { treeData } = state;
     const expandedKeys = [];
     if (keywords) {
       treeData.forEach((node) => {
@@ -383,11 +311,11 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
         }
       });
     }
-    this.setState({ keywords, expandedKeys });
+    setState({ ...state, keywords, expandedKeys });
   };
 
-  handleTransfer = (nextTargetKeys, direction?, moveKeys?) => {
-    const { targetKeys } = this.state;
+  const handleTransfer = (nextTargetKeys, direction?, moveKeys?) => {
+    const { targetKeys } = state;
     let newKeys = [];
     if (moveKeys) {
       // 在后面追加
@@ -407,19 +335,20 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
       key.indexOf('uid') !== -1 ? key : `${key}&uid=${uniqueId('c_')}`,
     );
 
-    this.setState({ targetKeys: [...newKeys] });
+    setState({ ...state, targetKeys: [...newKeys] });
   };
 
-  handleItemDelete = (idx: number) => {
-    const { targetKeys } = this.state;
+  const handleItemDelete = (key: React.Key) => {
+    const { targetKeys } = state;
+    const index = targetKeys.findIndex((item) => item === key);
     if (targetKeys) {
-      targetKeys.splice(idx, 1);
-      this.handleTransfer(targetKeys, null, null);
+      targetKeys.splice(index, 1);
+      handleTransfer(targetKeys, null, null);
     }
   };
 
-  handleItemMove = (dragIndex: number, hoverIndex: number) => {
-    const { targetKeys } = this.state;
+  const handleItemMove = (dragIndex: number, hoverIndex: number) => {
+    const { targetKeys } = state;
     if (!targetKeys) {
       return;
     }
@@ -431,30 +360,32 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
       ],
     });
 
-    this.handleTransfer(updateValue, null, null);
+    handleTransfer(updateValue, null, null);
   };
 
-  handleItemChange = (data) => {
+  const handleItemChange = (data) => {
     const { dataKey } = data;
-    const { selectMap } = this.state;
+    const { selectMap } = state;
     if (!selectMap[dataKey]) {
       selectMap[dataKey] = { ...data };
     } else {
       selectMap[dataKey] = { ...selectMap[dataKey], ...data };
     }
-    this.setState({
+    setState({
+      ...state,
       selectMap,
     });
   };
 
-  handleItemAdd = () => {
-    const { targetKeys } = this.state;
-    this.setState({
+  const handleItemAdd = () => {
+    const { targetKeys } = state;
+    setState({
+      ...state,
       targetKeys: [...targetKeys, uniqueId('odc.customer.column_uid_')],
     });
   };
 
-  getTreeKeys = (root, keys?) => {
+  const getTreeKeys = (root, keys?) => {
     const r = keys || [];
     const { children = [], key } = root;
     if (key) {
@@ -463,9 +394,91 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
 
     if (children.length) {
       children.forEach((child) => {
-        this.getTreeKeys(child, r);
+        getTreeKeys(child, r);
       });
     }
     return r;
   };
-}
+  /**
+   * treeData 打平成 { key, value }
+   */
+  const dataSource = useMemo(() => {
+    const { treeData } = state;
+    const result = [];
+    function flatten(data) {
+      data.forEach((item) => {
+        const { children, title, key, type } = item;
+        result.push({ key, value: title });
+        if (children) {
+          flatten(children);
+        }
+      });
+    }
+    flatten(treeData);
+    return result;
+  }, [state.treeData]);
+
+  return (
+    <div>
+      <Transfer
+        dataSource={dataSource}
+        targetKeys={state.targetKeys}
+        showSearch={!state.loading}
+        showSelectAll
+        className={styles['tree-transfer']}
+        filterOption={() => true}
+        titles={[
+          null,
+          <>
+            <span className={styles['header-tip']}>
+              {
+                formatMessage({
+                  id: 'odc.component.ColumnSelector.TipYouCanClickCustom',
+                  defaultMessage: '提示：可点击自定义新建字段',
+                }) /* 提示：可点击自定义新建字段 */
+              }
+            </span>
+            <a onClick={handleItemAdd}>
+              <PlusOutlined />
+              {
+                formatMessage({
+                  id: 'odc.component.ColumnSelector.Custom',
+                  defaultMessage: '自定义',
+                }) /* 自定义 */
+              }
+            </a>
+          </>,
+        ]}
+        locale={{
+          searchPlaceholder: formatMessage({
+            id: 'odc.component.ColumnSelector.EnterAFieldName',
+            defaultMessage: '请输入字段名称',
+          }), // 请输入字段名称
+        }}
+        onChange={handleTransfer}
+        onSearch={handleTreeSearch}
+        oneWay
+      >
+        {({ direction, selectedKeys, onItemSelectAll }) => {
+          if (direction === 'left') {
+            selectedKeys = selectedKeys;
+            return renderSourcePanel(onItemSelectAll, selectedKeys);
+          }
+          if (direction === 'right') {
+            return renderTargetPanel();
+          }
+        }}
+      </Transfer>
+      <Button type="primary" onClick={handleSubmit} style={{ marginTop: '20px' }}>
+        {
+          formatMessage({
+            id: 'odc.component.ColumnSelector.Determine',
+            defaultMessage: '确定',
+          }) /* 确定 */
+        }
+      </Button>
+    </div>
+  );
+});
+
+export default TreeSelector;

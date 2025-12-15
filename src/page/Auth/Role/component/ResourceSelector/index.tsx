@@ -48,7 +48,7 @@ const getOptions = (
       return {
         ...item,
         resourceType: type,
-        resourceId: item?.id,
+        resourceId: item?.id?.toString?.(),
         name: item?.name,
       };
     }) ?? []
@@ -190,6 +190,7 @@ const FormResourceSelector: React.FC<{
                     id: 'odc.components.FormResourceSelector.ResourceManagementPermissions',
                     defaultMessage: '资源管理权限',
                   }),
+                  forceRender: true,
                   children: (
                     <>
                       <Form.Item

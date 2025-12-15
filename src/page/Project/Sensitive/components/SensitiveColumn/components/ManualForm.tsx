@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { listDatabases } from '@/common/network/database';
 import { batchCreateSensitiveColumns, listColumns } from '@/common/network/sensitiveColumn';
 import ExportCard from '@/component/ExportCard';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { fieldIconMap } from '@/constant';
-import { IDatabase } from '@/d.ts/database';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 import ProjectContext from '@/page/Project/ProjectContext';
@@ -29,6 +26,7 @@ import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
 import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { formatMessage } from '@/util/intl';
 import { convertDataTypeToDataShowType } from '@/util/utils';
+import MultipleDatabaseSelect from '@/component/Task/component/MultipleDatabaseSelect/index';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -78,80 +76,24 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
   const projectContext = useContext(ProjectContext);
   const { project } = projectContext;
   const { maskingAlgorithms, maskingAlgorithmOptions, projectId } = sensitiveContext;
-  const [databases, setDatabases] = useState<IDatabase[]>([]);
   const [databaseIds, setDatabaseIds] = useState<number[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<string[]>([]);
 
-  const databaseOptions = databases?.map(({ name, id, environment, dataSource, project }) => ({
-    label: (
-      <Popover
-        showArrow={false}
-        overlayClassName={styles.popover}
-        data-label={name}
-        placement="right"
-        content={
-          <Space direction="vertical">
-            <Space>
-              <RiskLevelLabel color={environment?.style} content={environment?.name} />
-              <Text strong>{name}</Text>
-            </Space>
-            <Text type="secondary">
-              {
-                formatMessage({
-                  id: 'odc.src.component.Task.component.DatabaseSelect.DataSource',
-                  defaultMessage: '所属数据源:',
-                }) /* 所属数据源:  */
-              }
-
-              {dataSource?.name ?? '-'}
-            </Text>
-            <Text type="secondary">
-              {
-                formatMessage({
-                  id: 'odc.src.component.Task.component.DatabaseSelect.ItSNotPlayed',
-                  defaultMessage: '所属项目:',
-                }) /* 所属项目:  */
-              }
-
-              {project?.name ?? '-'}
-            </Text>
-          </Space>
-        }
-      >
-        <Space
-          size={2}
-          data-label={name}
-          style={{
-            display: 'flex',
-          }}
-        >
-          <RiskLevelLabel color={environment?.style} content={environment?.name} />
-          <span>{name}</span>
-        </Space>
-      </Popover>
-    ),
-
-    value: id,
-  }));
-  const initDatabases = async () => {
-    const rawData = await listDatabases(projectId, null, null, null, null, null, null, true);
-    setDatabases(rawData?.contents);
-  };
-  const handleDatabaseSelect = async (value: number) => {
-    if (value === -1) {
-      setDatabaseIds(databaseOptions?.map((option) => option.value as number));
-      return;
-    }
-    if (!databaseIds?.includes(value)) {
-      setDatabaseIds(databaseIds.concat(value));
-    }
-  };
   const handleDatabaseClear = () => {
     setDatabaseIds([]);
   };
-  const handleDatabaseDeselect = debounce(async (value: number) => {
-    setDatabaseIds(databaseIds.filter((id) => id !== value));
-  }, 500);
+
+  const handleDatabaseSelect = async (Ids) => {
+    await formRef.setFieldsValue({
+      database: Ids,
+    });
+    setDatabaseIds(Ids);
+  };
+
+  const handleDatabaseChange = debounce((Ids) => {
+    setDatabaseIds(Ids);
+  }, 300);
+
   const submit = () => {
     _formRef.current?.submit(setModalOpen, callback);
   };
@@ -178,9 +120,6 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
     });
   };
 
-  useEffect(() => {
-    initDatabases();
-  }, []);
   return (
     <Drawer
       width={800}
@@ -222,45 +161,24 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
           </Space>
         </div>
       }
-      className={styles.manualForm}
+      rootClassName={styles.manualForm}
     >
       <div className={styles.manualFormContent}>
         <Form layout="vertical" form={formRef} className={styles.form}>
-          <Form.Item
+          <MultipleDatabaseSelect
+            name="database"
             label={
               formatMessage({
-                id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Database',
+                id: 'odc.SensitiveColumn.components.SacnRule.Database',
                 defaultMessage: '数据库',
-              }) /* 数据库 */
+              }) //数据库
             }
-            name="database"
-            style={{
-              marginBottom: '4px',
-            }}
-          >
-            <Select
-              className={styles.select}
-              mode="multiple"
-              maxTagCount="responsive"
-              placeholder={
-                formatMessage({
-                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.PleaseChoose.1',
-                  defaultMessage: '请选择',
-                }) /* 请选择 */
-              }
-              filterOption={(input, option) =>
-                (option?.label?.props?.['data-label'] ?? '')
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              options={databaseOptions}
-              onSelect={handleDatabaseSelect}
-              onDeselect={handleDatabaseDeselect}
-              onClear={handleDatabaseClear}
-              optionLabelProp="label"
-              allowClear={true}
-            />
-          </Form.Item>
+            projectId={projectId}
+            onSelect={handleDatabaseSelect}
+            onChange={handleDatabaseChange}
+            onClear={handleDatabaseClear}
+            selectWidth={320}
+          />
           <div className={styles.currentProject}>
             {
               formatMessage({
@@ -453,6 +371,80 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
         });
         tableViewIndex++;
       }
+      for (const key in databaseColumn?.externalTable2Columns) {
+        const leaves = databaseColumn?.externalTable2Columns?.[key].map(
+          (externalTableColumn, _index) => ({
+            title: externalTableColumn?.name,
+            key: `0-${index}-${tableViewIndex}-${_index}`,
+            icon: (
+              <span className={styles.icon}>
+                <Icon
+                  component={
+                    fieldIconMap[
+                      convertDataTypeToDataShowType(
+                        externalTableColumn?.typeName,
+                        databaseColumn?.dataTypeUnits,
+                      )
+                    ]
+                  }
+                />
+              </span>
+            ),
+
+            type: ESensitiveColumnType.TABLE_COLUMN,
+          }),
+        );
+        allColumns = allColumns + leaves?.length;
+        tables.push({
+          title: key,
+          key: `0-${index}-${tableViewIndex}`,
+          icon: (
+            <span className={styles.icon}>
+              <Icon component={TableOutlined} />
+            </span>
+          ),
+
+          children: leaves,
+          type: ESensitiveColumnType.TABLE_COLUMN,
+        });
+        tableViewIndex++;
+      }
+      for (const key in databaseColumn?.materializedView2Columns) {
+        const leaves = databaseColumn?.materializedView2Columns?.[key]?.map(
+          (materializedViewColumn, _index) => ({
+            title: materializedViewColumn.name,
+            key: `0-${index}-${tableViewIndex}-${_index}`,
+            icon: (
+              <span className={styles.icon}>
+                <Icon
+                  component={
+                    fieldIconMap[
+                      convertDataTypeToDataShowType(
+                        materializedViewColumn?.typeName,
+                        databaseColumn?.dataTypeUnits,
+                      )
+                    ]
+                  }
+                />
+              </span>
+            ),
+            type: ESensitiveColumnType.VIEW_COLUMN,
+          }),
+        );
+        views.push({
+          title: key,
+          key: `0-${index}-${tableViewIndex}`,
+          icon: (
+            <span className={styles.icon}>
+              <Icon component={ViewSvg} />
+            </span>
+          ),
+
+          children: leaves,
+          type: ESensitiveColumnType.VIEW_COLUMN,
+        });
+        tableViewIndex++;
+      }
       treeData.push({
         title: databaseColumn?.databaseName,
         key: `0-${index}`,
@@ -563,6 +555,48 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
             key: `0-${index}-${tableViewIndex}`,
             children: leaves,
             type: ESensitiveColumnType.VIEW_COLUMN,
+          });
+        }
+        tableViewIndex++;
+      }
+      for (const key in databaseColumn?.externalTable2Columns) {
+        const leaves = databaseColumn?.externalTable2Columns?.[key]
+          .map((externalTableColumn, _index) => ({
+            title: externalTableColumn?.name,
+            key: `0-${index}-${tableViewIndex}-${_index}`,
+            type: ESensitiveColumnType.TABLE_COLUMN,
+            columnType: externalTableColumn?.typeName,
+            dataTypeUnits: databaseColumn?.dataTypeUnits,
+          }))
+          ?.filter((leaf) => checkedKeys?.includes(leaf?.key));
+        checkedColumns = checkedColumns + leaves?.length;
+        if (leaves?.length > 0) {
+          tables.push({
+            title: key,
+            key: `0-${index}-${tableViewIndex}`,
+            children: leaves,
+            type: ESensitiveColumnType.TABLE_COLUMN,
+          });
+        }
+        tableViewIndex++;
+      }
+      for (const key in databaseColumn?.materializedView2Columns) {
+        const leaves = databaseColumn?.materializedView2Columns?.[key]
+          ?.map((materializedViewColumn, _index) => ({
+            title: materializedViewColumn?.name,
+            key: `0-${index}-${tableViewIndex}-${_index}`,
+            type: ESensitiveColumnType.TABLE_COLUMN,
+            columnType: materializedViewColumn?.typeName,
+            dataTypeUnits: databaseColumn?.dataTypeUnits,
+          }))
+          ?.filter((leaf) => checkedKeys?.includes(leaf?.key));
+        checkedColumns = checkedColumns + leaves?.length;
+        if (leaves?.length > 0) {
+          views.push({
+            title: key,
+            key: `0-${index}-${tableViewIndex}`,
+            children: leaves,
+            type: ESensitiveColumnType.TABLE_COLUMN,
           });
         }
         tableViewIndex++;

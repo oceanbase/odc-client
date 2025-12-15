@@ -18,6 +18,7 @@ import { ConnectType, TaskType } from '@/d.ts';
 import { IDataSourceModeConfig } from '../interface';
 import MySQLColumnExtra from './MySQLColumnExtra';
 import { haveOCP } from '@/util/env';
+import { ScheduleType } from '@/d.ts/schedule';
 
 const tableConfig = {
   enableTableCharsetsAndCollations: true,
@@ -56,6 +57,18 @@ const procedureConfig: IDataSourceModeConfig['schema']['proc'] = {
   deterministic: true,
 };
 
+const scheduleConfig: IDataSourceModeConfig['features']['scheduleConfig'] = {
+  allowTargetConnectTypeByDataArchive: [
+    ConnectType.OB_MYSQL,
+    ConnectType.CLOUD_OB_MYSQL,
+    ConnectType.MYSQL,
+    ConnectType.COS,
+    ConnectType.OBS,
+    ConnectType.S3A,
+    ConnectType.OSS,
+  ],
+};
+
 const items: Record<
   ConnectType.OB_MYSQL | ConnectType.CLOUD_OB_MYSQL | ConnectType.ODP_SHARDING_OB_MYSQL,
   IDataSourceModeConfig
@@ -71,15 +84,19 @@ const items: Record<
       ssl: true,
     },
     features: {
+      scheduleConfig,
       task: Object.values(TaskType),
+      schedule: Object.values(ScheduleType),
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
       sessionManage: true,
       sessionParams: true,
-      resourceTree: true,
+      groupResourceTree: true,
+      sqlconsole: true,
       supportOBProxy: true,
       plRun: true,
+      plEdit: true,
       export: {
         fileLimit: true,
         snapshot: true,
@@ -109,15 +126,19 @@ const items: Record<
       unionUser: true,
     },
     features: {
-      task: Object.values(TaskType),
+      scheduleConfig,
+      task: Object.values(TaskType)?.filter((i) => ![TaskType.ONLINE_SCHEMA_CHANGE]?.includes?.(i)),
+      schedule: Object.values(ScheduleType),
       obclient: true,
       recycleBin: true,
       sessionManage: true,
       sessionParams: true,
-      resourceTree: true,
+      groupResourceTree: true,
+      sqlconsole: true,
       sqlExplain: true,
       supportOBProxy: true,
       plRun: true,
+      plEdit: true,
       export: {
         fileLimit: true,
         snapshot: true,
@@ -148,13 +169,15 @@ const items: Record<
       unionUser: true,
     },
     features: {
-      task: [TaskType.ASYNC, TaskType.SQL_PLAN, TaskType.MULTIPLE_ASYNC],
+      task: [TaskType.ASYNC, TaskType.MULTIPLE_ASYNC],
+      schedule: [ScheduleType.SQL_PLAN],
       obclient: false,
       recycleBin: false,
       sessionManage: true,
       sqlExplain: false,
       sessionParams: true,
-      resourceTree: true,
+      groupResourceTree: true,
+      sqlconsole: true,
       supportOBProxy: true,
       export: {
         fileLimit: true,

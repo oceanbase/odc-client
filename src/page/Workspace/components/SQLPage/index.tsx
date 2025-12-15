@@ -17,12 +17,13 @@
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { newScript, updateScript } from '@/common/network';
 import { executeSQL, runSQLLint } from '@/common/network/sql';
-import { executeTaskManager, IExecuteTaskResult } from '@/common/network/sql/executeSQL';
+import { executeTaskManager } from '@/common/network/sql/executeSQL';
+import { IExecuteTaskResult } from '@/common/network/sql/preHandle';
 import { batchGetDataModifySQL } from '@/common/network/table';
 import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
-import { IEditor } from '@/component/MonacoEditor';
+import { IEditor, IFullEditor } from '@/component/MonacoEditor';
 import SaveSQLModal from '@/component/SaveSQLModal';
 import ScriptPage from '@/component/ScriptPage';
 import SQLConfigContext from '@/component/SQLConfig/SQLConfigContext';
@@ -50,12 +51,16 @@ import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import setting, { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
-import utils, { EHighLight } from '@/util/editor';
+import { isConnectionModeBeMySQLType } from '@/util/database/connection';
+import { isLogicalDatabase } from '@/util/database/database';
+import utils, { EHighLight } from '@/util/ui/editor';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
-import { splitSql } from '@/util/sql';
-import { generateAndDownloadFile, getCurrentSQL } from '@/util/utils';
+import notification from '@/util/ui/notification';
+import { splitSqlForHighlight } from '@/util/data/sql';
+import { getCurrentSQL } from '@/util/utils';
+import { generateAndDownloadFile } from '@/util/data/file';
+import { getModelProviders, getProviderModels } from '@/common/network/largeModel';
+import { IModel } from '@/d.ts/llm';
 import { message, Spin } from 'antd';
 import { debounce, isNil } from 'lodash';
 import { inject, observer } from 'mobx-react';
@@ -68,7 +73,13 @@ import Trace from '../Trace';
 import ExecDetail from './ExecDetail';
 import ExecPlan from './ExecPlan';
 import styles from './index.less';
-import { isLogicalDatabase } from '@/util/database';
+import {
+  addAIAction,
+  addAIContextMenu,
+  addAIIcon,
+  addAIHint,
+  createStore,
+} from './InlineChat/util';
 
 interface ISQLPageState {
   resultHeight: number;
@@ -105,6 +116,9 @@ interface ISQLPageState {
   baseOffset: number;
   status: EStatus;
   hasExecuted: boolean;
+  // AI Models 相关状态
+  modelsLoaded: boolean;
+  lastModelsLoadTime: number;
 }
 
 interface IProps {
@@ -158,9 +172,14 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     status: null,
     hasExecuted: false,
     isSavingScript: false,
+    // AI Models 初始状态
+    modelsLoaded: false,
+    lastModelsLoadTime: 0,
   };
 
   public editor: IEditor;
+
+  public fullEditor: IFullEditor;
 
   public chartContainer: HTMLDivElement | null = null;
 
@@ -170,6 +189,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
   private actions: IDisposable[];
   private config: Partial<IUserConfig>;
+  private disposes: (() => void)[] = [];
 
   constructor(props) {
     super(props);
@@ -258,6 +278,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   public componentWillUnmount() {
     const { pageKey, sqlStore } = this.props;
     const session = this.getSession();
+    this.disposes.forEach((d) => d());
 
     if (this.timer) {
       clearInterval(this.timer);
@@ -326,13 +347,113 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     this.config = setting.configurations;
   };
 
-  public handleEditorCreated = (editor: IEditor) => {
+  public handleEditorCreated = (editor: IEditor, fullEditor: IFullEditor) => {
     this.editor = editor; // 快捷键绑定
+    this.fullEditor = fullEditor;
     this.bindEditorKeymap();
     this.debounceHighlightSelectionLine();
     //  编辑光标位置变化事件
     this.editor.onDidChangeCursorPosition(() => {
       this.debounceHighlightSelectionLine();
+    });
+    this.initAI();
+  };
+
+  /**
+   * 加载模型列表
+   * @param forceRefresh 是否强制刷新，忽略缓存
+   */
+  private loadModels = async (forceRefresh: boolean = false): Promise<void> => {
+    const { settingStore } = this.props;
+    // 检查是否需要重新加载（缓存策略：5分钟内不重复加载）
+    const now = Date.now();
+    const cacheExpiration = 5 * 60 * 1000; // 5分钟
+    const shouldUseCache =
+      this.state.modelsLoaded &&
+      now - this.state.lastModelsLoadTime < cacheExpiration &&
+      !forceRefresh;
+
+    if (shouldUseCache) {
+      return;
+    }
+
+    if (settingStore.modelsLoading) {
+      return; // 避免重复加载
+    }
+
+    try {
+      settingStore.setModelsLoading(true);
+      const providersData = await getModelProviders();
+
+      // 获取所有提供商的所有模型
+      const allModelsPromises = (providersData || []).map(async (provider) => {
+        try {
+          const models = await getProviderModels(provider.provider);
+          return (models || []).map((model) => ({
+            ...model,
+            providerName: provider.provider,
+          }));
+        } catch (error) {
+          console.warn(`Failed to fetch models for provider ${provider.provider}:`, error);
+          return [];
+        }
+      });
+
+      const modelsResults = await Promise.all(allModelsPromises);
+      const flattenedModels = modelsResults.flat();
+
+      settingStore.setAllModels(flattenedModels);
+      this.setState({
+        modelsLoaded: true,
+        lastModelsLoadTime: now,
+      });
+      settingStore.setModelsLoading(false);
+    } catch (error) {
+      console.error('Failed to fetch providers:', error);
+      settingStore.setModelsLoading(false);
+    }
+  };
+
+  /**
+   * AI 功能挂载
+   */
+  public initAI = async () => {
+    const { settingStore } = this.props;
+    // 初始化时加载模型
+    if (!this.state.modelsLoaded && !settingStore.modelsLoading) {
+      await this.loadModels();
+    }
+    const store = createStore();
+    let iconControl;
+    const show = addAIAction(
+      this.editor,
+      () => this.getSession(),
+      store,
+      this.fullEditor,
+      () => this.loadModels(true),
+      (operating) => iconControl?.setAIOperating?.(operating),
+    );
+    iconControl = addAIIcon(this.editor, store, show, this.fullEditor);
+    const { dispose } = iconControl;
+    const disposeMenu = addAIContextMenu(
+      this.editor,
+      store,
+      show,
+      this.fullEditor,
+      () => this.getSession(),
+      dispose,
+    );
+    const disposeHint = addAIHint(this.editor);
+    this.disposes.push(() => {
+      dispose();
+      disposeHint();
+      disposeMenu();
+      this.editor.setSelection({
+        startLineNumber: this.editor.getSelection()?.startLineNumber,
+        startColumn: this.editor.getSelection()?.startColumn,
+        endLineNumber: this.editor.getSelection()?.startLineNumber,
+        endColumn: this.editor.getSelection()?.startColumn,
+      });
     });
   };
 
@@ -387,8 +508,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         Array.isArray(result?.executeResult) &&
         result?.executeResult?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS)
       ) {
-        const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
-        sqlStore.setActiveTab(pageKey, firstResultKey ? firstResultKey : recordsTabKey);
+        const lastResultKey = sqlStore.getLastUnlockedResultKey(pageKey);
+        sqlStore.setActiveTab(pageKey, lastResultKey ? lastResultKey : recordsTabKey);
       } else if (result?.status !== EStatus.SUBMIT) {
         sqlStore.setActiveTab(pageKey, sqlLintTabKey);
       }
@@ -454,8 +575,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         Array.isArray(results?.executeResult) &&
         results?.executeResult?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS)
       ) {
-        const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
-        sqlStore.setActiveTab(pageKey, firstResultKey ? firstResultKey : recordsTabKey);
+        const lastResultKey = sqlStore.getLastUnlockedResultKey(pageKey);
+        sqlStore.setActiveTab(pageKey, lastResultKey ? lastResultKey : recordsTabKey);
       } else if (results?.status !== EStatus.SUBMIT) {
         sqlStore.setActiveTab(pageKey, sqlLintTabKey);
       }
@@ -613,8 +734,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       executeOrPreCheckSql: value,
       sqlChanged: false,
     });
-    if (result) {
-      if (!result.length) {
+    if (result?.checkResults) {
+      if (!result.checkResults.length) {
         /**
          * 无规则
          */
@@ -632,7 +753,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
       this.setState(
         {
-          lintResultSet: result,
+          lintResultSet: result?.checkResults,
         },
         () => this.props.sqlStore.setActiveTab(this.props.pageKey, sqlLintTabKey),
       );
@@ -667,7 +788,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     const resultSetIndex = sqlStore.resultSets.get(pageKey)?.findIndex((set) => {
       return set.uniqKey === resultSetKey;
     });
-    sqlStore.closeResultSet(pageKey, resultSetIndex);
+    sqlStore.closeResultSet(pageKey, resultSetKey);
     const resultSet = sqlStore.resultSets.get(pageKey); // 如果已经关闭了全部结果集，只剩下历史记录，需要切换
 
     if (resultSet && resultSet.length === 0) {
@@ -717,6 +838,49 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   public handleUnLockResultSet = (key: string) => {
     const { sqlStore, pageKey } = this.props;
     sqlStore.unlockResultSet(pageKey, key);
+  };
+
+  public handleCloseOtherResultSets = (currentKey: string) => {
+    const { sqlStore, pageKey } = this.props;
+    const resultSets = sqlStore.resultSets.get(pageKey);
+
+    // 关闭其它结果集
+    sqlStore.closeOtherResultSets(pageKey, currentKey);
+
+    // 检查当前激活tab是否被关闭，如果被关闭则切换到当前结果集
+    const updatedResultSets = sqlStore.resultSets.get(pageKey);
+    if (
+      updatedResultSets &&
+      !updatedResultSets.find((set) => set.uniqKey === sqlStore.activeTab[pageKey])
+    ) {
+      sqlStore.setActiveTab(pageKey, currentKey);
+    }
+
+    this.triggerTableLayout();
+  };
+
+  public handleCloseAllResultSets = () => {
+    const { sqlStore, pageKey } = this.props;
+
+    // 关闭所有结果集
+    sqlStore.closeAllResultSets(pageKey);
+
+    // 切换到执行记录tab
+    const updatedResultSets = sqlStore.resultSets.get(pageKey);
+    if (!updatedResultSets || updatedResultSets.length === 0) {
+      sqlStore.setActiveTab(pageKey, 'records');
+    } else {
+      // 优先定位到日志tab
+      const logTab = updatedResultSets.find((set) => set.type === 'LOG');
+      if (logTab) {
+        sqlStore.setActiveTab(pageKey, logTab.uniqKey);
+      } else {
+        // 如果没有日志tab，则定位到第一个（固定的结果集）
+        sqlStore.setActiveTab(pageKey, updatedResultSets[0].uniqKey);
+      }
+    }
+
+    this.triggerTableLayout();
   };
 
   public handleChangeResultSetTab = (activeKey: string) => {
@@ -1183,6 +1347,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
                 onCloseResultSet={this.handleCloseResultSet}
                 onLockResultSet={this.handleLockResultSet}
                 onUnLockResultSet={this.handleUnLockResultSet}
+                onCloseOtherResultSets={this.handleCloseOtherResultSets}
+                onCloseAllResultSets={this.handleCloseAllResultSets}
                 onExportResultSet={this.handleStartExportResultSet}
                 onShowExecuteDetail={this.handleShowExecuteDetail}
                 onShowTrace={this.handleShowTrace}
@@ -1318,8 +1484,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     /**
      * 装填一下额外数据,详细的列名
      */
-    const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
-    sqlStore.setActiveTab(pageKey, firstResultKey ? firstResultKey : recordsTabKey);
+    const lastResultKey = sqlStore.getLastUnlockedResultKey(pageKey);
+    sqlStore.setActiveTab(pageKey, lastResultKey ? lastResultKey : recordsTabKey);
 
     // TODO: 刷新左侧资源树
 
@@ -1343,7 +1509,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     for (let i = 0; i < results?.length; i++) {
       const result = results[i];
       if (result.status !== ISqlExecuteResultStatus.SUCCESS) {
-        const sqlIndexs = await splitSql(
+        const sqlIndexs = await splitSqlForHighlight(
           this.editor.getValue(),
           session.connection?.dialectType === ConnectionMode.MYSQL,
           session?.params?.delimiter,
@@ -1446,11 +1612,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
 export default forwardRef(function (props: IProps, ref: React.ForwardedRef<SQLPage>) {
   return (
-    <SessionContextWrap
-      defaultDatabaseId={props.params?.cid}
-      defaultMode={props.params?.databaseFrom}
-      warnIfNotFound={false}
-    >
+    <SessionContextWrap defaultDatabaseId={props.params?.cid} warnIfNotFound={false}>
       {({ session }) => {
         return <SQLPage sessionId={session?.sessionId} {...props} ref={ref} />;
       }}

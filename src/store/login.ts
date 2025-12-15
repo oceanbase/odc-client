@@ -215,9 +215,12 @@ export class UserStore {
         currentPassword: encrypt(data.currentPassword),
       });
     }
-    const result = await request.post(`/api/v2/iam/users/${data.username}/activate`, {
-      data,
-    });
+    const result = await request.post(
+      `/api/v2/iam/users/${encodeURIComponent(data.username)}/activate`,
+      {
+        data,
+      },
+    );
     return result && result.data;
   }
 
@@ -235,6 +238,7 @@ export class UserStore {
         initTracert();
       }
       await setting.getSystemConfig();
+      await setting.getAIConfig();
       this.addLogoutListener();
     }
     return !!user;
@@ -254,23 +258,32 @@ export class UserStore {
   }
 
   @action
-  public async switchCurrentOrganization(id?: number) {
+  public async switchCurrentOrganization(
+    id?: number,
+    getDefaultOrganization?: () => Promise<number>,
+    beforeOrganizationSwitch?: () => void,
+  ) {
     await setting.getUserConfig();
-    id = id || this.getDefaultOrganization()?.id;
+    id = id || (await this.getDefaultOrganization(getDefaultOrganization))?.id;
     if (!id) {
       return false;
     }
     this.isSwitchingOrganization = true;
+    beforeOrganizationSwitch?.();
     this.organizationId = id;
     sessionStorage.setItem(sessionKey, id?.toString());
+    await setting.getSpaceConfig();
     this.isUserFetched = false;
     const isSuccess = await this.getCurrentUser();
     this.isSwitchingOrganization = false;
     return isSuccess;
   }
 
-  public getDefaultOrganization() {
-    const sessionOrganizationId = parseInt(sessionStorage.getItem(sessionKey));
+  public async getDefaultOrganization(getDefaultOrganization?: () => Promise<number>) {
+    let sessionOrganizationId = parseInt(sessionStorage.getItem(sessionKey));
+    if (!sessionOrganizationId && getDefaultOrganization) {
+      sessionOrganizationId = await getDefaultOrganization();
+    }
     const sessionOrganization = this.organizations?.find(
       (item) => item.id === sessionOrganizationId,
     );
@@ -279,7 +292,7 @@ export class UserStore {
     }
 
     const firstOrganization = this.organizations?.find(
-      (item) => item.type === setting.configurations['odc.account.defaultOrganizationType'],
+      (item) => item.type === setting?.configurations?.['odc.account.defaultOrganizationType'],
     );
     let defaultOrganization = firstOrganization || this.organizations?.[0];
     return defaultOrganization;

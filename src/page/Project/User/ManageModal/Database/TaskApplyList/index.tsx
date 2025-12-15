@@ -24,8 +24,8 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
-import TaskDetailModal from '@/component/Task/DetailModal';
+import TaskDetailModal from '@/component/Task/modals/DetailModals';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 import type { IResponseData } from '@/d.ts';
 import { TaskType } from '@/d.ts';
 import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
@@ -224,6 +224,7 @@ interface IProps {
   dataSource: IResponseData<IDatabasePermission>;
   params: ITableLoadOptions;
   isOwner: boolean;
+  isDBA: boolean;
   tableRef: React.RefObject<ITableInstance>;
   onReclaim: (ids: number[]) => void;
   onLoad: (args: ITableLoadOptions) => Promise<any>;
@@ -231,7 +232,8 @@ interface IProps {
 }
 
 const TaskApplyList: React.FC<IProps> = (props) => {
-  const { projectId, isOwner, dataSource, params, tableRef, onReclaim, onLoad, onChange } = props;
+  const { projectId, isOwner, isDBA, dataSource, params, tableRef, onReclaim, onLoad, onChange } =
+    props;
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
 
@@ -256,8 +258,12 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         showToolbar={false}
         titleContent={null}
         rowSelecter={
-          isOwner
+          isOwner || isDBA
             ? {
+                selectAllText: formatMessage({
+                  id: 'src.page.Project.User.ManageModal.Database.TaskApplyList.0D360FEE',
+                  defaultMessage: '全选当前页',
+                }),
                 options: [
                   {
                     okText: formatMessage({
@@ -273,7 +279,9 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         onLoad={onLoad}
         onChange={onChange}
         tableProps={{
-          columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
+          columns: columns?.filter((item) =>
+            isOwner || isDBA ? true : item?.dataIndex !== 'action',
+          ),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
           scroll: {

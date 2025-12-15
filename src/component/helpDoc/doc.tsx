@@ -419,6 +419,24 @@ export default {
     </p>
   ),
 
+  TemporaryTableNameRules: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.9DB2EA45',
+        defaultMessage: '命名方式采用bak_odc_{taskId}_{tableName}形式',
+      })}
+    </p>
+  ),
+
+  CreateMaterializedViewSelectStartWith: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.DE21871C',
+        defaultMessage: '刷新开始时间必须大于创建物化视图时的时间',
+      })}
+    </p>
+  ),
+
   expirePeriod: (
     <p>
       {
@@ -553,34 +571,30 @@ export default {
 
   projectOwner: (
     <p>
-      {
-        formatMessage({
-          id: 'src.component.helpDoc.927F1ADC' /*拥有项目内的所有权限*/,
-          defaultMessage: '拥有项目内的所有权限',
-        }) /* 拥有项目内的所有权限 */
-      }
+      {formatMessage({
+        id: 'src.component.helpDoc.D5104F9F',
+        defaultMessage: '拥有项目内的所有权限，可查看和管理项目的所有工单',
+      })}
     </p>
   ),
 
   projectDBA: (
     <p>
-      {
-        formatMessage({
-          id: 'src.component.helpDoc.D8B031DB' /*拥有项目内除添加/移除成员和归档项目以外的所有权限*/,
-          defaultMessage: '拥有项目内除添加/移除成员和归档项目以外的所有权限',
-        }) /* 拥有项目内除添加/移除成员和归档项目以外的所有权限 */
-      }
+      {formatMessage({
+        id: 'src.component.helpDoc.632E5F54',
+        defaultMessage:
+          '拥有项目内除成员管理、消息配置和项目设置外的所有权限，包括查看和管理项目的所有工单权限',
+      })}
     </p>
   ),
 
   projectDev: (
     <p>
-      {
-        formatMessage({
-          id: 'src.component.helpDoc.B4D80BEE' /*允许登录所有数据库、执行 SQL、提交工单，通常是开发人员*/,
-          defaultMessage: '允许登录所有数据库、执行 SQL、提交工单，通常是开发人员',
-        }) /* 允许登录所有数据库、执行 SQL、提交工单，通常是开发人员 */
-      }
+      {formatMessage({
+        id: 'src.component.helpDoc.D0EB1808',
+        defaultMessage:
+          '拥有项目内所有数据库权限，允许登录数据库、执行\n      SQL、提交工单，可以查看项目内所有工单并管理自己发起的工单',
+      })}
     </p>
   ),
 
@@ -597,12 +611,11 @@ export default {
 
   participant: (
     <p>
-      {
-        formatMessage({
-          id: 'src.component.helpDoc.843310FE' /*允许查看项目基本信息，并自助申请库权限和提交工单*/,
-          defaultMessage: '允许查看项目基本信息，并自助申请库权限和提交工单',
-        }) /* 允许查看项目基本信息，并自助申请库权限和提交工单 */
-      }
+      {formatMessage({
+        id: 'src.component.helpDoc.E5938015',
+        defaultMessage:
+          '允许查看项目基本信息，默认无项目内任何数据库权限，支持自助申请库权限和提交工单，可以查看项目内所有工单并管理自己发起的工单',
+      })}
     </p>
   ),
 
@@ -617,7 +630,14 @@ export default {
     </p>
   ),
 
-  dataArchiveVariablesDoc: <p>{dataArchiveVariablesDoc}</p>,
+  dataArchiveVariablesDoc: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.F0D45A43',
+        defaultMessage: '定义变量、设置时间偏移量并在上文的目标表及过滤条件中引用',
+      })}
+    </p>
+  ),
   dataClearVariablesDoc: <p>{dataClearVariablesDoc}</p>,
   schemaChangeSwapTable: (
     <p>
@@ -643,12 +663,10 @@ export default {
 
   schemaChangeSwapTableRetryTimes: (
     <p>
-      {
-        formatMessage({
-          id: 'odc.component.helpDoc.doc.AfterTheTableLockTime',
-          defaultMessage: '超过锁表时间后，未切换完成可自动重试',
-        }) /*超过锁表时间后，未切换完成可自动重试*/
-      }
+      {formatMessage({
+        id: 'src.component.helpDoc.7F2FDC2E',
+        defaultMessage: '若锁定失败，可自动重试次数',
+      })}
     </p>
   ),
 
@@ -663,6 +681,31 @@ export default {
     </p>
   ),
 
+  TimingforCleanAfterArchive: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.6D63E347',
+        defaultMessage: '待数据全部完成归档后再开始进行数据清理',
+      })}
+    </p>
+  ),
+  TimingforCleanAfterCleanUp: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.8EDA4D85',
+        defaultMessage: '按分片归档，分片归档完成后即时进行清理',
+      })}
+    </p>
+  ),
+  ExecutionTimeoutSchedulingStrategy: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.86172CDC',
+        defaultMessage: '任务超时之后下一轮调度对于超时任务的处理逻辑',
+      })}
+    </p>
+  ),
+
   TaskLmitData: (
     <p>
       {
@@ -671,17 +714,6 @@ export default {
           defaultMessage: '每秒操作数据总大小限制',
         }) /* 每秒操作数据总大小限制 */
       }
-    </p>
-  ),
-
-  AlterDdlTaskLockUsersTip: (
-    <p>
-      {formatMessage({
-        id: 'src.component.helpDoc.AEEC5916' /*关于注意事项第3条，由您指定将要锁定的账号，是为了保障表名切换期间数据一致性的同时尽可能降低对业务的影响。请您确保指定账号的准确性，若您未指定任何账号，ODC
-      将不会进行任何账号锁定及kill session 操作，切换期间数据的一致性将需要由您来保障*/,
-        defaultMessage:
-          '关于注意事项第 3 条，由您指定将要锁定的账号，是为了保障表名切换期间数据一致性的同时尽可能降低对业务的影响。请您确保指定账号的准确性，若您未指定任何账号，ODC 将不会进行任何账号锁定及 Kill Session 操作，切换期间数据的一致性将需要由您来保障。',
-      })}
     </p>
   ),
 

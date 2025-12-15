@@ -19,7 +19,7 @@ import { executeSQL } from '@/common/network/sql';
 import { ISqlExecuteResultStatus } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { message, Modal } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import CommonIDE from '../CommonIDE';

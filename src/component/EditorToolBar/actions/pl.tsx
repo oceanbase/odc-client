@@ -16,6 +16,7 @@
 
 import { formatMessage } from '@/util/intl';
 import { message, Modal } from 'antd';
+import { debounce } from 'lodash';
 
 import {
   BugOutlined,
@@ -32,6 +33,7 @@ import { PLPage } from '@/page/Workspace/components/PLPage';
 import { DebugStatus } from '@/store/debug/type';
 import sqlStore from '@/store/sql';
 import { ToolBarActions } from '..';
+import { ConnectType } from '@/d.ts';
 
 const { confirm } = Modal;
 
@@ -51,10 +53,21 @@ const plActions: ToolBarActions = {
       defaultMessage: '确认修改',
     }),
     icon: CheckOutlined,
-    statusFunc: getStatus,
-    async action(ctx: any) {
-      await ctx.savePL();
+    statusFunc: (ctx: PLPage, hasChangeEditorValue) => {
+      /* 未更改, 不可修改 */
+      if (!hasChangeEditorValue) return IConStatus.DISABLE;
+      return getStatus(ctx);
     },
+    action: debounce(async (ctx: any, databaseType?: ConnectType, editorValue?: String) => {
+      switch (databaseType) {
+        case ConnectType.MYSQL:
+        case ConnectType.OB_MYSQL:
+        case ConnectType.CLOUD_OB_MYSQL:
+          return await ctx.savePL(null, true, editorValue);
+        default:
+          return await ctx.savePL();
+      }
+    }, 300),
   },
 
   PL_TRIGGER_TYPE_SAVE: {
@@ -63,9 +76,17 @@ const plActions: ToolBarActions = {
       defaultMessage: '确认修改',
     }),
     type: 'BUTTON_PRIMARY',
-    async action(ctx: any) {
-      await ctx.savePL();
+    statusFunc: (ctx: PLPage) => {
+      const { pageStore, pageKey } = ctx.props;
+      const page = pageStore?.getPageByKey(pageKey);
+      if (page?.startSaving) {
+        return IConStatus.RUNNING;
+      }
+      return IConStatus.INIT;
     },
+    action: debounce(async (ctx: any) => {
+      ctx.savePL();
+    }, 300),
   },
 
   PL_SCRIPT_SAVE: {

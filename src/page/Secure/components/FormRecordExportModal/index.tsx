@@ -19,11 +19,12 @@ import ConnectionPopover from '@/component/ConnectionPopover';
 import { AuditEventActionMap } from '@/constant/record';
 import type { IManagerPublicConnection, IManagerUser } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { downloadFile, getPreTime } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
+import { getPreTime } from '@/util/data/dateTime';
 import { Button, DatePicker, Drawer, Form, Popover, Select, Space, TreeSelect } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import type { DataNode } from 'antd/lib/tree';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './index.less';
 
@@ -125,7 +126,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
           defaultMessage: '导出操作记录',
         })}
         /*导出操作记录*/
-        className={styles.exportModal}
+        rootClassName={styles.exportModal}
         footer={
           <Space>
             <Button onClick={handleClose}>
@@ -161,7 +162,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
           initialValues={{
             event,
             format: 'CSV',
-            dateRange: [moment(getPreTime(7)), moment()],
+            dateRange: [dayjs(getPreTime(7)), dayjs()],
           }}
         >
           <Form.Item

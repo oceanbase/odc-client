@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { externalTableMenusConfig } from './externalTable';
 import { databaseMenusConfig } from './database';
 import { functionMenusConfig } from './function';
 import { packageMenusConfig } from './package';
@@ -25,6 +26,9 @@ import { tableMenusConfig } from './table';
 import { triggerMenusConfig } from './trigger';
 import { typeMenusConfig } from './type';
 import { viewMenusConfig } from './view';
+import { materializedViewConfig } from './materializedView';
+import { externalResourceMenusConfig } from './externalResource';
+import { groupNodeMenusConfig } from './groupNode';
 
 export default {
   ...tableMenusConfig,
@@ -38,4 +42,8 @@ export default {
   ...packageMenusConfig,
   ...packageBodyMenusConfig,
   ...databaseMenusConfig,
+  ...externalTableMenusConfig,
+  ...materializedViewConfig,
+  ...externalResourceMenusConfig,
+  ...groupNodeMenusConfig,
 };

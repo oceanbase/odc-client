@@ -3,10 +3,16 @@
   color: var(--icon-color-normal);
   font-size: 13px;
   cursor: pointer;
+  box-sizing: content-box;
   &:hover {
     background-color: var(--hover-color);
   }
+  &.border {
+    border: 1px solid var(--odc-border-color);
+    border-radius: 2px;
+  }
   &.iconActive {
     color: var(--icon-color-focus);
+    border-color: var(--icon-color-focus);
   }
 }

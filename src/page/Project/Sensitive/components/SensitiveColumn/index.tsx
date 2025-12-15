@@ -46,6 +46,8 @@ import SensitiveContext from '../../SensitiveContext';
 import EditSensitiveColumnModal from './components/EditSensitiveColumnModal';
 import FormSensitiveColumnDrawer from './components/FormSensitiveColumnDrawer';
 import ManualForm from './components/ManualForm';
+import ProjectContext from '@/page/Project/ProjectContext';
+import { isProjectArchived } from '@/page/Project/helper';
 import styles from './index.less';
 
 export const PopoverContainer: React.FC<{
@@ -91,6 +93,7 @@ const getColumns: ({
   dataSourceIdMap,
   hasRowSelected,
   maskingAlgorithmIdMap,
+  hideColumns,
 }) => ColumnsType<ISensitiveColumn> = ({
   handleStatusSwitch,
   handleEdit,
@@ -100,8 +103,9 @@ const getColumns: ({
   dataSourceIdMap,
   hasRowSelected,
   maskingAlgorithmIdMap,
+  hideColumns = [],
 }) => {
-  return [
+  const columns: ColumnsType<ISensitiveColumn> = [
     {
       title: formatMessage({
         id: 'odc.components.SensitiveColumn.DataSource',
@@ -307,6 +311,7 @@ const getColumns: ({
       ),
     },
   ];
+  return columns.filter((item) => !hideColumns.includes(item.key));
 };
 const SensitiveColumn = ({
   projectId,
@@ -316,6 +321,8 @@ const SensitiveColumn = ({
 }) => {
   const tableRef = useRef<ITableInstance>();
   const sensitiveContext = useContext(SensitiveContext);
+  const { project } = useContext(ProjectContext);
+  const projectArchived = isProjectArchived(project);
   const { dataSourceIdMap, maskingAlgorithms, maskingAlgorithmIdMap, maskingAlgorithmOptions } =
     sensitiveContext;
   const [sensitiveColumnIds, setSensitiveColumnIds] = useState<number[]>([]);
@@ -539,6 +546,7 @@ const SensitiveColumn = ({
     maskingAlgorithms,
     dataSourceIdMap: dataSourceIdMap,
     maskingAlgorithmIdMap: maskingAlgorithmIdMap,
+    hideColumns: projectArchived ? ['action'] : [],
   });
   const operationOptions: IOperationOption[] = [];
   operationOptions.push({
@@ -555,7 +563,7 @@ const SensitiveColumn = ({
               }) /*添加敏感列*/
             }
 
-            <DownOutlined />
+            <DownOutlined style={{ color: '#fff' }} />
           </Space>
         </a>
       </Button>
@@ -592,6 +600,7 @@ const SensitiveColumn = ({
     },
     onClick: () => {},
   });
+
   return (
     <>
       <CommonTable
@@ -612,7 +621,8 @@ const SensitiveColumn = ({
           }), //'请选择数据源和库'
         }}
         operationContent={{
-          options: operationOptions,
+          options: projectArchived ? [] : operationOptions,
+          isNeedOccupyElement: projectArchived,
         }}
         onLoad={loadData}
         onChange={loadData}
@@ -625,7 +635,7 @@ const SensitiveColumn = ({
             total: sensitiveColumn?.page?.totalElements,
           },
         }}
-        rowSelecter={rowSelector}
+        rowSelecter={projectArchived ? null : rowSelector}
         rowSelectedCallback={rowSelectedCallback}
       />
 

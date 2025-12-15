@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { Input } from 'antd';
-import { PureComponent } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface IProps {
   editable?: boolean;
@@ -25,63 +24,56 @@ interface IProps {
   onChange: (values: any) => void;
 }
 
-interface IState {
-  editable: boolean;
-  value: string;
-}
+const EditableText: React.FC<IProps> = React.memo((props) => {
+  const [state, setState] = useState({ editable: props.editable || false, value: props.initValue });
 
-export default class EditableText extends PureComponent<IProps, IState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      editable: this.props.editable || false,
-      value: this.props.initValue,
-    };
-  }
-
-  changeToEditable = () => {
-    this.setState({
+  const changeToEditable = () => {
+    setState({
+      ...state,
       editable: true,
     });
   };
 
-  handleSubmit = () => {
-    const { editable, value } = this.state;
+  const handleSubmit = () => {
+    const { editable, value } = state;
     if (editable) {
-      this.setState({
+      setState({
+        ...state,
         editable: false,
       });
-      this.props?.onChange(value);
+      props?.onChange(value);
     }
   };
 
-  handleChange = (e) => {
-    this.setState({
+  const handleChange = (e) => {
+    setState({
+      ...state,
       value: e.target.value,
     });
   };
 
-  render() {
-    const { placeholder, hideArrow } = this.props;
-    const { editable, value } = this.state;
-    if (!editable) {
-      if (hideArrow) {
-        return <a onClick={this.changeToEditable}>{value || placeholder}</a>;
-      } else {
-        return <a onClick={this.changeToEditable}>&lt;{value || placeholder}&gt;</a>;
-      }
+  if (!state.editable) {
+    if (props.hideArrow) {
+      return <a onClick={changeToEditable}>{state.value || props.placeholder}</a>;
+    } else {
+      return <a onClick={changeToEditable}>&lt;{state.value || props.placeholder}&gt;</a>;
     }
-    return (
-      <Input
-        autoFocus={true}
-        size="small"
-        style={{ minWidth: '50px' }}
-        placeholder={placeholder}
-        onBlur={this.handleSubmit}
-        onPressEnter={this.handleSubmit}
-        onChange={this.handleChange}
-        value={value}
-      />
-    );
   }
-}
+  return (
+    <Input
+      autoFocus={true}
+      size="small"
+      style={{ minWidth: '50px' }}
+      placeholder={props.placeholder}
+      onBlur={handleSubmit}
+      onPressEnter={(e) => {
+        e.stopPropagation();
+        handleSubmit();
+      }}
+      onChange={handleChange}
+      value={state.value}
+    />
+  );
+});
+
+export default EditableText;

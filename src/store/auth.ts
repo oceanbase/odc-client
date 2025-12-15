@@ -15,7 +15,10 @@
  */
 
 import { getCurrentUserPermissions } from '@/common/network/manager';
+import { ALL_SELECTED_VALUE } from '@/component/Manage/ResourceSelector';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
+import odc from '@/plugins/odc';
+import { isNull } from 'lodash';
 import { action, observable } from 'mobx';
 import { createContext } from 'react';
 
@@ -54,7 +57,7 @@ export class AuthStore {
           });
         }
         const item = newPermissions.get(resourceType as IManagerResourceType);
-        if (!resourceId) {
+        if (resourceId === ALL_SELECTED_VALUE()) {
           item.all = item.all.concat((actions as actionTypes[]) || []);
         } else {
           const rid = resourceId?.toString();

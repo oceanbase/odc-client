@@ -71,6 +71,10 @@ export interface ISupportFeature {
   enableShadowSync: boolean;
 
   enablePartitionPlan: boolean;
+  /**
+   * 外表
+   */
+  enableExternalTable: boolean;
 
   /**
    * 执行详情
@@ -88,4 +92,6 @@ export interface ISupportFeature {
    * 实时剖析
    */
   enableProfile: boolean;
+  /** 物化视图 */
+  enableMaterializedView: boolean;
 }

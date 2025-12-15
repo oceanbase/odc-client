@@ -23,7 +23,7 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 import type { IResponseData } from '@/d.ts';
 import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
 import { SearchOutlined } from '@ant-design/icons';
@@ -105,6 +105,9 @@ const getColumns = (params: {
 
       filteredValue: filters?.dataSourceName || null,
       filters: [],
+      render(_) {
+        return _ || '-';
+      },
     },
     {
       dataIndex: 'type',
@@ -172,6 +175,7 @@ interface IProps {
   dataSource: IResponseData<IDatabasePermission>;
   params: ITableLoadOptions;
   isOwner: boolean;
+  isDBA: boolean;
   tableRef: React.RefObject<ITableInstance>;
   onReclaim: (ids: number[]) => void;
   onLoad: (args: ITableLoadOptions) => Promise<any>;
@@ -179,7 +183,8 @@ interface IProps {
 }
 
 const UserAuthList: React.FC<IProps> = (props) => {
-  const { projectId, isOwner, dataSource, params, tableRef, onReclaim, onLoad, onChange } = props;
+  const { projectId, isOwner, isDBA, dataSource, params, tableRef, onReclaim, onLoad, onChange } =
+    props;
   const columns = getColumns({
     paramOptions: params,
     onReclaim: onReclaim,
@@ -194,12 +199,16 @@ const UserAuthList: React.FC<IProps> = (props) => {
         showToolbar={false}
         titleContent={null}
         rowSelecter={
-          isOwner
+          isOwner || isDBA
             ? {
+                selectAllText: formatMessage({
+                  id: 'src.page.Project.User.ManageModal.Database.UserAuthList.3F5E6287',
+                  defaultMessage: '全选当前页',
+                }),
                 options: [
                   {
                     okText: formatMessage({
-                      id: 'src.page.Project.User.ManageModal.UserAuthList.1491B8F7',
+                      id: 'src.page.Project.User.ManageModal.UserAuthList.1491B8F71',
                       defaultMessage: '批量回收',
                     }), //'批量回收'
                     onOk: onReclaim,
@@ -211,7 +220,9 @@ const UserAuthList: React.FC<IProps> = (props) => {
         onLoad={onLoad}
         onChange={onChange}
         tableProps={{
-          columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
+          columns: columns?.filter((item) =>
+            isOwner || isDBA ? true : item?.dataIndex !== 'action',
+          ),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
           scroll: {

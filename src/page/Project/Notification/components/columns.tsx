@@ -21,12 +21,14 @@ import {
   IChannel,
   IMessage,
   IPolicy,
+  IPolicyColumnsKeys,
+  IChannelColumnsKeys,
 } from '@/d.ts/projectNotification';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { SearchOutlined } from '@ant-design/icons';
 import { Space, Switch } from 'antd';
-import { ColumnType } from 'antd/lib/table';
+import { ColumnType } from 'antd/es/table';
 import { EChannelTypeMap, EMessageStatusMap, EPolicyFormMode, TPolicyForm } from './interface';
 import { MessageStatus } from './MessageStatus';
 
@@ -172,19 +174,22 @@ type GetPolicyColumns = ({
   handleUpdatePolicies,
   handleSwitchPoliciesStatus,
   hanleOpenChannelDetailDrawer,
+  hideColumns,
 }: {
   projectId: number;
   handleUpdatePolicies: (formType: TPolicyForm) => void;
   handleSwitchPoliciesStatus: (formType: TPolicyForm, enabled?: boolean) => Promise<void>;
   hanleOpenChannelDetailDrawer;
+  hideColumns?: IPolicyColumnsKeys[];
 }) => ColumnType<IPolicy>[];
 export const getPolicyColumns: GetPolicyColumns = function ({
   projectId,
   handleUpdatePolicies,
   handleSwitchPoliciesStatus,
   hanleOpenChannelDetailDrawer,
+  hideColumns = [],
 }) {
-  return [
+  const columns = [
     {
       title: formatMessage({
         id: 'src.page.Project.Notification.components.3F3F37F5',
@@ -334,6 +339,7 @@ export const getPolicyColumns: GetPolicyColumns = function ({
       },
     },
   ];
+  return columns.filter((item) => !hideColumns.includes(item.key as IPolicyColumnsKeys));
 };
 // #endregion
 
@@ -342,17 +348,20 @@ type GetChannelColumn = ({
   handleDelete,
   handleChannelEdit,
   hanleOpenChannelDetailDrawer,
+  hideColumns,
 }: {
   handleDelete: (channelId: number) => void;
   handleChannelEdit: (channelId: number) => void;
   hanleOpenChannelDetailDrawer: (channel: Omit<IChannel<EChannelType>, 'channelConfig'>) => void;
+  hideColumns?: IChannelColumnsKeys[];
 }) => ColumnType<IChannel<EChannelType>>[];
 export const getChannelColumns: GetChannelColumn = function ({
   handleDelete,
   handleChannelEdit,
   hanleOpenChannelDetailDrawer,
+  hideColumns = [],
 }) {
-  return [
+  const columns: ColumnType<IChannel<EChannelType>>[] = [
     {
       title: formatMessage({
         id: 'src.page.Project.Notification.components.76BA6F01',
@@ -468,5 +477,6 @@ export const getChannelColumns: GetChannelColumn = function ({
       },
     },
   ];
+  return columns.filter((item) => !hideColumns.includes(item.key as IChannelColumnsKeys));
 };
 // #endregion

@@ -9,6 +9,11 @@
 .content {
   display: flex;
   align-items: center;
+  width: 100%;
+  .datasourceAndProjectItemBox {
+    flex: 1;
+    overflow: hidden;
+  }
 }
 
 .link {
@@ -25,6 +30,60 @@
   }
 }
 
+.SessionInfo {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  padding-right: 8px;
+  .datasourceAndProjectItemBox {
+    padding-left: 8px;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+  }
+}
+.select {
+  :global {
+    .ant-select-arrow {
+      color: var(--icon-color-normal);
+    }
+  }
+}
+
 .ellipsis {
   .odc-text-ellipsis();
+}
+
+.datasourceAndProjectItem {
+  max-width: 100%;
+  :global {
+    .ant-space-item {
+      overflow: hidden;
+    }
+  }
+  .describeItem {
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    .label {
+      color: var(--text-color-hint);
+    }
+    > span:nth-child(1) {
+      white-space: nowrap;
+    }
+  }
+}
+
+.databaseInfo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  color: var(--text-color-hint);
+  .item {
+    max-width: 100%;
+    word-wrap: anywhere;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
 }

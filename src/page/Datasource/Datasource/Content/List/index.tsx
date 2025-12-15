@@ -15,8 +15,9 @@
  */
 
 import { getConnectionList } from '@/common/network/connection';
+import { getDataSourceGroupByConnectType } from '@/common/datasource';
 import { IConnection } from '@/d.ts';
-import { Space, Spin } from 'antd';
+import { Space, Spin, message } from 'antd';
 import React, {
   forwardRef,
   useContext,
@@ -33,7 +34,7 @@ import ListItem from '../ListItem';
 import LoadingItem from '../ListItem/Loading';
 import ConnectionName from './ConnectionNameItem';
 import MoreBtn from './MoreBtn';
-
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { DataSourceEmpty } from '@/component/Empty/DataSourceEmpty';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IPageType } from '@/d.ts/_index';
@@ -46,6 +47,8 @@ import { formatMessage } from '@/util/intl';
 import { history } from '@umijs/max';
 import { inject, observer } from 'mobx-react';
 import TitleButton from '../TitleButton';
+import ListHeader from '../ListHeader';
+import styles from '../index.less';
 
 interface IProps {
   width: number;
@@ -90,6 +93,15 @@ const List: React.FC<IProps> = forwardRef(function (
   }, []);
 
   async function openNewConnection(connection: IConnection) {
+    if (isConnectTypeBeFileSystemGroup(connection?.type)) {
+      message.info(
+        formatMessage({
+          id: 'src.page.Datasource.Datasource.Content.List.75724B17',
+          defaultMessage: '对象存储数据源暂不支持查看详情',
+        }),
+      );
+      return;
+    }
     history.push(`/datasource/${connection.id}/${IPageType.Datasource_info}`);
   }
 
@@ -188,8 +200,8 @@ const List: React.FC<IProps> = forwardRef(function (
     ref,
     () => {
       return {
-        reload() {
-          _fetchNextConnectList(true);
+        reload: async () => {
+          await _fetchNextConnectList(true);
         },
       };
     },
@@ -247,6 +259,7 @@ const List: React.FC<IProps> = forwardRef(function (
           connectionName={
             <ConnectionName openNewConnection={openNewConnection} connection={connection} />
           }
+          connectType={connection?.type}
           cluster={<div>{getClusterName(connection.clusterName)}</div>}
           tenant={<div>{getTenantName(connection.clusterName, connection.tenantName)}</div>}
           host={<div>{[connection.host, connection.port].filter(Boolean).join(':') || '-'}</div>}
@@ -301,35 +314,39 @@ const List: React.FC<IProps> = forwardRef(function (
     );
   }
   return (
-    <InfiniteLoader
-      isRowLoaded={({ index }) => {
-        return index < connectionList?.length;
-      }}
-      rowCount={total}
-      loadMoreRows={async ({ startIndex, stopIndex }) => {
-        if (startIndex === 0) {
-          /**
-           * 这里代表初始化，因为上面已经初始化过数据了，所以就不再执行
-           */
-          return;
-        }
-        fetchNextConnectList();
-      }}
-    >
-      {({ onRowsRendered, registerChild }) => {
-        return (
-          <TableList
-            ref={registerChild}
-            onRowsRendered={onRowsRendered}
-            rowRenderer={rowRenderer}
-            rowHeight={40}
-            height={height}
-            width={width}
-            rowCount={total}
-          />
-        );
-      }}
-    </InfiniteLoader>
+    <div>
+      <ListHeader style={total * 40 >= height ? { paddingRight: '14px' } : {}} />
+      <InfiniteLoader
+        isRowLoaded={({ index }) => {
+          return index < connectionList?.length;
+        }}
+        rowCount={total}
+        loadMoreRows={async ({ startIndex, stopIndex }) => {
+          if (startIndex === 0) {
+            /**
+             * 这里代表初始化，因为上面已经初始化过数据了，所以就不再执行
+             */
+            return;
+          }
+          fetchNextConnectList();
+        }}
+      >
+        {({ onRowsRendered, registerChild }) => {
+          return (
+            <TableList
+              ref={registerChild}
+              onRowsRendered={onRowsRendered}
+              rowRenderer={rowRenderer}
+              rowHeight={40}
+              height={height}
+              width={width}
+              rowCount={total}
+              className={styles.tableList}
+            />
+          );
+        }}
+      </InfiniteLoader>
+    </div>
   );
 });
 
@@ -343,9 +360,9 @@ const ListWrap = inject(
 function AutoSizerWrap(props, ref) {
   return (
     <>
-      <AutoSizer>
+      <AutoSizer style={{ width: '100%' }}>
         {({ width, height }) => {
-          return <ListWrap ref={ref} width={width} height={height} {...props} />;
+          return <ListWrap ref={ref} width={width} height={height - 24} {...props} />;
         }}
       </AutoSizer>
     </>

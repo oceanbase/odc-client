@@ -29,6 +29,7 @@ import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
 import copy from 'copy-to-clipboard';
 import { useEffect, useMemo, useRef } from 'react';
 import DatasourceForm, { IFormRef } from './Form';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 
 interface IProps {
   visible: boolean;
@@ -219,7 +220,10 @@ export default function NewDatasourceDrawer({
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>
-          {isEdit && !haveOCP() && connectType !== ConnectType.ORACLE ? (
+          {isEdit &&
+          !haveOCP() &&
+          connectType !== ConnectType.ORACLE &&
+          !isConnectTypeBeFileSystemGroup(originDatasource?.type) ? (
             <Button onClick={copyUri}>
               {
                 formatMessage({

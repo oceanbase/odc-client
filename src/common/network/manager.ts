@@ -41,6 +41,7 @@ import {
   ISSOConfig,
   ISSOType,
 } from '@/d.ts';
+import { IAccessKey } from '@/d.ts/openAPI';
 import request from '@/util/request';
 import { encrypt } from '@/util/utils';
 interface IRoleForUpdate extends IManagerRole {
@@ -61,9 +62,13 @@ export async function createUser(data: Partial<IManagerUser>[]): Promise<IManage
 /**
  * 删除用户详情
  */
-export async function deleteUser(id: number): Promise<IManagerUser> {
-  const result = await request.delete(`/api/v2/iam/users/${id}`);
-  return result?.data;
+export async function deleteUser(id: number, ignoreError: boolean = false): Promise<boolean> {
+  const result = await request.delete(`/api/v2/iam/users/${id}`, {
+    params: {
+      ignoreError,
+    },
+  });
+  return !!result?.data;
 }
 
 /**
@@ -763,6 +768,9 @@ export async function checkIntegrationExists(
 export async function testClientRegistration(
   config: ISSOConfig,
   type: 'info' | 'test',
+  params?: {
+    odcBackUrl?: string;
+  },
 ): Promise<{
   testLoginUrl: string;
   testId: string;
@@ -785,6 +793,7 @@ export async function testClientRegistration(
       enabled: true,
     },
     params: {
+      ...params,
       type,
     },
   });
@@ -798,4 +807,50 @@ export async function getTestUserInfo(testId: string): Promise<string> {
     },
   });
   return res?.data;
+}
+
+/**
+ * 生成密钥对
+ */
+export async function querySecretKey(): Promise<string> {
+  const result = await request.get(`/api/v2/sso/credential`);
+  return result?.data?.certificate || '';
+}
+
+/**
+ * 获取用户的 AccessKey 列表
+ */
+export async function getUserAccessKeys(userId: number): Promise<IAccessKey[]> {
+  const result = await request.get(`/api/v2/iam/users/${userId}/accessKeys`);
+  return result?.data?.contents || [];
+}
+
+/**
+ * 创建新的 AccessKey
+ */
+export async function createAccessKey(userId: number): Promise<IAccessKey> {
+  const result = await request.post(`/api/v2/iam/users/${userId}/accessKeys`);
+  return result?.data;
+}
+
+/**
+ * 删除 AccessKey
+ */
+export async function deleteAccessKey(userId: number, accessKey: string): Promise<boolean> {
+  const result = await request.delete(`/api/v2/iam/users/${userId}/accessKeys/${accessKey}`);
+  return result?.data;
+}
+
+/**
+ * 设置 AccessKey 启用状态
+ */
+export async function setAccessKeyEnabled(
+  userId: number,
+  accessKey: string,
+  status: string,
+): Promise<boolean> {
+  const result = await request.put(`/api/v2/iam/users/${userId}/accessKeys/${accessKey}`, {
+    data: { status },
+  });
+  return result?.data;
 }

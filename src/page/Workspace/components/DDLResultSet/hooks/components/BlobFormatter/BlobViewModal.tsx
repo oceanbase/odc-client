@@ -21,7 +21,8 @@ import { LobExt, RSModifyDataType } from '@/d.ts';
 import login from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { formatBytes, getBlobValueKey } from '@/util/utils';
+import { getBlobValueKey } from '@/util/utils';
+import { formatBytes } from '@/util/data/byte';
 import type { FormatterProps } from '@oceanbase-odc/ob-react-data-grid';
 import { getLocale } from '@umijs/max';
 import { Alert, Button, Image, Input, Modal, Radio, Row, Space, Spin, Typography } from 'antd';
@@ -32,6 +33,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ResultContext from '../../../ResultContext';
 import HexEditor from '../HexEditor';
 import styles from './index.less';
+import odc from '@/plugins/odc';
 
 enum DISPLAY_MODE {
   TEXT,
@@ -322,7 +324,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
             sessionId={resultContext.sessionId}
             maxCount={1}
             action={
-              window.ODCApiHost +
+              odc.appConfig.network?.baseUrl?.() +
               `/api/v2/datasource/sessions/${generateSessionSid(resultContext.sessionId)}/upload`
             }
             headers={{

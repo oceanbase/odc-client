@@ -17,43 +17,35 @@
 import { DbObjectType, IResponseData, IManagerResourceType, ConnectType } from '@/d.ts';
 import { DBType, IDatabase, IDatabaseObject } from '@/d.ts/database';
 import sessionManager from '@/store/sessionManager';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import request from '@/util/request';
-import { getDropSQL } from '@/util/sql';
+import { getDropSQL } from '@/util/data/sql';
 import { executeSQL } from './sql';
-import { syncDatasource } from './connection';
-import login from '@/store/login';
+import { DatabaseSearchType } from '@/d.ts/database';
+
+export interface listDatabasesParams {
+  projectId?: number;
+  dataSourceId?: number;
+  page?: number;
+  size?: number;
+  environmentId?: number[];
+  /** 是否包含未分配项目的数据库 */
+  containsUnassigned?: boolean;
+  existed?: boolean;
+  includesPermittedAction?: boolean;
+  /** 是否查询数据库管理员owners列表，默认不查 */
+  includesDbOwner?: boolean;
+  type?: DBType[];
+  connectType?: ConnectType[];
+  fuzzyKeyword?: string;
+  searchType?: DatabaseSearchType;
+}
 
 export async function listDatabases(
-  projectId?: number,
-  dataSourceId?: number,
-  page?: number,
-  size?: number,
-  name?: string,
-  environmentId?: number[],
-  /**
-   * 是否包含未分配项目的数据库
-   */
-  containsUnassigned?: boolean,
-  existed?: boolean,
-  includesPermittedAction?: boolean,
-  type?: DBType[],
-  connectType?: ConnectType[],
+  params: listDatabasesParams,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/database/databases`, {
-    params: {
-      projectId,
-      dataSourceId,
-      name,
-      page,
-      size,
-      environmentId,
-      containsUnassigned,
-      existed,
-      includesPermittedAction,
-      type: type,
-      connectType: connectType,
-    },
+    params: params,
   });
 
   return res?.data;
@@ -78,12 +70,26 @@ export async function updateDataBase(
   databaseIds: number[],
   projectId: number,
   ownerIds: number[],
+  ignoreError: boolean = false,
 ): Promise<Boolean> {
   const res = await request.post(`/api/v2/database/databases/transfer`, {
     data: {
       databaseIds,
       projectId,
       ownerIds,
+    },
+    params: {
+      ignoreError,
+    },
+  });
+  return res?.data;
+}
+
+export async function batchUpdateRemarks(databaseIds: number[], databaseRemark: string) {
+  const res = await request.post(`/api/v2/database/databases/batchUpdateRemarks`, {
+    data: {
+      databaseIds,
+      databaseRemark,
     },
   });
   return res?.data;
@@ -147,7 +153,7 @@ export async function getDatabaseObject(
   projectId?: number,
   datasourceId?: number,
   databaseIds?: string | number,
-  types?: string,
+  types?: string | string[],
   searchKey?: string,
 ): Promise<{ data?: IDatabaseObject; errCode: string; errMsg: string }> {
   if (searchKey) {
@@ -174,5 +180,14 @@ export async function syncObject(
       resourceId,
     },
   });
+  return res;
+}
+
+export async function syncAll(): Promise<{
+  data?: boolean;
+  errCode: string;
+  errMsg: string;
+}> {
+  const res = await request.post(`api/v2/database/object/syncAll`);
   return res;
 }

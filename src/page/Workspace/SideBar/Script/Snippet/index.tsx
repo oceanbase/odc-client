@@ -28,7 +28,7 @@ import { SQLConsoleResourceType } from '@/common/datasource/interface';
 import { SQLConsoleEmpty } from '@/component/Empty/SQLConsoleEmpty';
 import { ReactComponent as CodeSvg } from '@/svgr/Snippet.svg';
 import { formatMessage } from '@/util/intl';
-import { getWrapedSnippetBody } from '@/util/snippet';
+import { getWrapedSnippetBody } from '@/util/business/snippet';
 import tracert from '@/util/tracert';
 import copyToCB from 'copy-to-clipboard';
 import SnippetInfoToolTip from './Info';
@@ -78,7 +78,6 @@ export default inject('snippetStore')(
                 id: 'odc.Script.Snippet.SearchForCodeSnippets',
                 defaultMessage: '搜索代码片段',
               })} /*搜索代码片段*/
-              size="small"
             />
           </div>
           <div className={styles.list}>

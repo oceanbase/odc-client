@@ -15,7 +15,7 @@
  */
 
 import DisplayTable from '@/component/DisplayTable';
-import { timeUnitOptions } from '@/component/Task/DataArchiveTask/CreateModal/VariableConfig';
+import { timeUnitOptions } from '@/component/Schedule/modals/DataArchive/Create/VariableConfig';
 import { formatMessage } from '@/util/intl';
 import React from 'react';
 const oprationReg = /^[-+]\d+[shdwmMy]$/;
@@ -85,6 +85,7 @@ const VariableConfigTable: React.FC<{
       dataSource={dataSource}
       scroll={null}
       disablePagination
+      enableResize
     />
   );
 };

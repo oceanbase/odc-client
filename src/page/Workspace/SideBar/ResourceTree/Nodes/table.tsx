@@ -63,7 +63,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
           return;
         }
         visited.add(table.info?.tableName);
-        const tableKey = `${database.id}-${dbSession?.database?.tableVersion}-${dbName}-table-${table?.info?.tableName}`;
+        const tableKey = `${database.id}-${dbName}-table-${table?.info?.tableName}`;
         let columnRoot: TreeDataNode;
         if (table.columns) {
           columnRoot = {
@@ -82,7 +82,6 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                 }}
               />
             ),
-
             children: table.columns?.map((c) => {
               return {
                 title: c.name,
@@ -161,16 +160,41 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
             />
           ),
         };
+
+        const subpartitionsDataHelper = (key, partitions, name) => {
+          if (!partitions) return [];
+          return partitions
+            ?.filter((_s) => _s?.parentName === name)
+            ?.map((s) => {
+              return {
+                title: s.name,
+                key: `${key}-${s.name}`,
+                isLeaf: true,
+                sessionId: dbSession?.sessionId,
+                icon: (
+                  <Icon
+                    component={PartitionSvg}
+                    style={{
+                      color: '#3FA3FF',
+                    }}
+                  />
+                ),
+                type: ResourceNodeType.TablePartition,
+              };
+            });
+        };
+
         /**
          * 处理分区
          */
         switch (table.partitions?.partType) {
           case IPartitionType.HASH: {
-            partitionRoot.children = [
-              {
+            partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-hash-${p.name}`;
+              return {
                 title: 'HASH',
-                key: `${tableKey}-partition-hash`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 // @ts-ignore
                 sessionId: dbSession?.sessionId,
                 icon: (
@@ -181,19 +205,19 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                     }}
                   />
                 ),
-
                 type: ResourceNodeType.TablePartition,
-              },
-            ];
-
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
+              };
+            });
             break;
           }
           case IPartitionType.KEY: {
-            partitionRoot.children = [
-              {
+            partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-key-${p.name}`;
+              return {
                 title: 'KEY',
-                key: `${tableKey}-partition-key`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 // @ts-ignore
                 sessionId: dbSession?.sessionId,
                 icon: (
@@ -204,19 +228,19 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                     }}
                   />
                 ),
-
                 type: ResourceNodeType.TablePartition,
-              },
-            ];
-
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
+              };
+            });
             break;
           }
           case IPartitionType.LIST: {
             partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-list-${p.name}`;
               return {
                 title: p.name,
-                key: `${tableKey}-partition-list-${p.name}`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 sessionId: dbSession?.sessionId,
                 icon: (
                   <Icon
@@ -228,16 +252,18 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                 ),
 
                 type: ResourceNodeType.TablePartition,
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
               };
             });
             break;
           }
           case IPartitionType.LIST_COLUMNS: {
             partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-list-${p.name}`;
               return {
                 title: p.name,
-                key: `${tableKey}-partition-listColumns-${p.name}`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 sessionId: dbSession?.sessionId,
                 icon: (
                   <Icon
@@ -249,16 +275,18 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                 ),
 
                 type: ResourceNodeType.TablePartition,
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
               };
             });
             break;
           }
           case IPartitionType.RANGE: {
             partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-list-${p.name}`;
               return {
                 title: p.name,
-                key: `${tableKey}-partition-range-${p.name}`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 sessionId: dbSession?.sessionId,
                 icon: (
                   <Icon
@@ -270,16 +298,18 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                 ),
 
                 type: ResourceNodeType.TablePartition,
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
               };
             });
             break;
           }
           case IPartitionType.RANGE_COLUMNS: {
             partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-list-${p.name}`;
               return {
                 title: p.name,
-                key: `${tableKey}-partition-rangeColumns-${p.name}`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 sessionId: dbSession?.sessionId,
                 icon: (
                   <Icon
@@ -291,6 +321,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                 ),
 
                 type: ResourceNodeType.TablePartition,
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
               };
             });
             break;
@@ -360,7 +391,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
           type: ResourceNodeType.Table,
           data: table,
           dbObjectType: DbObjectType.table,
-          doubleClick(session, node, databaseFrom) {
+          doubleClick(session, node) {
             openTableViewPage(
               table.info.tableName,
               TopTab.PROPS,

@@ -47,6 +47,7 @@ export enum Expression {
   SQL_CHECK_RESULT = 'SQL_CHECK_RESULT',
   PROJECT_NAME = 'PROJECT_NAME',
   DATABASE_NAME = 'DATABASE_NAME',
+  SCHEDULE_TYPE = 'SCHEDULE_TYPE',
 }
 export const ExpressionMap = {
   [Expression.ENVIRONMENT_NAME]: formatMessage({
@@ -54,9 +55,9 @@ export const ExpressionMap = {
     defaultMessage: '环境',
   }), //'环境'
   [Expression.TASK_TYPE]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.Type',
-    defaultMessage: '任务类型',
-  }), //'任务类型'
+    id: 'src.page.Secure.RiskLevel.92D2ED86',
+    defaultMessage: '工单类型',
+  }),
   [Expression.SQL_CHECK_RESULT]: formatMessage({
     id: 'odc.src.page.Secure.RiskLevel.SQLExaminationResults',
     defaultMessage: 'SQL 检查结果',
@@ -69,6 +70,10 @@ export const ExpressionMap = {
     id: 'odc.src.page.Secure.RiskLevel.NameDatabase',
     defaultMessage: '数据库名称',
   }), //'数据库名称'
+  [Expression.SCHEDULE_TYPE]: formatMessage({
+    id: 'src.page.Secure.RiskLevel.F7BA8534',
+    defaultMessage: '作业类型',
+  }),
 };
 export enum EOperator {
   EQUALS = 'EQUALS',
@@ -79,28 +84,10 @@ export enum EOperator {
   NOT_IN = 'NOT_IN',
 }
 export const OperatorMap = {
-  [EOperator.EQUALS]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.Equal',
-    defaultMessage: '等于',
-  }), //'等于'
-  [EOperator.NOT_EQUALS]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.NotEqualTo',
-    defaultMessage: '不等于',
-  }), //'不等于'
-  [EOperator.CONTAINS]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.Include',
-    defaultMessage: '包含',
-  }), //'包含'
-  [EOperator.NOT_CONTAINS]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.NotInclude',
-    defaultMessage: '不包含',
-  }), //'不包含'
-  [EOperator.IN]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.Exist',
-    defaultMessage: '在',
-  }), //'在'
-  [EOperator.NOT_IN]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.Absence',
-    defaultMessage: '不在',
-  }), //'不在'
+  [EOperator.EQUALS]: '=', //'等于'
+  [EOperator.NOT_EQUALS]: '!=', //'不等于'
+  [EOperator.CONTAINS]: 'contains', //'包含'
+  [EOperator.NOT_CONTAINS]: 'not contains', //'不包含'
+  [EOperator.IN]: 'in', //'在'
+  [EOperator.NOT_IN]: 'not in', //'不在'
 };

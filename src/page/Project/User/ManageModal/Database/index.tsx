@@ -69,11 +69,12 @@ interface IProps {
   projectId: number;
   userId: number;
   isOwner: boolean;
+  isDBA: boolean;
   onClose: () => void;
 }
 
 const ManageModal: React.FC<IProps> = (props) => {
-  const { isOwner, projectId, userId } = props;
+  const { isOwner, projectId, userId, isDBA } = props;
   const [dataSource, setDataSource] = useState<IResponseData<IDatabasePermission>>(null);
   const [authorizationType, setAuthorizationType] = useState(
     PermissionSourceType.TICKET_APPLICATION,
@@ -104,6 +105,9 @@ const ManageModal: React.FC<IProps> = (props) => {
       page: current,
       size: pageSize,
     };
+    if (pageSize === 0) {
+      return;
+    }
     // sorter
     params.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
     const res = await getDatabasePermissions(params);
@@ -135,7 +139,7 @@ const ManageModal: React.FC<IProps> = (props) => {
     Modal.confirm({
       title,
       content: (
-        <Text type="secondary">
+        <Text>
           {
             formatMessage({
               id: 'src.page.Project.User.ManageModal.B7377F46' /*回收后不可撤回*/,
@@ -170,12 +174,6 @@ const ManageModal: React.FC<IProps> = (props) => {
     });
   };
 
-  useEffect(() => {
-    if (projectId && userId) {
-      loadData();
-    }
-  }, [userId, projectId, authorizationType]);
-
   const handleSwitchUserTab = () => {
     if (authorizationType === PermissionSourceType.USER_AUTHORIZATION) {
       handleReload();
@@ -206,7 +204,7 @@ const ManageModal: React.FC<IProps> = (props) => {
           </Radio.Group>
           <HelpDoc isTip leftText doc="userManageTip" />
         </div>
-        {isOwner && (
+        {(isOwner || isDBA) && (
           <CreateAuth projectId={projectId} userId={userId} onSwitchUserTab={handleSwitchUserTab} />
         )}
       </div>
@@ -217,6 +215,7 @@ const ManageModal: React.FC<IProps> = (props) => {
             dataSource={dataSource}
             params={params}
             isOwner={isOwner}
+            isDBA={isDBA}
             tableRef={tableRef}
             onLoad={loadData}
             onChange={handleChange}
@@ -228,6 +227,7 @@ const ManageModal: React.FC<IProps> = (props) => {
             dataSource={dataSource}
             params={params}
             isOwner={isOwner}
+            isDBA={isDBA}
             tableRef={tableRef}
             onLoad={loadData}
             onChange={handleChange}

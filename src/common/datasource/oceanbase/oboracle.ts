@@ -19,6 +19,7 @@ import { TableForeignConstraintOnDeleteType } from '@/d.ts/table';
 import { haveOCP } from '@/util/env';
 import { IDataSourceModeConfig } from '../interface';
 import OracleColumnExtra from './OracleColumnExtra';
+import { ScheduleType } from '@/d.ts/schedule';
 
 const oracleTableConfig = {
   constraintEnableConfigurable: true,
@@ -48,6 +49,18 @@ const functionConfig: IDataSourceModeConfig['schema']['func'] = {
   params: ['paramName', 'paramMode', 'dataType', 'defaultValue'],
 };
 
+const scheduleConfig: IDataSourceModeConfig['features']['scheduleConfig'] = {
+  allowTargetConnectTypeByDataArchive: [
+    ConnectType.COS,
+    ConnectType.OBS,
+    ConnectType.S3A,
+    ConnectType.OSS,
+    ConnectType.OB_ORACLE,
+    ConnectType.CLOUD_OB_ORACLE,
+    ConnectType.ORACLE,
+  ],
+};
+
 const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSourceModeConfig> = {
   [ConnectType.OB_ORACLE]: {
     priority: 99,
@@ -60,6 +73,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       ssl: true,
     },
     features: {
+      scheduleConfig,
       task: Object.values(TaskType).filter(
         (type) =>
           ![
@@ -68,11 +82,13 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
             TaskType.LOGICAL_DATABASE_CHANGE,
           ].includes(type),
       ),
+      schedule: Object.values(ScheduleType),
       obclient: true,
       recycleBin: true,
       sessionManage: true,
       sessionParams: true,
-      resourceTree: true,
+      groupResourceTree: true,
+      sqlconsole: true,
       sqlExplain: true,
       compile: true,
       plEdit: true,
@@ -109,21 +125,18 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
     },
     features: {
       task: Object.values(TaskType).filter(
-        (type) =>
-          ![
-            TaskType.SHADOW,
-            TaskType.DATA_ARCHIVE,
-            TaskType.DATA_DELETE,
-            TaskType.LOGICAL_DATABASE_CHANGE,
-          ].includes(type),
+        (type) => ![TaskType.SHADOW, TaskType.LOGICAL_DATABASE_CHANGE].includes(type),
       ),
+      schedule: Object.values(ScheduleType),
+      scheduleConfig,
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
       compile: true,
       sessionManage: true,
       sessionParams: true,
-      resourceTree: true,
+      groupResourceTree: true,
+      sqlconsole: true,
       plEdit: true,
       plRun: true,
       anonymousBlock: true,

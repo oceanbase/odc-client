@@ -24,13 +24,19 @@ import { openCreateViewPage, openViewViewPage } from '@/store/helper/page';
 import modal from '@/store/modal';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
+import { downloadPLDDL } from '@/util/database/sqlExport';
+import {
+  PlusOutlined,
+  QuestionCircleFilled,
+  ReloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
-import { hasChangePermission, hasExportPermission } from '../index';
+import { hasTableChangePermission, hasTableExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
+import { openGlobalSearch } from '../../const';
 
 export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.ViewRoot]: [
@@ -46,6 +52,20 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       actionType: actionTypes.create,
       run(session, node) {
         openCreateViewPage(session?.odcDatabase?.id);
+      },
+    },
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
       },
     },
     {
@@ -82,7 +102,20 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
         );
       },
     },
-
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_DATA,
       text: [
@@ -109,8 +142,8 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.view.Export', defaultMessage: '导出' }), //导出
       ellipsis: true,
-      disabled: (session) => {
-        return !hasExportPermission(session);
+      disabled: (session, node) => {
+        return !hasTableExportPermission(session, node);
       },
       isHide: (session) => {
         return !isSupportExport(session);
@@ -229,8 +262,8 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.Delete', defaultMessage: '删除' })],
       ellipsis: true,
       actionType: actionTypes.delete,
-      disabled: (session) => {
-        return !hasChangePermission(session);
+      disabled: (session, node) => {
+        return !hasTableChangePermission(session, node);
       },
       run(session, node) {
         const view = node.data as IView;

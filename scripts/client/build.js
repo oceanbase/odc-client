@@ -15,8 +15,6 @@
  */
 
 const { execSync } = require('child_process');
-const path = require('path');
-const { run: sign } = require('./sign');
 const electronBuilder = require('electron-builder');
 /**
  * build renderer
@@ -113,10 +111,6 @@ async function run() {
           platform: 'mac',
         },
       });
-      if (!!process.env.APPLE_ID) {
-        //sign jar first
-        await sign();
-      }
       await buildWeb();
       await buildClient('mac-jre');
       return;
@@ -176,10 +170,6 @@ async function run() {
           platform: 'mac',
         },
       });
-      if (!!process.env.APPLE_ID) {
-        //sign jar first
-        await sign();
-      }
       await buildWeb();
       await buildClient('mac-jre');
 

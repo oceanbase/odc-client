@@ -17,15 +17,18 @@
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Button, Drawer, FormInstance, message, Space } from 'antd';
-import { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CreateProject, { ICreateProjectFormData } from '.';
 
 import { createProject as createProjectService } from '@/common/network/project';
 import { ProjectRole } from '@/d.ts/project';
+import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
 
 interface IProps {
   onCreate?: () => void;
   disabled?: boolean;
+  buttonType?: 'link' | 'text' | 'default' | 'primary' | 'dashed';
+  buttonChildren?: React.ReactChild;
 }
 
 export default function CreateProjectDrawer(props: IProps) {
@@ -34,6 +37,14 @@ export default function CreateProjectDrawer(props: IProps) {
   const { run, loading, cancel } = useRequest(createProjectService, {
     manual: true,
   });
+  const { runAction } = useUrlAction();
+
+  useEffect(() => {
+    runAction({
+      actionType: URL_ACTION.newProject,
+      callback: () => (props.disabled ? null : setOpen(true)),
+    });
+  }, []);
   async function onSubmit() {
     const data = await createProject?.current?.form?.validateFields();
     if (data) {
@@ -90,14 +101,15 @@ export default function CreateProjectDrawer(props: IProps) {
     <>
       <Button
         disabled={props.disabled}
-        type="primary"
+        type={props?.buttonType || 'primary'}
         onClick={props.disabled ? null : () => setOpen(true)}
       >
         {
-          formatMessage({
-            id: 'odc.Project.CreateProject.Drawer.CreateAProject',
-            defaultMessage: '新建项目',
-          }) /*新建项目*/
+          props?.buttonChildren ||
+            formatMessage({
+              id: 'odc.Project.CreateProject.Drawer.CreateAProject',
+              defaultMessage: '新建项目',
+            }) /*新建项目*/
         }
       </Button>
       <Drawer

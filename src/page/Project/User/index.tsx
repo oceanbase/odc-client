@@ -17,7 +17,6 @@
 import { deleteProjectMember } from '@/common/network/project';
 import Action from '@/component/Action';
 import FilterIcon from '@/component/Button/FIlterIcon';
-import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import TooltipAction from '@/component/TooltipAction';
@@ -25,13 +24,18 @@ import { IProject, ProjectRole } from '@/d.ts/project';
 import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
-import { Button, message, Popconfirm, Space, Tag } from 'antd';
+import { Button, Space, Tag, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
 import ManageModal from './ManageModal';
 import UpdateUserModal from './UpdateUserModal';
+import { isProjectArchived } from '@/page/Project/helper';
+import { UserOperationKey, getOperatioFunc } from '@/d.ts/operation';
+import { renderTool } from '@/util/ui/renderTool';
+import { SyncOutlined } from '@ant-design/icons';
+
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
     id: 'odc.User.AddUserModal.Administrator',
@@ -51,6 +55,7 @@ export const projectRoleTextMap = {
     defaultMessage: '参与者',
   }), //'参与者'
 };
+
 interface IProps {
   id: string;
   userStore?: UserStore;
@@ -58,6 +63,7 @@ interface IProps {
 const User: React.FC<IProps> = ({ id, userStore }) => {
   const context = useContext(ProjectContext);
   const { project } = context;
+  const projectArchived = isProjectArchived(project);
   const isOwner = project?.currentUserResourceRoles?.some((item) => item === ProjectRole.OWNER);
   const isDBA = project?.currentUserResourceRoles?.some((item) => item === ProjectRole.DBA);
   const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
@@ -66,24 +72,30 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   const [detailId, setDetailId] = useState<number>(null);
   const dataSource: (IProject['members'][0] & {
     roles: ProjectRole[];
+    globalRoles: ProjectRole[];
   })[] = useMemo(() => {
     const userMap = new Map<
       number,
       IProject['members'][0] & {
         roles: ProjectRole[];
+        globalRoles: ProjectRole[];
       }
     >();
     context?.project?.members
       ?.sort((item) => (userStore?.user?.id == item.id ? -1 : 1))
       ?.forEach((mem) => {
-        const { id, role } = mem;
+        const { id, role, derivedFromGlobalProjectRole } = mem;
         if (userMap.has(id)) {
           userMap.get(id).roles.push(role);
+          derivedFromGlobalProjectRole && userMap.get(id).globalRoles.push(role);
         } else {
-          userMap.set(id, {
+          const obj = {
             ...mem,
             roles: [role],
-          });
+            globalRoles: [],
+          };
+          derivedFromGlobalProjectRole && obj.globalRoles.push(role);
+          userMap.set(id, obj);
         }
       });
     return [...userMap.values()];
@@ -91,22 +103,16 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   useEffect(() => {
     tracert.expo('a3112.b64002.c330860');
   }, []);
-  async function deleteUser(id: number) {
+  async function deleteUser(id: number, name: string) {
     const isSuccess = await deleteProjectMember({
       projectId: context?.project?.id,
       userId: id,
     });
     if (isSuccess) {
-      message.success(
-        formatMessage({
-          id: 'odc.Project.User.DeletedSuccessfully',
-          defaultMessage: '删除成功',
-        }), //删除成功
-      );
-
       context.reloadProject();
     }
   }
+
   async function updateUser(id: number) {
     setEditUserId(id);
   }
@@ -121,37 +127,121 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
     setManageModalVisiable(false);
   }
 
+  const getOperation: getOperatioFunc<
+    IProject['members'][0] & {
+      roles: ProjectRole[];
+      globalRoles: ProjectRole[];
+    }
+  > = (record) => {
+    const isGlobalRolesUser = !!record.globalRoles.length;
+    const isMe = userStore?.user?.id === record.id;
+    return [
+      {
+        key: UserOperationKey.MANAGE_PERMISSION,
+        disable: !isOwner && !isMe,
+        text: formatMessage({
+          id: 'src.page.Project.User.3AE67EC2',
+          defaultMessage: '管理权限',
+        }),
+        action: () => showManageModal(record.id),
+        disableTooltip: () => {
+          if (!isOwner && !isMe) {
+            return formatMessage({
+              id: 'src.page.Project.User.907FD906',
+              defaultMessage: '暂无权限',
+            });
+          } else {
+            return '';
+          }
+        },
+      },
+      {
+        disable: !isOwner,
+        action: () => updateUser(record.id),
+        text: formatMessage({
+          id: 'src.page.Project.User.D1A92D2A',
+          defaultMessage: '编辑角色',
+        }),
+        key: UserOperationKey.EDIT_ROLES,
+        disableTooltip: () => {
+          if (!isOwner) {
+            return formatMessage({
+              id: 'src.page.Project.User.907FD906',
+              defaultMessage: '暂无权限',
+            });
+          } else {
+            return '';
+          }
+        },
+      },
+      {
+        disable: !isOwner || isGlobalRolesUser,
+        key: UserOperationKey.REMOVE_ROLES,
+        text: formatMessage({
+          id: 'odc.Project.User.Remove',
+          defaultMessage: '移除',
+        }),
+        confirmText: formatMessage({
+          id: 'odc.Project.User.AreYouSureYouWant',
+          defaultMessage: '是否确定删除该成员？',
+        }),
+        action: () => deleteUser(record.id, record.name),
+        disableTooltip: () => {
+          if (isGlobalRolesUser) {
+            return formatMessage({
+              id: 'src.page.Project.User.68557BE1',
+              defaultMessage: '全局角色不可移除',
+            });
+          } else if (!isOwner) {
+            return formatMessage({
+              id: 'src.page.Project.User.FE2F4924',
+              defaultMessage: '暂无权限',
+            });
+          } else {
+            return '';
+          }
+        },
+      },
+    ];
+  };
+
+  const TableCardTitle = (
+    <TooltipAction
+      title={
+        isOwner
+          ? ''
+          : formatMessage({
+              id: 'src.page.Project.User.0C0586E8',
+              defaultMessage: '暂无权限',
+            })
+      }
+    >
+      <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
+        {
+          formatMessage({
+            id: 'odc.Project.User.AddMembers',
+            defaultMessage: '添加成员',
+          }) /*添加成员*/
+        }
+      </Button>
+    </TooltipAction>
+  );
+
   return (
     <TableCard
-      title={
-        <TooltipAction
-          title={
-            isOwner || isDBA
-              ? ''
-              : formatMessage({ id: 'src.page.Project.User.0C0586E8', defaultMessage: '暂无权限' })
-          }
-        >
-          <Button
-            type="primary"
-            onClick={() => setAddUserModalVisiable(true)}
-            disabled={!isOwner && !isDBA}
-          >
-            {
-              formatMessage({
-                id: 'odc.Project.User.AddMembers',
-                defaultMessage: '添加成员',
-              }) /*添加成员*/
-            }
-          </Button>
-        </TooltipAction>
-      }
+      title={projectArchived ? null : TableCardTitle}
       extra={
-        <FilterIcon onClick={context.reloadProject}>
-          <Reload />
+        <FilterIcon onClick={context.reloadProject} border>
+          <SyncOutlined spin={context?.loading} />
         </FilterIcon>
       }
     >
-      <MiniTable<IProject['members'][0]>
+      <MiniTable<
+        IProject['members'][0] & {
+          roles: ProjectRole[];
+          globalRoles: ProjectRole[];
+        }
+      >
         rowKey={'accountName'}
         columns={[
           {
@@ -197,8 +287,10 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
             //项目角色
             dataIndex: 'roles',
             width: 370,
-            render(v) {
-              return v?.map((item) => projectRoleTextMap[item] || item)?.join(' | ');
+            render(v: ProjectRole[]) {
+              return Array.from(new Set(v))
+                ?.map((item) => projectRoleTextMap[item] || item)
+                ?.join(' | ');
             },
           },
           {
@@ -209,77 +301,14 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
             //操作
             dataIndex: 'name',
             width: 135,
+            hide: projectArchived,
             render(_, record) {
-              const disabled = !isOwner && !isDBA;
-              const isMe = userStore?.user?.id === record.id;
+              const operation = getOperation(record);
               return (
                 <Action.Group size={3}>
-                  <Action.Link
-                    key="managePermission"
-                    disabled={disabled && !isMe}
-                    tooltip={
-                      disabled && !isMe
-                        ? formatMessage({
-                            id: 'src.page.Project.User.907FD906',
-                            defaultMessage: '暂无权限',
-                          })
-                        : ''
-                    }
-                    onClick={() => {
-                      showManageModal(record.id);
-                    }}
-                  >
-                    {formatMessage({
-                      id: 'src.page.Project.User.3AE67EC2',
-                      defaultMessage: '管理权限',
-                    })}
-                  </Action.Link>
-                  <Action.Link
-                    onClick={() => updateUser(record.id)}
-                    key={'export'}
-                    disabled={disabled}
-                    tooltip={
-                      disabled
-                        ? formatMessage({
-                            id: 'src.page.Project.User.AC258D23',
-                            defaultMessage: '暂无权限',
-                          })
-                        : ''
-                    }
-                  >
-                    {formatMessage({
-                      id: 'src.page.Project.User.D1A92D2A',
-                      defaultMessage: '编辑角色',
-                    })}
-                  </Action.Link>
-                  <Popconfirm
-                    key="import"
-                    title={formatMessage({
-                      id: 'odc.Project.User.AreYouSureYouWant',
-                      defaultMessage: '是否确定删除该成员？',
-                    })}
-                    /*确定删除该成员吗？*/ onConfirm={() => deleteUser(record.id)}
-                  >
-                    <Action.Link
-                      key={'import'}
-                      disabled={disabled}
-                      tooltip={
-                        disabled
-                          ? formatMessage({
-                              id: 'src.page.Project.User.FE2F4924',
-                              defaultMessage: '暂无权限',
-                            })
-                          : ''
-                      }
-                    >
-                      {
-                        formatMessage({
-                          id: 'odc.Project.User.Remove',
-                          defaultMessage: '移除',
-                        }) /*移除*/
-                      }
-                    </Action.Link>
-                  </Popconfirm>
+                  {operation.map((item, index) => {
+                    return renderTool(item, index);
+                  })}
                 </Action.Group>
               );
             },
@@ -314,6 +343,11 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
         roles={
           context.project?.members?.filter((m) => m.id === editUserId)?.map((m) => m.role) || []
         }
+        globalRoles={
+          context.project?.members
+            ?.filter((m) => m.id === editUserId && m.derivedFromGlobalProjectRole)
+            ?.map((m) => m.role) || []
+        }
       />
 
       <ManageModal
@@ -321,6 +355,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
         projectId={context.project?.id}
         userId={detailId}
         isOwner={isOwner}
+        isDBA={isDBA}
         onClose={closeManageModal}
       />
     </TableCard>

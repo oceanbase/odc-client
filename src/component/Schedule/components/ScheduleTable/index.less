@@ -1,0 +1,149 @@
+.menuItem {
+  padding: 4px 15px;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--hover-color);
+  }
+}
+
+.newSchedulePopover {
+  :global {
+    .ant-popover-content {
+      .ant-popover-inner {
+        padding: 0px !important;
+        .ant-popover-inner-content {
+          .ant-space {
+            padding: 4px !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+.scheduleTable {
+  :global {
+    .ant-spin-nested-loading {
+      height: 100%;
+      .ant-spin-container {
+        .ant-table-wrapper {
+          height: 100%;
+        }
+      }
+    }
+    .ant-input-search {
+      width: 178px;
+    }
+    .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+      padding: 0 11px 0 0;
+    }
+    .ant-table-tbody > tr > td > .ant-table-wrapper:only-child .ant-table {
+      margin-top: 0;
+    }
+    .ant-pagination-next[aria-disabled='false'] {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+    }
+    .ant-pagination-disabled {
+      .anticon {
+        color: var(--icon-color-disable);
+      }
+    }
+  }
+}
+.tip {
+  color: var(--text-color-secondary);
+}
+
+.batchOperationDropdown {
+  :global {
+    .ant-dropdown-menu {
+      .ant-dropdown-menu-item {
+        padding: 0;
+        .ant-dropdown-menu-title-content {
+          .ant-btn {
+            width: 100%;
+            justify-content: left;
+          }
+        }
+      }
+    }
+  }
+}
+
+.tableRow:hover {
+  .hoverLink {
+    color: #1890ff !important;
+    cursor: pointer;
+  }
+}
+
+.scheduleNameColumn {
+  color: var(--text-color-secondary);
+  padding: 10px 0px 10px 6px;
+  .columns {
+    display: flex;
+    gap: 8px;
+  }
+  .scheduleName {
+    font-weight: 600;
+    color: black;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .creator {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .project {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+}
+
+.dbColumnsEllipsis {
+  width: fit-content;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.mw110 {
+  max-width: 108px !important;
+}
+
+.scheduleDatabaseColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.subTaskDatabaseColumn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.mr4 {
+  margin-right: 4px;
+}
+
+.scheduleNameTooltip {
+  max-width: 500px !important;
+}
+
+.ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}

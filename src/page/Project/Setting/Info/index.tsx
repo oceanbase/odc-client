@@ -15,17 +15,28 @@
  */
 
 import { setProjectAchived, updateProject } from '@/common/network/project';
-import { IProject } from '@/d.ts/project';
+import { IProject, ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
 import { history } from '@umijs/max';
-import { Button, Form, Input, message, Popconfirm, Space } from 'antd';
+import { Button, Form, Input, message, Popconfirm, Space, Modal, Tooltip } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import ProjectContext from '../../ProjectContext';
+import { isProjectArchived } from '@/page/Project/helper';
+import DeleteProjectModal from '@/page/Project/components/DeleteProjectModal.tsx';
+import RelativeResourceModal from '@/component/RelativeResourceModal';
+import { getResourceDependencies } from '@/common/network/relativeResource';
+import { EEntityType } from '@/d.ts/relativeResource';
+import { SchedulePageMode } from '@/component/Schedule/interface';
 
 export default function Info() {
   const [form] = Form.useForm<Pick<IProject, 'name' | 'description'>>();
   const context = useContext(ProjectContext);
+  const projectName = context?.project?.name;
   const [isModify, setIsModify] = useState(false);
+  const projectArchived = isProjectArchived(context.project);
+  const [openDeleteProjectModal, setOpenDeleteProjectModal] = useState(false);
+  const [openArchiveModal, setOpenArchiveModal] = useState(false);
+  const isProjectOwner = context?.project?.currentUserResourceRoles?.includes(ProjectRole.OWNER);
 
   useEffect(() => {
     if (context.project) {
@@ -49,19 +60,62 @@ export default function Info() {
     }
   }
 
-  async function deleteProject() {
-    const isSuccess = await setProjectAchived({
-      projectId: context?.projectId,
-      archived: true,
-    });
-    if (!isSuccess) {
-      return;
+  const handleProjectAchived = async () => {
+    const res = await getResourceDependencies({ projectId: context.projectId });
+    const data = res?.data;
+    const total =
+      data?.flowDependencies?.length ||
+      0 + data?.scheduleDependencies?.length ||
+      0 + data?.scheduleTaskDependencies?.length ||
+      0;
+    if (total > 0) {
+      setOpenArchiveModal(true);
+    } else {
+      Modal.confirm({
+        title: formatMessage({
+          id: 'src.page.Project.Setting.Info.38EA601D',
+          defaultMessage: '确定要归档这个项目吗？',
+        }),
+        content: (
+          <p>
+            {formatMessage({
+              id: 'src.page.Project.Setting.Info.D29E85EF',
+              defaultMessage: '项目归档后将不可恢复，但仍保留相关数据，',
+            })}
+            {formatMessage({
+              id: 'src.page.Project.Setting.Info.5666645F',
+              defaultMessage: '可前往归档项目中查看项目。',
+            })}
+          </p>
+        ),
+
+        okText: formatMessage({
+          id: 'app.button.ok',
+          defaultMessage: '确定',
+        }),
+        cancelText: formatMessage({
+          id: 'app.button.cancel',
+          defaultMessage: '取消',
+        }),
+        onOk: async () => {
+          const isSuccess = await setProjectAchived({
+            projectId: context?.projectId,
+            archived: true,
+          });
+          if (!isSuccess) {
+            return;
+          }
+          message.success(
+            formatMessage({
+              id: 'odc.Setting.Info.OperationSucceeded',
+              defaultMessage: '操作成功',
+            }), //操作成功
+          );
+          history.push('/project');
+        },
+      });
     }
-    message.success(
-      formatMessage({ id: 'odc.Setting.Info.OperationSucceeded', defaultMessage: '操作成功' }), //操作成功
-    );
-    history.push('/project');
-  }
+  };
 
   return (
     <div style={{ padding: 24 }}>
@@ -87,6 +141,7 @@ export default function Info() {
               id: 'odc.Setting.Info.EnterAName',
               defaultMessage: '请输入名称',
             })}
+            disabled={projectArchived}
             /*请输入名称*/ style={{ width: 400 }}
           />
         </Form.Item>
@@ -103,6 +158,7 @@ export default function Info() {
               defaultMessage: '请输入描述',
             })} /*请输入描述*/
             style={{ width: 480 }}
+            disabled={projectArchived}
             autoSize={{ minRows: 4, maxRows: 8 }}
           />
         </Form.Item>
@@ -116,16 +172,30 @@ export default function Info() {
             }) /*确认修改*/
           }
         </Button>
-        <Popconfirm
-          title={
-            formatMessage({
-              id: 'odc.Setting.Info.ThisOperationCannotBeRestored',
-              defaultMessage: '该操作无法恢复，是否确定归档项目？',
-            }) //该操作无法恢复，确定要归档项目吗？
-          }
-          onConfirm={deleteProject}
-        >
-          <Button danger>
+        {projectArchived ? (
+          <Tooltip
+            title={
+              !isProjectOwner
+                ? formatMessage({
+                    id: 'src.page.Project.Setting.Info.3C89D359',
+                    defaultMessage: '暂无权限，请联系管理员',
+                  })
+                : undefined
+            }
+          >
+            <Button
+              danger
+              onClick={() => setOpenDeleteProjectModal(true)}
+              disabled={!isProjectOwner}
+            >
+              {formatMessage({
+                id: 'src.page.Project.Setting.Info.FF3FCF6B',
+                defaultMessage: '删除项目',
+              })}
+            </Button>
+          </Tooltip>
+        ) : (
+          <Button danger onClick={handleProjectAchived}>
             {
               formatMessage({
                 id: 'odc.Setting.Info.ArchiveProject',
@@ -133,8 +203,32 @@ export default function Info() {
               }) /*归档项目*/
             }
           </Button>
-        </Popconfirm>
+        )}
       </Space>
+      <DeleteProjectModal
+        open={openDeleteProjectModal}
+        setOpen={setOpenDeleteProjectModal}
+        verifyValue="delete"
+        projectList={[{ id: context?.project?.id, name: context?.project?.name }]}
+        afterDelete={() => {
+          history.push('/project?archived=true');
+        }}
+      />
+
+      <RelativeResourceModal
+        mode={EEntityType.PROJECT}
+        open={openArchiveModal}
+        id={context?.project?.id}
+        scheduleDetailMode={SchedulePageMode.PROJECT}
+        title={formatMessage(
+          {
+            id: 'src.page.Project.Setting.Info.2365AA93',
+            defaultMessage: '项目 {projectName} 存在以下未完成的工单和作业，暂不支持归档',
+          },
+          { projectName },
+        )}
+        onCancel={() => setOpenArchiveModal(false)}
+      />
     </div>
   );
 }

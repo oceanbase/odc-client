@@ -26,7 +26,7 @@ const outputPath = path.join(localePath, './must/strings');
 const exclude = 'src/main';
 
 function matchText(text, path) {
-  const isConsoleLog = /^console\.log\(/gi.test(path?.parentPath?.toString());
+  const isConsoleLog = /^console\.\w+\(/gi.test(path?.parentPath?.toString());
   let isFormattedMessage = false;
   // 识别 <FormatMessage> 标签的文字层级
   try {

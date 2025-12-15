@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { getDataSourceStyleByConnectType, isFileSystemSupport } from '@/common/datasource';
 import { getConnectionDetail, getConnectionList } from '@/common/network/connection';
 import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import ApplyDatabasePermissionButton from '@/component/Task/ApplyDatabasePermission/CreateButton';
+import ApplyDatabasePermissionButton from '@/component/Task/modals/ApplyDatabasePermission/CreateButton';
 import TooltipAction from '@/component/TooltipAction';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
@@ -41,7 +41,10 @@ import {
   Dropdown,
 } from 'antd';
 import { useContext, useState } from 'react';
+import { IConnection } from '@/d.ts';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import settingStore from '@/store/setting';
+import DatasourceSelectEmpty from '@/component/Empty/DatasourceSelectEmpty';
 interface IProps {
   projectId: number;
   orderedDatabaseIds: number[][];
@@ -49,7 +52,9 @@ interface IProps {
   onSuccess: () => void;
   clearSelectedRowKeys: () => void;
   onOpenLogicialDatabase: () => void;
+  onOpenObjectStorage: () => void;
   disabledMultiDBChanges?: boolean;
+  onOpenDatabaseAdmin?: () => void;
 }
 const AddDataBaseButton: React.FC<IProps> = ({
   projectId,
@@ -58,10 +63,15 @@ const AddDataBaseButton: React.FC<IProps> = ({
   onSuccess,
   clearSelectedRowKeys,
   onOpenLogicialDatabase,
+  onOpenObjectStorage,
   disabledMultiDBChanges,
+  onOpenDatabaseAdmin,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
+  const [dataSourceListWithoutFileSystem, setDataSourceListWithoutFileSystem] = useState<
+    IConnection[]
+  >([]);
 
   const [form] = Form.useForm<{
     databaseIds: number[];
@@ -71,7 +81,13 @@ const AddDataBaseButton: React.FC<IProps> = ({
   const { run, loading: saveDatabaseLoading } = useRequest(updateDataBase, {
     manual: true,
   });
-  const { data: dataSourceList, loading: dataSourceListLoading } = useRequest(getConnectionList, {
+  const { loading: dataSourceListLoading } = useRequest(getConnectionList, {
+    onSuccess: (e) => {
+      // 过滤掉对象存储的数据源
+      setDataSourceListWithoutFileSystem(
+        e.contents.filter((item) => !isConnectTypeBeFileSystemGroup(item.type)),
+      );
+    },
     defaultParams: [
       {
         size: 99999,
@@ -119,16 +135,87 @@ const AddDataBaseButton: React.FC<IProps> = ({
       form.resetFields();
     }
   }
-  const items: MenuProps['items'] = [
+
+  let items: MenuProps['items'] = [
+    ...(settingStore?.enableLogicaldatabase
+      ? [
+          {
+            label: formatMessage({
+              id: 'src.page.Project.Database.components.AddDataBaseButton.BCE1BC95',
+              defaultMessage: '配置逻辑库',
+            }),
+            key: '1',
+            onClick: onOpenLogicialDatabase,
+          },
+        ]
+      : []),
+    ...(isFileSystemSupport()
+      ? [
+          {
+            label: formatMessage({
+              id: 'src.page.Project.Database.components.AddDataBaseButton.201B0791',
+              defaultMessage: '添加对象存储',
+            }),
+            key: '2',
+            onClick: onOpenObjectStorage,
+          },
+        ]
+      : []),
+  ];
+
+  const batchOperationItems: MenuProps['items'] = [
     {
-      label: formatMessage({
-        id: 'src.page.Project.Database.components.AddDataBaseButton.BCE1BC95',
-        defaultMessage: '配置逻辑库',
-      }),
-      key: '1',
+      key: 'multiDatabaseChange',
+      disabled: disabledMultiDBChanges,
       onClick: () => {
-        onOpenLogicialDatabase();
+        modalStore?.changeMultiDatabaseChangeModal(true, {
+          projectId,
+          orderedDatabaseIds,
+        });
+        clearSelectedRowKeys?.();
       },
+      label: (
+        <Tooltip
+          title={
+            disabledMultiDBChanges
+              ? formatMessage({
+                  id: 'src.page.Project.Database.components.AddDataBaseButton.11CC7812',
+                  defaultMessage: '仅支持选择相同类型的数据源的数据库发起多库变更任务',
+                })
+              : null
+          }
+        >
+          {formatMessage({
+            id: 'src.page.Project.Database.AddDataBaseButton.693C4817',
+            defaultMessage: '多库变更',
+          })}
+        </Tooltip>
+      ),
+    },
+    {
+      key: 'applyDatabasePermission',
+      label: (
+        <ApplyDatabasePermissionButton
+          label={
+            formatMessage({
+              id: 'src.page.Project.Database.AddDataBaseButton.B54F6D7D',
+              defaultMessage: '申请库权限',
+            }) /*"申请库权限"*/
+          }
+          projectId={projectId}
+          buttontype="text"
+        />
+      ),
+    },
+    {
+      key: 'setDatabaseAdmin',
+      onClick: () => {
+        onOpenDatabaseAdmin?.();
+      },
+      label: formatMessage({
+        id: 'src.page.Project.Database.components.AddDataBaseButton.438E94A5',
+        defaultMessage: '设置库管理员',
+      }),
     },
   ];
 
@@ -145,63 +232,29 @@ const AddDataBaseButton: React.FC<IProps> = ({
               : ''
           }
         >
-          {!settingStore?.enableLogicaldatabase ? (
-            <Button type='primary' onClick={() => setOpen(true)} disabled={disabledAction}>
-              {formatMessage({
-                id: 'src.page.Project.Database.components.AddDataBaseButton.EE4B77AC',
-                defaultMessage: '添加数据库',
-              })}
-            </Button>
-          ) : (
-            <Dropdown.Button
-              type="primary"
-              icon={<DownOutlined />}
-              menu={{ items }}
-              onClick={() => setOpen(true)}
-              disabled={disabledAction}
-            >
-              {formatMessage({
-                id: 'src.page.Project.Database.components.AddDataBaseButton.EE4B77AC',
-                defaultMessage: '添加数据库',
-              })}
-            </Dropdown.Button>
-          )}
-        </TooltipAction>
-        <Tooltip
-          title={
-            disabledMultiDBChanges
-              ? formatMessage({
-                  id: 'src.page.Project.Database.components.AddDataBaseButton.11CC7812',
-                  defaultMessage: '仅支持选择相同类型的数据源的数据库发起多库变更任务',
-                })
-              : null
-          }
-        >
-          <Button
-            disabled={disabledMultiDBChanges}
-            onClick={() => {
-              modalStore?.changeMultiDatabaseChangeModal(true, {
-                projectId,
-                orderedDatabaseIds,
-              });
-              clearSelectedRowKeys?.();
-            }}
+          <Dropdown.Button
+            type="primary"
+            icon={<DownOutlined />}
+            menu={{ items }}
+            onClick={() => setOpen(true)}
+            disabled={disabledAction}
           >
             {formatMessage({
-              id: 'src.page.Project.Database.AddDataBaseButton.693C4817',
-              defaultMessage: '多库变更',
+              id: 'src.page.Project.Database.components.AddDataBaseButton.EE4B77AC',
+              defaultMessage: '添加数据库',
             })}
+          </Dropdown.Button>
+        </TooltipAction>
+        <Dropdown menu={{ items: batchOperationItems }} placement="bottomLeft">
+          <Button>
+            {formatMessage({
+              id: 'src.page.Project.Database.components.AddDataBaseButton.85804FB2',
+              defaultMessage: '批量操作',
+            })}
+
+            <DownOutlined style={{ color: 'var(--icon-color-normal)' }} />
           </Button>
-        </Tooltip>
-        <ApplyDatabasePermissionButton
-          label={
-            formatMessage({
-              id: 'src.page.Project.Database.AddDataBaseButton.B54F6D7D',
-              defaultMessage: '申请库权限',
-            }) /*"申请库权限"*/
-          }
-          projectId={projectId}
-        />
+        </Dropdown>
       </Space>
       <Modal
         open={open}
@@ -221,7 +274,13 @@ const AddDataBaseButton: React.FC<IProps> = ({
           onValuesChange={(changedValues) => {
             if (changedValues.hasOwnProperty('dataSourceId')) {
               fetchDataSource(changedValues?.dataSourceId);
-              fetchDatabases(null, changedValues?.dataSourceId, 1, 999999, null, null, true, true);
+              fetchDatabases({
+                dataSourceId: changedValues?.dataSourceId,
+                page: 1,
+                size: 999999,
+                containsUnassigned: true,
+                existed: true,
+              });
             }
           }}
         >
@@ -246,6 +305,12 @@ const AddDataBaseButton: React.FC<IProps> = ({
                   style={{
                     width: 'calc(100% - 10px)',
                   }}
+                  dropdownStyle={{ padding: 0 }}
+                  dropdownRender={
+                    dataSourceListWithoutFileSystem.length > 0
+                      ? undefined
+                      : () => <DatasourceSelectEmpty />
+                  }
                   placeholder={formatMessage({
                     id: 'odc.Database.AddDataBaseButton.PleaseSelect',
                     defaultMessage: '请选择',
@@ -256,7 +321,7 @@ const AddDataBaseButton: React.FC<IProps> = ({
                     })
                   }
                 >
-                  {dataSourceList?.contents?.map((item) => {
+                  {dataSourceListWithoutFileSystem?.map((item) => {
                     const icon = getDataSourceStyleByConnectType(item.type);
                     const isDisabled = !!item?.projectId && projectId !== item?.projectId;
                     return (
@@ -295,7 +360,7 @@ const AddDataBaseButton: React.FC<IProps> = ({
             </Col>
             <Col span={6}>
               <Form.Item
-                requiredMark={false}
+                required={false}
                 label={formatMessage({
                   id: 'odc.Database.AddDataBaseButton.Environment',
                   defaultMessage: '环境',

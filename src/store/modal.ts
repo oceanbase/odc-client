@@ -31,11 +31,17 @@ import {
   RollbackType,
   SubTaskStatus,
   TaskDetail,
+  IResultSetExportTaskParams,
+  IApplyPermissionTaskParams,
+  TaskRecord,
 } from '@/d.ts';
+import { SearchStatus } from '@/page/Workspace/SideBar/ResourceTree/DatabaseSearchModal/constant';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
-import { TablePermissionType } from '@/d.ts/table';
+import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
+import setting from './setting';
+import { getSpaceConfigForFormInitialValue } from '@/util/utils';
 
 interface ConnectionData {
   data: any;
@@ -71,6 +77,15 @@ interface AsyncData {
   activePageKey?: string;
 }
 
+interface GolbalSearchData {
+  databaseId?: number;
+  projectId?: number;
+  dataSourceId?: number;
+  initSearchKey?: string;
+  initStatus: SearchStatus;
+  activeKey?: string; // 指定打开搜索弹窗时应该选中的tab（对象类型）
+}
+
 export interface IMultipleAsyncTaskData {
   projectId?: number;
   orderedDatabaseIds?: number[][];
@@ -80,9 +95,14 @@ interface ResultSetExportData {
   sql?: string;
   databaseId?: number;
   tableName?: string;
+  taskId?: number;
+  task?: TaskDetail<IResultSetExportTaskParams>;
 }
 
-interface ApplyPermissionData {}
+interface ApplyPermissionData {
+  projectId?: number;
+  task?: Partial<TaskDetail<IApplyPermissionTaskParams>>;
+}
 
 interface ApplyDatabasePermissionData {
   projectId?: number;
@@ -105,40 +125,40 @@ interface IExportModalData {
   name?: string;
   databaseId?: number;
   exportPkgBody?: boolean;
+  taskId?: number;
 }
 
 interface IImportModalData {
   table?: Partial<ITable>;
   databaseId?: number;
-}
-
-interface IDataArchiveTaskData {
-  id?: number;
-  type?: 'RETRY' | 'EDIT';
-  databaseId?: number;
-}
-
-interface IDataClearTaskData extends IDataArchiveTaskData {}
-
-interface ISQLPlanTaskData {
-  id?: number;
-  databaseId?: number;
-}
-
-interface IPartitionTaskData {
-  databaseId?: number;
+  taskId?: number;
 }
 
 interface IDDLAlterTaskData {
   databaseId?: number;
+  taskId?: number;
+}
+
+interface ILogicDatabaseAsyncTaskData {
+  projectId?: number;
+  ddl?: string;
+  databaseId?: number;
+  taskId?: number;
 }
 
 interface IShadowSyncTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IStructureComparisonTaskData {
   databaseId?: number;
+  taskId?: number;
+}
+
+interface ICreateExternalResourceData {
+  databaseId?: number;
+  dbName?: string;
 }
 
 interface IWorkSpaceExecuteSQLModalProps {
@@ -151,17 +171,12 @@ interface IWorkSpaceExecuteSQLModalProps {
   onSave: any;
   status: EStatus;
   lintResultSet: ISQLLintReuslt[];
+  unauthorizedDBResources: IUnauthorizedDBResources[];
 }
 
 export class ModalStore {
   @observable
   public databaseSearchModalVisible: boolean = false;
-
-  @observable
-  public canDatabaseSearchModalOpen: boolean = false;
-
-  @observable
-  public databaseSearchsSetExpandedKeysFunction: (id: string | number) => void = null;
 
   @observable
   public selectDatabaseVisible: boolean = false;
@@ -219,15 +234,6 @@ export class ModalStore {
   public applyTablePermissionVisible: boolean = false;
 
   @observable
-  public partitionVisible: boolean = false;
-
-  @observable
-  public dataArchiveVisible: boolean = false;
-
-  @observable
-  public dataArchiveTaskData: IDataArchiveTaskData = null;
-
-  @observable
   public structureComparisonVisible: boolean = false;
 
   @observable
@@ -258,21 +264,7 @@ export class ModalStore {
   public logicDatabaseVisible: boolean = false;
 
   @observable
-  public logicDatabaseInfo: {
-    projectId?: number;
-    ddl?: string;
-    databaseId?: number;
-    task?: ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>;
-  } = null;
-
-  @observable
-  public dataClearVisible: boolean = false;
-
-  @observable
-  public dataClearTaskData: IDataClearTaskData = null;
-
-  @observable
-  public createSQLPlanVisible: boolean = false;
+  public logicDatabaseInfo: ILogicDatabaseAsyncTaskData = null;
 
   @observable
   public sensitiveColumnVisible: boolean = false;
@@ -293,16 +285,13 @@ export class ModalStore {
   public asyncTaskData: AsyncData = null;
 
   @observable
+  public golbalSearchData: GolbalSearchData = null;
+
+  @observable
   public multipleAsyncTaskData: IMultipleAsyncTaskData = null;
 
   @observable
   public resultSetExportData: ResultSetExportData = null;
-
-  @observable
-  public sqlPlanData: ISQLPlanTaskData = null;
-
-  @observable
-  public partitionData: IPartitionTaskData = null;
 
   @observable
   public ddlAlterData: IDDLAlterTaskData = null;
@@ -354,6 +343,8 @@ export class ModalStore {
   public createFunctionModalData = {
     databaseId: null,
     dbName: '',
+    fromExternalResource: false,
+    externalResourceName: null,
   };
 
   @action
@@ -361,11 +352,15 @@ export class ModalStore {
     isShow: boolean = true,
     databaseId?: number,
     dbName?: string,
+    fromExternalResource: boolean = false,
+    externalResourceName?: string,
   ) {
     this.createFunctionModalVisible = isShow;
     this.createFunctionModalData = {
       databaseId,
       dbName,
+      fromExternalResource,
+      externalResourceName,
     };
   }
 
@@ -478,6 +473,16 @@ export class ModalStore {
     dbName: '',
   };
 
+  /** create external resource */
+  @observable
+  public createExternalResourceModalVisible: boolean = false;
+
+  @observable
+  public createExternalResourceModalData: ICreateExternalResourceData = {
+    databaseId: null,
+    dbName: '',
+  };
+
   @action
   public changeCreateTypeModalVisible(v: boolean, databaseId?: number, dbName?: string) {
     this.createTypeModalVisible = v;
@@ -488,10 +493,25 @@ export class ModalStore {
   }
 
   @action
-  public changeExportModal(isShow: boolean = true, modalData?: IExportModalData) {
-    this.exportModalVisible = isShow;
-    this.exportModalData = isShow ? modalData : null;
+  public changeCreateExternalResourceModalVisible(
+    v: boolean,
+    databaseId?: number,
+    dbName?: string,
+  ) {
+    this.createExternalResourceModalVisible = v;
+    this.createExternalResourceModalData = {
+      databaseId,
+      dbName,
+    };
   }
+
+  @action
+  public changeExportModal = (isShow: boolean = true, modalData?: IExportModalData) => {
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.exportModalVisible = isShow;
+      this.exportModalData = isShow ? modalData : null;
+    });
+  };
 
   @action
   public changeAllModal(isShow: boolean = true) {
@@ -499,10 +519,12 @@ export class ModalStore {
   }
 
   @action
-  public changeImportModal(isShow: boolean = true, modalData?: IImportModalData) {
-    this.importModalVisible = isShow;
-    this.importModalData = isShow ? modalData : null;
-  }
+  public changeImportModal = (isShow: boolean = true, modalData?: IImportModalData) => {
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.importModalVisible = isShow;
+      this.importModalData = isShow ? modalData : null;
+    });
+  };
 
   @action
   public changeAddConnectionModal(isShow: boolean = true, modalData?: ConnectionData) {
@@ -511,17 +533,22 @@ export class ModalStore {
   }
 
   @action
-  public changeDataMockerModal(isShow: boolean = true, modalData?: DataMockerData) {
+  public changeDataMockerModal = (isShow: boolean = true, modalData?: DataMockerData) => {
     isShow && tracert.expo('c114250');
-    this.dataMockerVisible = isShow;
-    this.dataMockerData = isShow ? modalData : null;
-  }
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.dataMockerVisible = isShow;
+      this.dataMockerData = isShow ? modalData : null;
+    });
+  };
 
   @action
-  public changeCreateAsyncTaskModal(isShow: boolean = true, data?: AsyncData) {
-    this.createAsyncTaskVisible = isShow;
-    this.asyncTaskData = isShow ? data : null;
-  }
+  public changeCreateAsyncTaskModal = (isShow: boolean = true, data?: AsyncData) => {
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.createAsyncTaskVisible = isShow;
+      this.asyncTaskData = isShow ? data : null;
+    });
+  };
+
   @action
   public updateCreateAsyncTaskModal(data?: AsyncData) {
     this.asyncTaskData = data ? data : null;
@@ -533,10 +560,15 @@ export class ModalStore {
   }
 
   @action
-  public changeCreateResultSetExportTaskModal(isShow: boolean = true, data?: ResultSetExportData) {
-    this.createResultSetExportTaskVisible = isShow;
-    this.resultSetExportData = isShow ? data : null;
-  }
+  public changeCreateResultSetExportTaskModal = (
+    isShow: boolean = true,
+    data?: ResultSetExportData,
+  ) => {
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.createResultSetExportTaskVisible = isShow;
+      this.resultSetExportData = isShow ? data : null;
+    });
+  };
 
   @action
   public changeApplyPermissionModal(isShow: boolean = true, data?: any) {
@@ -557,38 +589,38 @@ export class ModalStore {
   }
 
   @action
-  public changePartitionModal(isShow: boolean = true, data?: IPartitionTaskData) {
-    this.partitionVisible = isShow;
-    this.partitionData = isShow ? data : null;
-  }
-
-  @action
-  public changeDataArchiveModal(isShow: boolean = true, data?: IDataArchiveTaskData) {
-    this.dataArchiveVisible = isShow;
-    this.dataArchiveTaskData = isShow ? data : null;
-  }
-
-  @action
   public changeStructureComparisonModal(
     isShow: boolean = true,
     data?: IStructureComparisonTaskData,
   ) {
-    this.structureComparisonVisible = isShow;
-    isShow && this.structureComparisonDataMap.clear();
-    this.structureComparisonTaskData = isShow ? data : null;
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.structureComparisonVisible = isShow;
+      isShow && !data?.taskId && this.structureComparisonDataMap.clear();
+      this.structureComparisonTaskData = isShow ? data : null;
+    });
   }
 
   @action
-  public changeMultiDatabaseChangeModal(isShow: boolean = true, data?: IMultipleAsyncTaskData) {
-    this.multipleDatabaseChangeOpen = isShow;
-    this.multipleAsyncTaskData = isShow ? data : null;
-  }
+  public changeMultiDatabaseChangeModal = (
+    isShow: boolean = true,
+    data?: IMultipleAsyncTaskData,
+  ) => {
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.multipleDatabaseChangeOpen = isShow;
+      this.multipleAsyncTaskData = isShow ? data : null;
+    });
+  };
 
   @action
-  public changeLogicialDatabaseModal(isShow: boolean = true, data?: any) {
-    this.logicDatabaseVisible = isShow;
-    this.logicDatabaseInfo = isShow ? data : null;
-  }
+  public changeLogicialDatabaseModal = (
+    isShow: boolean = true,
+    data?: ILogicDatabaseAsyncTaskData,
+  ) => {
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.logicDatabaseVisible = isShow;
+      this.logicDatabaseInfo = isShow ? data : null;
+    });
+  };
 
   @action
   public updateStructureComparisonDataMap(
@@ -610,22 +642,12 @@ export class ModalStore {
   }
 
   @action
-  public changeDataClearModal(isShow: boolean = true, data?: IDataClearTaskData) {
-    this.dataClearVisible = isShow;
-    this.dataClearTaskData = isShow ? data : null;
-  }
-
-  @action
-  public changeCreateSQLPlanTaskModal(isShow: boolean = true, data?: ISQLPlanTaskData) {
-    this.createSQLPlanVisible = isShow;
-    this.sqlPlanData = isShow ? data : null;
-  }
-
-  @action
-  public changeCreateDDLAlterTaskModal(isShow: boolean = true, data?: IDDLAlterTaskData) {
-    this.createDDLAlterVisible = isShow;
-    this.ddlAlterData = isShow ? data : null;
-  }
+  public changeCreateDDLAlterTaskModal = (isShow: boolean = true, data?: IDDLAlterTaskData) => {
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.createDDLAlterVisible = isShow;
+      this.ddlAlterData = isShow ? data : null;
+    });
+  };
 
   @action
   public changeVersionModalVisible(isShow: boolean = true) {
@@ -633,10 +655,12 @@ export class ModalStore {
   }
 
   @action
-  public changeShadowSyncVisible(isShow: boolean = true, data?: IShadowSyncTaskData) {
-    this.addShadowSyncVisible = isShow;
-    this.shadowSyncData = isShow ? data : null;
-  }
+  public changeShadowSyncVisible = (isShow: boolean = true, data?: IShadowSyncTaskData) => {
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.addShadowSyncVisible = isShow;
+      this.shadowSyncData = isShow ? data : null;
+    });
+  };
 
   @action
   public changeSensitiveColumnVisible(isShow: boolean = true) {
@@ -644,7 +668,11 @@ export class ModalStore {
   }
 
   @action
-  public changeOdcSettingVisible(isShow: boolean = true) {
+  public async changeOdcSettingVisible(isShow: boolean = true) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+      await setting.getUserConfig();
+    }
     this.odcSettingVisible = isShow;
   }
 
@@ -661,18 +689,9 @@ export class ModalStore {
   }
 
   @action
-  public changeDatabaseSearchModalVisible(isShow: boolean = true) {
+  public changeDatabaseSearchModalVisible(isShow: boolean = true, data?: GolbalSearchData) {
     this.databaseSearchModalVisible = isShow;
-  }
-
-  @action
-  public changeDatabaseSearchModalData(
-    data: boolean = true,
-    setExpandedKeys?: (id: string | number) => void,
-  ) {
-    this.canDatabaseSearchModalOpen = data;
-    this.databaseSearchsSetExpandedKeysFunction =
-      setExpandedKeys || this.databaseSearchsSetExpandedKeysFunction;
+    this.golbalSearchData = isShow ? data : null;
   }
 
   @action clear() {
@@ -684,14 +703,10 @@ export class ModalStore {
     this.dataMockerVisible = false;
     this.createAsyncTaskVisible = false;
     this.createResultSetExportTaskVisible = false;
-    this.createSQLPlanVisible = false;
 
     this.applyPermissionVisible = false;
     this.applyDatabasePermissionVisible = false;
     this.applyTablePermissionVisible = false;
-    this.partitionVisible = false;
-    this.dataArchiveVisible = false;
-    this.dataClearVisible = false;
     this.dataMockerData = null;
     this.createSequenceModalVisible = false;
     this.versionModalVisible = false;
@@ -700,9 +715,10 @@ export class ModalStore {
     this.odcSettingVisible = false;
     this.selectDatabaseVisible = false;
     this.databaseSearchModalVisible = false;
-    this.canDatabaseSearchModalOpen = false;
     this.executeSqlDetailModalVisible = false;
     this.executeSqlDetailData = null;
+    this.createExternalResourceModalVisible = false;
+    this.createExternalResourceModalData = null;
   }
 }
 

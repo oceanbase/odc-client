@@ -36,6 +36,7 @@ export interface GroupProps {
   /** 更多操作的自定义展示 */
   moreText?: string | React.ReactElement;
   ellipsisIcon?: 'horizontal' | 'vertical';
+  destroyOnHidden?: boolean;
 }
 
 type ellipsisType = 'default' | 'link';
@@ -61,6 +62,7 @@ export default ({
   enableLoading,
   moreText,
   ellipsisIcon = 'horizontal',
+  destroyOnHidden = false,
 }: GroupProps) => {
   const EllipsisIcon = ellipsisIcon === 'vertical' ? MoreOutlined : EllipsisOutlined;
   const visibleActions = Array.isArray(children)
@@ -141,6 +143,7 @@ export default ({
       {ellipsisActions.length > 0 && (
         <Dropdown
           placement={dropDownPlacement}
+          destroyOnHidden={destroyOnHidden}
           menu={{
             items: ellipsisActions.map((action, index) => {
               const actionKey = action.key;
@@ -156,11 +159,11 @@ export default ({
               return {
                 key: (actionKey as string) ?? index.toString(),
                 style: { minWidth: 120 },
-                ...omit(action.props, 'disabled', 'children', 'onClick'),
+                ...omit(action.props, 'disabled', 'children', 'onClick', 'type'),
                 disabled: actionDisabled,
                 onClick: (info) => {
                   info.domEvent.stopPropagation();
-                  action.props.onClick?.();
+                  action.props.onClick?.(info as any);
                 },
                 label: (
                   <Tooltip title={action.props.tooltip}>

@@ -20,55 +20,67 @@ import { ConnectTypeText } from '@/constant/label';
 import { ConnectType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, FilterOutlined } from '@ant-design/icons';
-import { Popover, Space, Typography } from 'antd';
-import React, { useContext } from 'react';
+import { Popover, Space, Tooltip, Typography } from 'antd';
+import React, { useContext, useMemo, useState } from 'react';
 import ParamContext from '../../ParamContext';
-import FilterIcon from '../FIlterIcon';
+import FilterIcon from '@/component/Button/FIlterIcon';
+import styles from '../index.less';
 
 interface IProps {}
 
 const Filter: React.FC<IProps> = function ({}) {
   const context = useContext(ParamContext);
-  let displayDom = (
-    <FilterIcon>
-      <FilterOutlined />
-    </FilterIcon>
-  );
-
+  const [open, setOpen] = useState<boolean>(false);
+  const [hover, setHover] = useState<boolean>(false);
   function clear() {
     context.setConnectType([]);
   }
+
+  const handleOpenChange = (value: boolean) => {
+    setOpen(value);
+  };
+
   const { connectType } = context;
   let selectedNames = [];
   connectType?.forEach((c) => {
-    selectedNames.push(ConnectTypeText[c]);
+    selectedNames.push(ConnectTypeText(c));
   });
-  if (selectedNames.length) {
-    displayDom = (
-      <div
-        style={{
-          padding: '4px 8px',
-          lineHeight: '20px',
-          color: 'var(--text-color-secondary)',
-          background: 'var(--hover-color)',
-        }}
-      >
-        {selectedNames.slice(0, 3)?.join(';')}
-        {selectedNames?.length > 3 ? '...' : ''}
-        <span style={{ marginLeft: 3 }}>
-          {formatMessage({ id: 'odc.Header.Filter.Total', defaultMessage: '共' }) /*共*/}
-          {selectedNames?.length}
-          {formatMessage({ id: 'odc.Header.Filter.Item', defaultMessage: '项' }) /*项*/}
+
+  const isActive = useMemo(() => {
+    return Boolean(connectType?.length);
+  }, [connectType]);
+  const comma = (idx, length) => {
+    return idx !== length - 1 && <>，</>;
+  };
+  const tipContent = () => {
+    if (!connectType?.length) return null;
+    return (
+      <div>
+        <span>
+          {formatMessage({
+            id: 'src.page.Project.Database.Header.Filter.ADA9E6A7',
+            defaultMessage: '数据源类型',
+          })}
         </span>
-        <CloseOutlined onClick={clear} style={{ cursor: 'pointer', marginLeft: 15 }} />
+        ：
+        {connectType?.map((name, index) => (
+          <>
+            <span key={name}>{ConnectTypeText?.(name)}</span>
+            {comma(index, connectType?.length)}
+          </>
+        ))}
       </div>
     );
-  }
+  };
 
   return (
     <Popover
       placement="bottomRight"
       overlayStyle={{ width: 300 }}
+      arrow={false}
+      open={open}
+      onOpenChange={handleOpenChange}
+      trigger="click"
       title={
         <div
           style={{
@@ -101,7 +113,7 @@ const Filter: React.FC<IProps> = function ({}) {
                 value={context?.connectType}
                 options={[]
                   .concat(getAllConnectTypes())
-                  .map((v) => ({ label: ConnectTypeText[v], value: v }))}
+                  .map((v) => ({ label: ConnectTypeText(v), value: v }))}
                 onChange={(v) => {
                   context.setConnectType(v as ConnectType[]);
                 }}
@@ -111,7 +123,17 @@ const Filter: React.FC<IProps> = function ({}) {
         </div>
       }
     >
-      {displayDom}
+      <FilterIcon border isActive={isActive}>
+        <Tooltip
+          title={open ? undefined : tipContent()}
+          open={!open && hover && isActive}
+          overlayClassName={styles.filterTooltip}
+        >
+          <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+            <FilterOutlined />
+          </div>
+        </Tooltip>
+      </FilterIcon>
     </Popover>
   );
 };

@@ -37,15 +37,16 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
   const { collapsed, userStore } = props;
 
   const handleOk = async (ori: IOrganization) => {
-    const isSuccess = await userStore?.switchCurrentOrganization(ori.id);
+    const isSuccess = await userStore?.switchCurrentOrganization(ori.id, null, () => {
+      if (ori?.type === SpaceType.SYNERGY) {
+        tracert.click('a3112.b46782.c330848.d367359');
+        history.push('/project');
+      } else {
+        tracert.click('a3112.b46782.c330848.d367360');
+      }
+    });
     if (!isSuccess) {
       return;
-    }
-    if (ori?.type === SpaceType.SYNERGY) {
-      tracert.click('a3112.b46782.c330848.d367359');
-      history.push('/project');
-    } else {
-      tracert.click('a3112.b46782.c330848.d367360');
     }
   };
 
@@ -99,16 +100,16 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
       className={classNames(styles['space-switch'], {
         [styles.collapsed]: collapsed,
       })}
-      onDropdownVisibleChange={(v) => {
+      onOpenChange={(v) => {
         if (v) {
           tracert.expo('a3112.b46782.c330848');
         }
       }}
+      popupMatchSelectWidth={false}
       value={userStore?.organizationId}
       suffixIcon={<SwapOutlined />}
-      dropdownMatchSelectWidth={144}
-      style={{ width: collapsed ? 30 : 144 }}
-      bordered={false}
+      style={{ width: collapsed ? 30 : 150 }}
+      variant="borderless"
       menuItemSelectedIcon={<CheckOutlined />}
       onChange={handleChange}
       options={userStore.organizations

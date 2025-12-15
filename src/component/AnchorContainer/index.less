@@ -1,0 +1,22 @@
+.AnchorContainer {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+
+  .content {
+    flex: 1;
+    overflow-x: auto;
+    height: max-content;
+  }
+
+  .anchor {
+    padding: 6px 16px 12px 12px;
+    height: 100%;
+    position: sticky;
+    right: 0;
+    top: 0;
+    align-self: flex-start;
+    max-width: 200px;
+    flex-shrink: 0; // 防止anchor被压缩
+  }
+}

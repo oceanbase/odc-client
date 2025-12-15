@@ -134,6 +134,8 @@ export const DbObjsIcon = {
   [DbObjectType.public_synonym]: SynonymSvg,
   [DbObjectType.file]: FileSvg,
   [DbObjectType.column]: FolderOpenFilled,
+  [DbObjectType.external_table]: TableOutlined,
+  [DbObjectType.materialized_view]: ViewSvg,
 };
 /**
  * lineBackground: src/page/Workspace/components/SessionContextWrap/SessionSelect/index.tsx 中使用的背景，使用场景较为特殊，单独区分出来。
@@ -217,3 +219,68 @@ export enum PartitionBound {
   PARTITION_UPPER_BOUND = 'PARTITION_UPPER_BOUND',
   PARTITION_LOWER_BOUND = 'PARTITION_LOWER_BOUND',
 }
+
+export const taskSuccessHintInfo = {
+  terminate: formatMessage({
+    id: 'odc.components.TaskManagePage.TerminatedSuccessfully',
+    defaultMessage: '终止成功',
+  }),
+  delete: formatMessage({
+    id: 'src.component.Task.component.ActionBar.9EDD0936',
+    defaultMessage: '删除成功',
+  }),
+  retry: formatMessage({
+    id: 'odc.TaskManagePage.component.TaskTools.InitiatedAgain',
+    defaultMessage: '再次发起成功',
+  }),
+  again: formatMessage({
+    id: 'src.component.Task.component.ActionBar.15961986',
+    defaultMessage: '发起重试成功',
+  }),
+  start: formatMessage({
+    id: 'src.component.Task.component.ActionBar.10A4FEFD',
+    defaultMessage: '开始执行',
+  }),
+};
+export const ObDocsUrlMap = {
+  'en-us': {
+    '100.sql-development-common-techniques.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418134',
+    '200.common-operations-in-odc-team-space.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418130',
+    '300.analysis-of-oceanbase-ap-real-time-sql-diagnostic-capabilities.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418132',
+    '400.history-database-optimization-management.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418131',
+    '500.automatic-detection-of-high-risk-changes.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418133',
+    '700.implement-management-and-changes-for-database.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418127',
+    '800.data-masking-control-practices.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418126',
+    '900.enterprise-level-governance-and-control-synergy.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418128',
+    releaseNote: 'https://www.oceanbase.com/product/oceanbase-developer-center-rn/releaseNote',
+    ask: 'https://ask.oceanbase.com/tags/c/advice-feedback/15/odc',
+  },
+  'zh-cn': {
+    '100.sql-development-common-techniques.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002859674',
+    '200.common-operations-in-odc-team-space.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002859675',
+    '300.analysis-of-oceanbase-ap-real-time-sql-diagnostic-capabilities.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687235',
+    '400.history-database-optimization-management.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687236',
+    '500.automatic-detection-of-high-risk-changes.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687237',
+    '700.implement-management-and-changes-for-database.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687240',
+    '800.data-masking-control-practices.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687241',
+    '900.enterprise-level-governance-and-control-synergy.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687239',
+    releaseNote: 'https://www.oceanbase.com/product/oceanbase-developer-center-rn/releaseNote',
+    ask: 'https://ask.oceanbase.com/tags/c/advice-feedback/15/odc',
+  },
+};

@@ -59,8 +59,10 @@ import {
 } from 'antd';
 import { useForm, useWatch } from 'antd/lib/form/Form';
 import classNames from 'classnames';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 import { getChannelColumns } from './columns';
+import ProjectContext from '@/page/Project/ProjectContext';
+import { isProjectArchived } from '@/page/Project/helper';
 import styles from './index.less';
 import {
   EChannelTypeMap,
@@ -80,6 +82,9 @@ const Channel: React.FC<{
   const [formDrawerOpen, setFormDrawerOpen] = useState<boolean>(false);
   const [channelsList, setChannelsList] =
     useState<IResponseData<Omit<IChannel<EChannelType>, 'channelConfig'>>>();
+  const { project } = useContext(ProjectContext);
+  const projectArchived = isProjectArchived(project);
+
   const loadChannels = async (args: ITableLoadOptions) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const { name, type } = filters ?? {};
@@ -168,6 +173,7 @@ const Channel: React.FC<{
     handleDelete,
     handleChannelEdit,
     hanleOpenChannelDetailDrawer,
+    hideColumns: projectArchived ? ['action'] : [],
   });
   return (
     <div className={styles.common}>
@@ -194,7 +200,10 @@ const Channel: React.FC<{
         showToolbar={true}
         onLoad={loadChannels}
         onChange={loadChannels}
-        operationContent={{ options: operationOptions }}
+        operationContent={{
+          options: projectArchived ? [] : operationOptions,
+          isNeedOccupyElement: projectArchived,
+        }}
         tableProps={{
           columns,
           dataSource: channelsList?.contents || [],
@@ -547,6 +556,7 @@ export const FromChannelDrawer: React.FC<{
         form={formRef}
         layout="vertical"
         onFieldsChange={handleFieldsChange}
+        requiredMark={'optional'}
         initialValues={
           !channelId && {
             type: EChannelType.DING_TALK,
@@ -568,7 +578,6 @@ export const FromChannelDrawer: React.FC<{
             }) /*"通道名称"*/
           }
           name="name"
-          requiredMark="optional"
           validateTrigger="onBlur"
           rules={[
             {
@@ -604,7 +613,6 @@ export const FromChannelDrawer: React.FC<{
             }) /*"通道类型"*/
           }
           name="type"
-          requiredMark="optional"
           rules={[
             {
               required: true,
@@ -663,7 +671,6 @@ export const FromChannelDrawer: React.FC<{
                 </Space>
               }
               name={['channelConfig', 'webhook']}
-              requiredMark="optional"
               validateTrigger="onBlur"
               rules={[
                 {
@@ -687,7 +694,6 @@ export const FromChannelDrawer: React.FC<{
                     }) /*"签名密钥"*/
                   }
                   name={['channelConfig', 'sign']}
-                  requiredMark="optional"
                 >
                   <Input
                     placeholder={
@@ -724,7 +730,6 @@ export const FromChannelDrawer: React.FC<{
                       defaultMessage: '代理',
                     }) /*"代理"*/
                   }
-                  requiredMark="optional"
                   name={['channelConfig', 'httpProxy']}
                 >
                   <Input
@@ -751,11 +756,7 @@ export const FromChannelDrawer: React.FC<{
                     <Radio value="PUT">PUT</Radio>
                   </Radio.Group>
                 </Form.Item>
-                <Form.Item
-                  label="Header"
-                  requiredMark="optional"
-                  name={['channelConfig', 'headersTemplate']}
-                >
+                <Form.Item label="Header" name={['channelConfig', 'headersTemplate']}>
                   <Input.TextArea
                     placeholder={
                       formatMessage({
@@ -767,11 +768,7 @@ export const FromChannelDrawer: React.FC<{
                     rows={4}
                   />
                 </Form.Item>
-                <Form.Item
-                  label="Body"
-                  requiredMark="optional"
-                  name={['channelConfig', 'bodyTemplate']}
-                >
+                <Form.Item label="Body" name={['channelConfig', 'bodyTemplate']}>
                   <Input.TextArea
                     placeholder={
                       formatMessage({
@@ -790,8 +787,6 @@ export const FromChannelDrawer: React.FC<{
                       defaultMessage: 'Response校验',
                     }) /*"Response校验"*/
                   }
-                  required
-                  requiredMark="optional"
                 >
                   <Form.Item noStyle name={['channelConfig', 'responseValidation']}>
                     <Input.TextArea
@@ -817,7 +812,6 @@ export const FromChannelDrawer: React.FC<{
                   }) /*"指定用户"*/
                 }
                 name={['channelConfig', 'atMobiles']}
-                requiredMark="optional"
               >
                 <Select
                   mode="tags"
@@ -838,13 +832,13 @@ export const FromChannelDrawer: React.FC<{
                 defaultMessage: '推送消息模版',
               }) /*"推送消息模版"*/
             }
+            required
             style={{
               marginBottom: '1px',
             }}
           >
             <Form.Item
               name={['channelConfig', 'language']}
-              requiredMark="optional"
               rules={[
                 {
                   required: true,
@@ -865,7 +859,6 @@ export const FromChannelDrawer: React.FC<{
                 noStyle
                 shouldUpdate
                 name={['channelConfig', 'contentTemplate']}
-                requiredMark="optional"
                 rules={[
                   {
                     required: true,
@@ -889,14 +882,17 @@ export const FromChannelDrawer: React.FC<{
                 />
               </Form.Item>
               <div>
-                <span style={{ color: 'var(--neutral-black45-color)' }}>
+                <span style={{ color: 'var(--text-color-hint)' }}>
                   {formatMessage({
                     id: 'src.page.Project.Notification.components.D0CF8521',
                     defaultMessage: '可通过输入${ } 引入标签，',
                   })}
                 </span>
                 <a
-                  href={odc.appConfig?.docs?.url || getLocalDocs('1000.message-notification.html')}
+                  href={
+                    odc.appConfig?.docs?.url ||
+                    getLocalDocs('100.create-a-notification-channel.html')
+                  }
                   target={'_blank'}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -914,6 +910,7 @@ export const FromChannelDrawer: React.FC<{
             </Form.Item>
           </Form.Item>
           <Form.Item
+            required
             label={
               formatMessage({
                 id: 'src.page.Project.Notification.components.ACDD499F',
@@ -936,7 +933,7 @@ export const FromChannelDrawer: React.FC<{
               }) /*"描述"*/
             }
             name="description"
-            requiredMark="optional"
+            required={false}
           >
             <Input.TextArea
               maxLength={200}
@@ -1244,6 +1241,7 @@ const CheckboxWithTip: React.FC<{
                         defaultMessage: '消息次数限制',
                       }) /*"消息次数限制"*/
                     }
+                    required
                     style={{
                       marginTop: '16px',
                     }}
@@ -1295,6 +1293,7 @@ const CheckboxWithTip: React.FC<{
                         defaultMessage: '超出限流处理策略',
                       }) /*"超出限流处理策略"*/
                     }
+                    required
                     name={['channelConfig', 'rateLimitConfig', 'overLimitStrategy']}
                     style={{
                       marginBottom: '8px',
