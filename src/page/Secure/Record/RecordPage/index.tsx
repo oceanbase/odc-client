@@ -23,7 +23,7 @@ import { TimeOptions } from '@/component/TimeSelect';
 import { AuditEventMetaMap, getEventFilterAndOptions } from '@/constant/record';
 import type { IAudit } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getPreTime } from '@/util/utils';
+import { getPreTime } from '@/util/data/dateTime';
 import { ExportOutlined } from '@ant-design/icons';
 import { Button, DatePicker } from 'antd';
 import type { Dayjs } from 'dayjs';

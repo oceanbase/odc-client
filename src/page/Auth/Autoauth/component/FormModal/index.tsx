@@ -27,7 +27,7 @@ import { projectRoleTextMap } from '@/page/Project/User';
 import odc from '@/plugins/odc';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import tracert from '@/util/tracert';
-import { validTrimEmptyWithWarn } from '@/util/valid';
+import { validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import type { RadioChangeEvent } from 'antd';
 import {

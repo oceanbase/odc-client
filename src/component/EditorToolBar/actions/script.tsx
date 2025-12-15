@@ -20,7 +20,7 @@ import { PLType } from '@/constant/plType';
 import { PLPage } from '@/page/Workspace/components/PLPage';
 import { PLPageType } from '@/store/helper/page/pages/pl';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 import { Modal } from 'antd'; // @ts-ignore
 import { ToolBarActions } from '..';

@@ -22,7 +22,7 @@ import { Button } from 'antd';
 import { observer } from 'mobx-react';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import styles from './index.less';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 
 export default observer(function StatusName({
   item,

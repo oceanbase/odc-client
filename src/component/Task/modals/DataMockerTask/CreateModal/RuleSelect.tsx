@@ -16,7 +16,7 @@
 
 import { ConnectionMode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { convertColumnType } from '@/util/utils';
+import { convertColumnType } from '@/util/data/string';
 import { Select } from 'antd';
 import { SelectProps } from 'antd/es/select';
 import React from 'react';

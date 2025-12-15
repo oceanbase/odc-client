@@ -15,11 +15,12 @@
  */
 
 import { ConnectionMode, ResultSetColumn } from '@/d.ts';
-import { generateAndDownloadFile, getQuoteTableName } from '../utils';
+import { getQuoteTableName } from '@/util/utils';
+import { generateAndDownloadFile } from '@/util/data/file';
 import mysqlConvertValueToSQLString from './dataTypes/mysql';
 import oracleConvertValueToSQLString from './dataTypes/oracle';
 import { isConnectionModeBeMySQLType } from '../connection';
-import { getNlsValueKey } from '../column';
+import { getNlsValueKey } from '@/util/database/column';
 
 export default function exportToSQL(
   selectData: any[][],

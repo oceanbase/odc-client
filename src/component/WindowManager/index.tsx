@@ -31,7 +31,7 @@ import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
 import styles from './index.less';
 import { isGroupNode } from '@/page/Workspace/SideBar/ResourceTree/const';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { isString } from 'lodash';
 import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
 

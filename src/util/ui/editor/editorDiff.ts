@@ -16,16 +16,18 @@
 
 import * as monaco from 'monaco-editor';
 import { IEditor } from '@/component/MonacoEditor';
-
 import myers from 'myers-diff';
+
 interface ISeparatedDiffInfo {
   lineInfo: ILineInfo[];
 }
+
 export enum LineType {
   ADD = 'add',
   DELETE = 'delete',
   ORIGINAL = 'original',
 }
+
 interface ILineInfo {
   lineNumber: number;
   originalLineNumber?: number; // 原始行号，用于删除行显示
@@ -36,6 +38,13 @@ interface ILineInfo {
 interface ITextPosition {
   line: number;
   column: number;
+}
+
+/**
+ * 创建编辑器diff装饰器
+ */
+export function createEditorDiffDecorator(editor: IEditor): EditorDiffDecorator {
+  return new EditorDiffDecorator(editor);
 }
 
 /**
@@ -356,11 +365,4 @@ export class EditorDiffDecorator {
   public dispose() {
     this.clearDecorations();
   }
-}
-
-/**
- * 创建编辑器diff装饰器
- */
-export function createEditorDiffDecorator(editor: IEditor): EditorDiffDecorator {
-  return new EditorDiffDecorator(editor);
 }

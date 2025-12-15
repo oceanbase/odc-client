@@ -34,7 +34,7 @@ import ArchiveRangeTip from '@/component/Schedule/components/ArchiveRangeTip';
 import { IArchiveRange } from '@/d.ts';
 import styles from './index.less';
 import BatchSelectionPopover from '@/component/BatchSelectionPopover';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { IDatabase } from '@/d.ts/database';
 import JoinTableConfigModal from '@/component/Task/component/JoinTableConfigsModal';
 import useJoinTableConfig from '@/component/Task/component/JoinTableConfigsModal/useJoinTableConfig';

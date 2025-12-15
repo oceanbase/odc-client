@@ -17,9 +17,9 @@
 import { DbObjectType, IResponseData, IManagerResourceType, ConnectType } from '@/d.ts';
 import { DBType, IDatabase, IDatabaseObject } from '@/d.ts/database';
 import sessionManager from '@/store/sessionManager';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import request from '@/util/request';
-import { getDropSQL } from '@/util/sql';
+import { getDropSQL } from '@/util/data/sql';
 import { executeSQL } from './sql';
 import { DatabaseSearchType } from '@/d.ts/database';
 

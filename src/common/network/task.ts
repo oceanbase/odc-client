@@ -49,7 +49,7 @@ import { IProject } from '@/d.ts/project';
 import { EOperationType, IComparisonResultData, IStructrueComparisonDetail } from '@/d.ts/task';
 import setting from '@/store/setting';
 import request from '@/util/request';
-import { downloadFile } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
 import { generateFunctionSid } from './pathUtil';
 import { IDatabase } from '@/d.ts/database';
 import { FileExportResponse, ScheduleExportListView } from '@/d.ts/migrateTask';
@@ -408,6 +408,22 @@ export function getAsyncTaskUploadUrl() {
 export async function getTaskFile(taskId: number, objectId: string[]): Promise<string[]> {
   const downloadInfo = await request.post(
     `/api/v2/flow/flowInstances/${taskId}/tasks/async/batchGetDownloadUrl`,
+    {
+      data: objectId,
+    },
+  );
+  return downloadInfo?.data?.contents ?? [];
+}
+
+/**
+ * 下载文件
+ */
+export async function getScheduleTaskFile(
+  scheduleId: number,
+  objectId: string[],
+): Promise<string[]> {
+  const downloadInfo = await request.post(
+    `/api/v2/schedule/schedules/${scheduleId}/batchGetDownloadUrl`,
     {
       data: objectId,
     },

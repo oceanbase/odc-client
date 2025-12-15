@@ -16,7 +16,7 @@
 
 import { AIQuestionType, ESseEventStatus } from '@/d.ts/ai';
 import login from '@/store/login';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import request from '@/util/request/service';
 
 interface IModifySyncProps {

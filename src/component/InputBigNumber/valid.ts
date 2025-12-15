@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { compareNumber } from '@/util/bigNumber';
+import { compareNumber } from '@/util/data/bigNumber';
 
 export function getValidOfCompareTo(
   getTarget: () => string,

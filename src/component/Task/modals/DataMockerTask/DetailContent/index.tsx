@@ -25,7 +25,7 @@ import {
   TaskExecStrategy,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import Form from 'antd/lib/form/Form';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';

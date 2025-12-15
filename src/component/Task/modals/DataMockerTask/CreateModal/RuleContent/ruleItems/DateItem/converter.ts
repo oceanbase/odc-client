@@ -16,7 +16,7 @@
 
 import { IMockFormColumn } from '@/component/Task/modals/DataMockerTask/CreateModal/type';
 import { IServerMockColumn, MockGenerator } from '@/d.ts';
-import { convertColumnType } from '@/util/utils';
+import { convertColumnType } from '@/util/data/string';
 import BigNumber from 'bignumber.js';
 import { cloneDeep } from 'lodash';
 import dayjs from 'dayjs';

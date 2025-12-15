@@ -15,11 +15,53 @@
  */
 
 import { generateDatabaseSid } from '@/common/network/pathUtil';
-import request from './request';
-import logger from './logger';
+import request from '@/util/request';
+import logger from '@/util/logger';
 
-// 上传文件到 OSS
-// @see https://help.aliyun.com/document_detail/64047.html
+/**
+ * 下载传输任务文件
+ * @param taskId 任务ID
+ * @returns 下载文件坐标
+ */
+export async function downloadTransferTaskFile(taskId) {
+  // 获取下载文件坐标
+  const fileInfo = await request.post('/api/v2/cloud/specific/DownloadTransferFile', {
+    data: {
+      taskId: taskId,
+      sid: generateDatabaseSid(),
+    },
+  });
+  if (fileInfo.data) {
+    window.open(fileInfo.data, '_blank');
+  }
+}
+
+/**
+ * 下载异步任务文件
+ * @param fileName
+ */
+export async function downloadAsyncTaskFile(fileName) {
+  // 获取下载文件坐标
+  const fileInfo = await request.post('/api/v2/cloud/specific/DownloadFile', {
+    data: {
+      fileName,
+      sid: generateDatabaseSid(),
+    },
+  });
+  if (fileInfo.data) {
+    window.open(fileInfo.data, '_blank');
+  }
+}
+
+/**
+ * 上传文件到 OSS
+ * @see https://help.aliyun.com/document_detail/64047.html
+ * @param file
+ * @param uploadFileOpenAPIName
+ * @param sessionId
+ * @param onProgress
+ * @returns
+ */
 export async function uploadFileToOSS(
   file,
   uploadFileOpenAPIName,
@@ -138,32 +180,4 @@ export async function uploadFileToOSS(
     }
   }
   return await getResult();
-}
-
-// 下载传输任务文件
-export async function downloadTransferTaskFile(taskId) {
-  // 获取下载文件坐标
-  const fileInfo = await request.post('/api/v2/cloud/specific/DownloadTransferFile', {
-    data: {
-      taskId: taskId,
-      sid: generateDatabaseSid(),
-    },
-  });
-  if (fileInfo.data) {
-    window.open(fileInfo.data, '_blank');
-  }
-}
-
-// 下载异步任务文件
-export async function downloadAsyncTaskFile(fileName) {
-  // 获取下载文件坐标
-  const fileInfo = await request.post('/api/v2/cloud/specific/DownloadFile', {
-    data: {
-      fileName,
-      sid: generateDatabaseSid(),
-    },
-  });
-  if (fileInfo.data) {
-    window.open(fileInfo.data, '_blank');
-  }
 }

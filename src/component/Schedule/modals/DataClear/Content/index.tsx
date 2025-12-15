@@ -1,12 +1,28 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { IScheduleRecord, IDataClearParameters } from '@/d.ts/schedule';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/data/dateTime';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import ArchiveRange from './ArchiveRange';
-import { kbToMb, mbToKb } from '@/util/utils';
+import { kbToMb, mbToKb } from '@/util/data/byte';
 import { Descriptions, Divider, message } from 'antd';
 import ThrottleEditableCell from '@/component/Task/component/ThrottleEditableCell';
 import {

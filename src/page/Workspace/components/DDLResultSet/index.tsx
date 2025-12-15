@@ -42,10 +42,10 @@ import { downloadDataObject, getDataObjectDownloadUrl } from '@/common/network/t
 import SessionStore from '@/store/sessionManager/session';
 import { ReactComponent as MockSvg } from '@/svgr/mock_toolbar.svg';
 import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';
-import { getNlsValueKey, isObjectColumn } from '@/util/column';
+import { getNlsValueKey, isObjectColumn } from '@/util/database/column';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey, getBlobValueKey } from '@/util/utils';
-import { OBCompare, ODC_TRACE_SUPPORT_VERSION } from '@/util/versionUtils';
+import { OBCompare, ODC_TRACE_SUPPORT_VERSION } from '@/util/business/versionUtils';
 import Icon, {
   BarsOutlined,
   CheckOutlined,

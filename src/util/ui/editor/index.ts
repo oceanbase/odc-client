@@ -49,9 +49,11 @@ export function getClassNameByType(type: EHighLight) {
     }
   }
 }
+
 const getMonaco = async function () {
   return monaco;
 };
+
 const utils = {
   // 断点管理 - 事件绑定
   initBreakpointEventBind(codeEditor: IEditor, lineNumber: number) {},

@@ -31,7 +31,8 @@ import { formatMessage } from '@/util/intl';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
-import { getLanguageFromResourceType, isContentSizeWithinLimit } from '@/util/utils';
+import { isContentSizeWithinLimit } from '@/util/data/byte';
+import { getLanguageFromResourceType } from '@/util/data/string';
 
 const ToolbarButton = Toolbar.Button;
 const { Content } = Layout;

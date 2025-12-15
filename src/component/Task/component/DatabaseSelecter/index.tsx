@@ -20,7 +20,7 @@ import ExportCard from '@/component/ExportCard';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { EnvColorMap } from '@/constant';
 import { DBType } from '@/d.ts/database';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Badge, Checkbox, Empty, Popconfirm, Space, Spin, Tooltip, Tree, Typography } from 'antd';
 import { DataNode, TreeProps } from 'antd/lib/tree';

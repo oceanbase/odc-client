@@ -18,7 +18,7 @@ import { ISnippet } from '@/store/snippet';
 import { Popover } from 'antd';
 
 import { formatMessage } from '@/util/intl';
-import { getSnippetText } from '@/util/snippet';
+import { getSnippetText } from '@/util/business/snippet';
 import styles from './info.less';
 
 const SnippetInfoToolTip: React.FC<{

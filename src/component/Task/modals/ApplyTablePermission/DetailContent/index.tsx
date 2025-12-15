@@ -19,7 +19,7 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import DisplayTable from '@/component/DisplayTable';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import type { IApplyTablePermissionTaskParams, TaskDetail } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Divider, Space } from 'antd';
 import { useMemo } from 'react';
 import { permissionOptionsMap } from '../';

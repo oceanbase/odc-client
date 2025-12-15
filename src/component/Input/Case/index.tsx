@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { removeTableQuote } from '@/util/sql';
+import { removeTableQuote } from '@/util/data/sql';
 import { getQuoteTableName } from '@/util/utils';
 import { Input, InputProps } from 'antd';
 import { InputRef, TextAreaProps } from 'antd/lib/input';

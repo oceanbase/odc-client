@@ -16,7 +16,8 @@
 
 import { hasSourceReadAuth, hasSourceWriteAuth } from '@/component/Acess';
 import { actionTypes } from '@/d.ts';
-import { formatMessage } from './intl';
+import { formatMessage } from '@/util/intl';
+import { IOperationTypeRole } from '@/d.ts/schedule';
 
 export const sourceAuthMap = {
   [actionTypes.writeAndReadConnect]: {
@@ -67,3 +68,27 @@ export function getSourceAuthOptions() {
 export function hasSourceApplyAuth(auths: string[] = []) {
   return auths?.includes(actionTypes.apply);
 }
+
+/** 工单、作业、作业类任务权限判断 */
+export const widthPermission = (
+  /** 权限判断函数 */
+  fn: (hasPermission: boolean) => boolean,
+  /** 操作需要的权限列表 */
+  ActionsNeedRoles: IOperationTypeRole[] = [],
+  /** 当前工单的权限列表 */
+  taskIRoles: IOperationTypeRole[] = [],
+): (() => boolean) => {
+  let hasPermission = false;
+  /** ActionsNeedRoles为空数组 代表不需要权限 */
+  if (ActionsNeedRoles?.length === 0) {
+    hasPermission = true;
+  }
+
+  for (let i of taskIRoles) {
+    if (ActionsNeedRoles?.includes(i)) {
+      hasPermission = true;
+      break;
+    }
+  }
+  return () => fn(hasPermission);
+};

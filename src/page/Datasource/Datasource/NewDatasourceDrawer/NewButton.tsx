@@ -25,7 +25,7 @@ import { ConnectTypeText, GruopTypeText } from '@/constant/label';
 import { ConnectType, IConnectionType, DatasourceGroup } from '@/d.ts';
 import { IDatasource, IDataSourceType } from '@/d.ts/datasource';
 import { ReactComponent as ConIcon } from '@/svgr/icon_connection.svg';
-import { encryptConnection } from '@/util/connection';
+import { encryptConnection } from '@/util/database/connection';
 import { formatMessage } from '@/util/intl';
 import Icon, { DownOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import {

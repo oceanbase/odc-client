@@ -18,11 +18,13 @@ import { DbObjectType, INlsObject, ITable, ITableColumn, LobExt, RSModifyDataTyp
 import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
-import { getNlsValueKey } from '@/util/column';
+import { getNlsValueKey } from '@/util/database/column';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import request from '@/util/request';
-import { downloadFile, encodeObjName, getBlobValueKey } from '@/util/utils';
+import { getBlobValueKey } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
+import { encodeObjName } from '@/util/data/string';
 import { message } from 'antd';
 import { Base64 } from 'js-base64';
 import { isNil, toInteger } from 'lodash';

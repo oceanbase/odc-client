@@ -1,8 +1,24 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getPartitionPlanTables } from '@/common/network/task';
 import { createSchedule, updateSchedule, getScheduleDetail } from '@/common/network/schedule';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
-import { validateCrontabInterval } from '@/util/schedule';
+import { validateCrontabInterval } from '@/util/ui/validRule';
 import FormItemPanel from '@/component/FormItemPanel';
 import {
   IPartitionPlanKeyType,
@@ -16,7 +32,7 @@ import {
 import { history } from '@umijs/max';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
-import { hourToMilliSeconds, milliSecondsToHour } from '@/util/utils';
+import { hourToMilliSeconds, milliSecondsToHour } from '@/util/data/dateTime';
 import {
   Alert,
   Button,
@@ -64,7 +80,7 @@ import { PageStore } from '@/store/page';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 import { openSchedulesPage } from '@/store/helper/page';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
-import { safeTruncateString } from '@/util/stringTruncate';
+import { safeTruncateString } from '@/util/data/string';
 import login from '@/store/login';
 const { Paragraph, Text } = Typography;
 

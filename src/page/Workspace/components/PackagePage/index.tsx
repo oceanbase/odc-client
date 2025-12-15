@@ -42,7 +42,7 @@ import { PLType } from '@/constant/plType';
 import { openPackageBodyPage, openPackageHeadPage, updatePage } from '@/store/helper/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { throttle } from 'lodash';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';

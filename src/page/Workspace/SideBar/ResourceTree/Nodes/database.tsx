@@ -34,7 +34,7 @@ import { ExternalResourceTreeData } from './externalResource';
 import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
 import { openNewSQLPage } from '@/store/helper/page';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
-import { isLogicalDatabase, isPhysicalDatabase } from '@/util/database';
+import { isLogicalDatabase, isPhysicalDatabase } from '@/util/database/database';
 
 export function DataBaseTreeData(
   dbSession: SessionStore,

@@ -15,7 +15,7 @@
  */
 
 import { ITaskFlowNode } from '@/d.ts';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import React from 'react';
 
 interface IProps {

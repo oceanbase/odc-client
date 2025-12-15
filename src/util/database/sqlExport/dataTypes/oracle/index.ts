@@ -15,8 +15,8 @@
  */
 
 import { ConnectionMode } from '@/d.ts';
-import { isNlsColumn, isObjectColumn } from '@/util/column';
-import { convertColumnType } from '@/util/utils';
+import { isNlsColumn, isObjectColumn } from '@/util/database/column';
+import { convertColumnType } from '@/util/data/string';
 import OracleDate from './date';
 import OracleInterval from './interval';
 import OracleNumber from './number';

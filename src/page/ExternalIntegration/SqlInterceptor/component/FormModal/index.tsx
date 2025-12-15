@@ -25,7 +25,7 @@ import { EncryptionAlgorithm, IManagerIntegration, IntegrationType } from '@/d.t
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import { decrypt, encrypt } from '@/util/utils';
-import { validTrimEmptyWithWarn } from '@/util/valid';
+import { validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import {
   Button,
   Checkbox,

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { listProjects } from '@/common/network/project';
 import { runMultipleSQLLint } from '@/common/network/sql';
@@ -17,7 +33,7 @@ import { IDatabase } from '@/d.ts/database';
 import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
-import utils, { IEditor } from '@/util/editor';
+import utils, { IEditor } from '@/util/ui/editor';
 import { formatMessage } from '@/util/intl';
 import { getLocale } from '@umijs/max';
 import {
@@ -41,7 +57,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import DatabaseQueue from './DatabaseQueue';
 import DrawerFooter from './DrawerFooter';
 import { IProps, items, SiderTabKeys } from './helper';
-import { flatArray } from '@/util/utils';
+import { flatArray } from '@/util/data/array';
 import styles from './index.less';
 import MoreSetting from './MoreSetting';
 import { MultipleAsyncContext } from './MultipleAsyncContext';
