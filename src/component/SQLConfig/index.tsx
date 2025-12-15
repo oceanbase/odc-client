@@ -19,7 +19,7 @@ import { formatMessage } from '@/util/intl';
 import { SettingOutlined } from '@ant-design/icons';
 import { Popover, Row, Switch, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import DelimiterSelect from '../DelimiterSelect';
 import InputBigNumber from '../InputBigNumber';
 
@@ -36,22 +36,39 @@ interface IProps {
 
 const SQLConfig: React.FC<IProps> = function (props) {
   const { session, pageKey } = useContext(SQLConfigContext);
-  const [queryLimitValue, setQueryLimitValue] = useState(1);
+  const [queryLimitValue, setQueryLimitValue] = useState(
+    Number(setting.spaceConfigurations?.['odc.sqlexecute.default.queryLimit']),
+  );
   const [showSessionParam, setShowSessionParam] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [showMaxLimit, setShowMaxLimit] = useState(false);
   const queryLimit = session?.params?.queryLimit;
   const tableColumnInfoVisible = session?.params.tableColumnInfoVisible;
   const fullLinkTraceEnabled = session?.params.fullLinkTraceEnabled;
   const continueExecutionOnError = session?.params.continueExecutionOnError;
 
   useEffect(() => {
+    setting.getUserConfig();
+  }, []);
+
+  useEffect(() => {
     setQueryLimitValue(session?.params.queryLimit);
   }, [queryLimit]);
 
-  const handleSetQueryLimit = async () => {
-    const success = await session.setQueryLimit(queryLimitValue);
-    if (!success) {
-      setQueryLimitValue(queryLimit);
+  const handleSetQueryLimit = async (e) => {
+    /**
+     * 判断是否允许无限制，假如不允许，禁止删除
+     */
+    const maxQueryLimit = session?.params?.maxQueryLimit;
+    if (maxQueryLimit !== Number.MAX_SAFE_INTEGER && !queryLimitValue) {
+      setQueryLimitValue(session?.params.queryLimit);
+      return;
+    }
+    if (e.target.value > maxQueryLimit) {
+      setShowMaxLimit(true);
+    } else {
+      setShowMaxLimit(false);
+      await session.setQueryLimit(queryLimitValue);
     }
   };
 
@@ -89,6 +106,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
             {
               formatMessage({
                 id: 'src.component.SQLConfig.2F1AC452' /*报错继续执行*/,
+                defaultMessage: '报错继续执行',
               }) /* 报错继续执行 */
             }
           </Row>
@@ -112,6 +130,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
             {
               formatMessage({
                 id: 'odc.component.SQLConfig.QueryResultLimits',
+                defaultMessage: '查询结果限制',
               })
               /*查询结果限制*/
             }
@@ -120,29 +139,35 @@ const SQLConfig: React.FC<IProps> = function (props) {
             <InputBigNumber
               value={queryLimitValue}
               min="1"
-              max={props.settingStore.maxResultSetRows + ''}
               style={{
                 width: '100%',
               }}
               placeholder={formatMessage({
                 id: 'odc.component.SQLConfig.Unlimited',
+                defaultMessage: '无限制',
               })}
               /*无限制*/
               onChange={(v) => {
-                if (!v) {
-                  /**
-                   * 判断是否允许无限制，假如不允许，禁止删除
-                   */
-                  const max = props.settingStore.maxResultSetRows;
-                  if (max !== Number.MAX_SAFE_INTEGER) {
-                    setQueryLimitValue(1);
-                    return;
-                  }
-                }
                 setQueryLimitValue(parseInt(v) || undefined);
               }}
               onBlur={handleSetQueryLimit}
             />
+
+            {showMaxLimit && (
+              <div
+                style={{
+                  lineHeight: '28px',
+                  color: '#ff4d4f',
+                }}
+              >
+                {formatMessage({
+                  id: 'src.component.SQLConfig.5E06ED93',
+                  defaultMessage: '不超过查询条数上限',
+                })}
+
+                {session?.params.maxQueryLimit || '-'}
+              </div>
+            )}
 
             {!queryLimitValue && (
               <div
@@ -154,6 +179,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
                 {
                   formatMessage({
                     id: 'odc.component.SQLConfig.UnlimitedSystemInstability',
+                    defaultMessage: '无限制易导致系统不稳定',
                   })
 
                   /*无限制易导致系统不稳定*/
@@ -170,6 +196,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
             {
               formatMessage({
                 id: 'odc.component.SQLConfig.ObtainTheColumnInformationOf',
+                defaultMessage: '获取结果集列信息',
               }) /*获取结果集列信息*/
             }
           </Row>
@@ -177,6 +204,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
             <Tooltip
               title={formatMessage({
                 id: 'odc.component.SQLConfig.AfterClosingColumnCommentsAnd',
+                defaultMessage: '关闭后将不查询获取列注释及可编辑的列信息，可降低 DB 耗时',
               })} /*关闭后将不查询获取列注释及可编辑的列信息，可降低 DB 耗时*/
             >
               <Switch
@@ -201,6 +229,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
             {
               formatMessage({
                 id: 'odc.component.SQLConfig.SetSessionVariables',
+                defaultMessage: '设置会话变量 >',
               }) //设置会话变量 >
             }
           </a>
@@ -214,12 +243,15 @@ const SQLConfig: React.FC<IProps> = function (props) {
         overlayStyle={{
           width: 170,
         }}
-        placement="bottom"
+        placement="bottomLeft"
         title=""
         content={session ? renderContent() : null}
         open={visible}
         showArrow={false}
         onOpenChange={(v) => {
+          if (v) {
+            setting.getSpaceConfig();
+          }
           setVisible(v);
         }}
       >
@@ -235,7 +267,12 @@ const SQLConfig: React.FC<IProps> = function (props) {
           <SettingOutlined style={{ fontSize: 14, height: 14, overflow: 'hidden' }} />
           {props.isShowText ? (
             <span style={{ whiteSpace: 'nowrap', marginLeft: 5, lineHeight: 1 }}>
-              {formatMessage({ id: 'odc.component.SQLConfig.Set' }) /*设置*/}
+              {
+                formatMessage({
+                  id: 'odc.component.SQLConfig.Set',
+                  defaultMessage: '设置',
+                }) /*设置*/
+              }
             </span>
           ) : null}
         </span>

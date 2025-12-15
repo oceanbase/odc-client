@@ -20,27 +20,63 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { TableProps } from 'antd/es/table';
 import { FilterValue } from 'antd/lib/table/interface';
 import styles from './index.less';
+import classNames from 'classnames';
+import { ResizeTitle } from '@/component/CommonTable/component/ResizeTitle';
+import { EditableRow, EditableCell } from '@/component/CommonTable/component/EditTableRow';
+import { DEFAULT_COLUMN_WIDTH } from '@/component/CommonTable/const';
+import type { ColumnGroupType, ColumnType } from 'antd/es/table';
+
+type IColumnsType<RecordType = unknown> = ((
+  | ColumnGroupType<RecordType>
+  | ColumnType<RecordType>
+) & { hide?: boolean })[];
 
 interface IProps<T> extends TableProps<T> {
-  loadData: (page: TablePaginationConfig, filters: Record<string, FilterValue>) => void;
+  isExpandedRowRender?: boolean;
+  loadData?: (page: TablePaginationConfig, filters: Record<string, FilterValue>) => void;
+  // 是否启用 列宽可拖拽
+  enableResize?: boolean;
+  enableEditTable?: boolean;
+  columns: IColumnsType<T>;
+  isScroll?: boolean;
+  itemHigeht?: number;
 }
 
-export default function MiniTable<T extends object>({ loadData, ...restProps }: IProps<T>) {
+export default function MiniTable<T extends object>({
+  loadData,
+  isExpandedRowRender = false,
+  enableResize = false,
+  enableEditTable = false,
+  columns: PropColumns = [],
+  isScroll = false,
+  itemHigeht = 40,
+  ...restProps
+}: IProps<T>) {
   const [pageSize, setPageSize] = useState(0);
+  const [scrollHeight, setScrollHeight] = useState(0);
+  const [columnWidthMap, setColumnWidthMap] = useState(null);
 
   const domRef = useRef<HTMLDivElement>();
+  const columns = PropColumns.filter((item) => !item.hide);
 
   useLayoutEffect(() => {
     if (domRef.current) {
       function resize() {
         const height = domRef.current.clientHeight - 24 - 60;
-        setPageSize(Math.floor(height / 40));
+        console.log('resize', height);
+        setPageSize(Math.floor(height / itemHigeht));
       }
       const height = domRef.current.clientHeight - 24 - 60;
-      setPageSize(Math.floor(height / 40));
-      domRef.current.addEventListener('resize', resize);
+      if (isScroll) {
+        setScrollHeight(domRef.current.clientHeight - 60);
+      }
+      setPageSize(Math.floor(height / itemHigeht));
+      const obsever = new ResizeObserver(() => {
+        resize();
+      });
+      obsever.observe(domRef.current);
       return () => {
-        domRef.current.removeEventListener('resize', resize);
+        obsever.disconnect();
       };
     }
   });
@@ -67,9 +103,69 @@ export default function MiniTable<T extends object>({ loadData, ...restProps }: 
     loadData(page, filters);
   };
 
+  function handleResize(oriColumn) {
+    return (e, { size }) => {
+      if (size?.width < oriColumn?.width) {
+        return;
+      }
+      setColumnWidthMap({
+        ...columnWidthMap,
+        [oriColumn.key]: size?.width,
+      });
+    };
+  }
+
   return (
     <div ref={domRef} style={{ height: '100%' }}>
-      <Table<T> size="small" className={styles.table} {...cloneProps} />
+      <Table<T>
+        size="small"
+        className={classNames(styles.table, {
+          [styles.expandedRowRender]: isExpandedRowRender,
+        })}
+        {...cloneProps}
+        components={{
+          ...(enableResize
+            ? {
+                header: {
+                  cell: ResizeTitle,
+                },
+              }
+            : {}),
+          ...(enableEditTable
+            ? {
+                body: {
+                  row: EditableRow,
+                  cell: EditableCell,
+                },
+              }
+            : {}),
+        }}
+        scroll={
+          isScroll
+            ? {
+                y: scrollHeight,
+                x: cloneProps.scroll.x || 1400,
+              }
+            : null
+        }
+        columns={
+          enableResize
+            ? columns?.map((oriColumn) => {
+                return {
+                  ...oriColumn,
+                  width:
+                    columnWidthMap?.[oriColumn?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+                  onHeaderCell: (column) =>
+                    ({
+                      width:
+                        columnWidthMap?.[column?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+                      onResize: handleResize(oriColumn),
+                    } as React.HTMLAttributes<HTMLElement>),
+                };
+              })
+            : columns || []
+        }
+      />
     </div>
   );
 }

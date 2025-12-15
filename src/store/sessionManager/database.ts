@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
+import {
+  removeExternalResource,
+  downloadExternalResourceFile,
+  getExternalResourceList,
+  getFunctionByFuncName,
+  getProcedureByProName,
+  loadExternalResourceDetail,
+} from '@/common/network';
 import {
   generateDatabaseSid,
   generateDatabaseSidByDataBaseId,
@@ -22,9 +29,10 @@ import {
   generateViewSid,
 } from '@/common/network/pathUtil';
 import { getSynonymList } from '@/common/network/synonym';
-import { getTableInfo } from '@/common/network/table';
+import { getTableInfo, getLogicTableInfo } from '@/common/network/table';
 import { getType, getTypeList } from '@/common/network/type';
 import {
+  DbObjectType,
   IFunction,
   IPackage,
   IProcedure,
@@ -35,18 +43,33 @@ import {
   IType,
   IView,
   SynonymType,
+  IMaterializedView,
 } from '@/d.ts';
+import { getMaterializedView } from '@/common/network/materializedView/index';
 import { ITableModel, TableInfo } from '@/page/Workspace/components/CreateTable/interface';
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
 import { action, observable, runInAction } from 'mobx';
+import { DBType } from '@/d.ts/database';
+import { IExternalResource } from '@/d.ts/externalResoruce';
 
 class DatabaseStore {
+  static a() {
+    throw new Error('Method not implemented.');
+  }
   @observable.shallow
   public tables: Array<Partial<ITableModel>> = [];
 
+  @observable public static refreshKey: string = undefined;
+
+  @observable.shallow
+  public externalTableTables: Array<Partial<ITableModel>> = [];
+
   @observable.shallow
   public views: Array<Partial<IView>> = [];
+
+  @observable.shallow
+  public materializedView: Array<Partial<IMaterializedView>> = [];
 
   @observable.shallow
   public functions: Array<Partial<IFunction>> = [];
@@ -72,47 +95,81 @@ class DatabaseStore {
   @observable.shallow
   public types: Array<Partial<IType>> = [];
 
+  @observable.shallow
+  public externalResources: Array<Partial<IExternalResource>> = [];
+
+  private static setRefreshKey(key: string) {
+    runInAction(() => {
+      this.refreshKey = key;
+    });
+  }
+
+  private static resetRefreshKey() {
+    runInAction(() => {
+      this.refreshKey = undefined;
+    });
+  }
+
   /**
    * version 用来标识这个列表的获取时间，在很多场景下，需要感知当前对象的版本，以此来区分新老版本来做出对应的变化
    * 这里的 version 目前使用时间戳来标识
    */
 
-  public tableVersion: number = 0;
-  public viewVersion: number = 0;
-  public functionVersion: number = 0;
-  public procedureVersion: number = 0;
-  public sequenceVersion: number = 0;
-  public packageVersion: number = 0;
-  public triggerVersion: number = 0;
-  public synonymVersion: number = 0;
-  public publicSynonymVersion: number = 0;
-  public typeVersion: number = 0;
+  // public tableVersion: number = 0;
+  // public externalTableTableVersion: number = 0;
+  // public viewVersion: number = 0;
+  // public functionVersion: number = 0;
+  // public procedureVersion: number = 0;
+  // public sequenceVersion: number = 0;
+  // public packageVersion: number = 0;
+  // public triggerVersion: number = 0;
+  // public synonymVersion: number = 0;
+  // public publicSynonymVersion: number = 0;
+  // public typeVersion: number = 0;
 
   public readonly sessionId: string = null;
 
   public readonly dbName: string = null;
+  public readonly databaseIdType: DBType = null;
 
   public readonly databaseId: number = null;
 
-  static async createInstance(sessionId: string, dbName: string, databaseId: number) {
-    const db = new DatabaseStore(sessionId, dbName, databaseId);
+  static async createInstance(sessionId: string, dbName: string, databaseId: number, type: DBType) {
+    const db = new DatabaseStore(sessionId, dbName, databaseId, type);
     return db;
   }
 
-  constructor(sessionId, dbName, databaseId) {
+  constructor(sessionId, dbName, databaseId, type) {
     this.sessionId = sessionId;
     this.dbName = dbName;
     this.databaseId = databaseId;
+    this.databaseIdType = type;
   }
 
   @action
-  public async getTableList() {
+  /**
+   * isExternalTable 表示是否为外表
+   *
+   */
+  public async getTableList(isExternalTable?: boolean) {
     const sid = generateDatabaseSidByDataBaseId(this.databaseId, this.sessionId);
+
+    const params: { databaseId: number; includePermittedAction: boolean; type?: string } = {
+      databaseId: this.databaseId,
+      includePermittedAction: true,
+    };
+    let refreshKey = `${this.databaseId}-${this.dbName}-table`;
+    if (isExternalTable) {
+      params.type = 'EXTERNAL_TABLE';
+      refreshKey = `${this.databaseId}-${this.dbName}-externalTable`;
+    }
+    DatabaseStore.setRefreshKey(refreshKey);
     const data = await request.get(`/api/v2/databaseSchema/tables`, {
-      params: { databaseId: this.databaseId, includePermittedAction: true },
+      params,
     });
+    DatabaseStore.resetRefreshKey();
     runInAction(() => {
-      this.tables =
+      const tablesValue: Partial<ITableModel>[] =
         data?.data?.contents?.map((table: ITable) => ({
           info: {
             tableName: table.name,
@@ -124,16 +181,48 @@ class DatabaseStore {
             createTime: table.gmtCreated,
             tableSize: table.tableSize,
             authorizedPermissionTypes: table.authorizedPermissionTypes || [],
+            tableId: table.id,
           },
         })) || [];
-      this.tableVersion = Date.now();
+      isExternalTable ? (this.externalTableTables = tablesValue) : (this.tables = tablesValue);
     });
   }
 
   @action
-  public async loadTable(tableInfo: TableInfo) {
-    const { tableName, authorizedPermissionTypes } = tableInfo;
-    const table = await getTableInfo(tableName, this.dbName, this.sessionId);
+  public async getLogicTableList() {
+    const data = await request.get(
+      `/api/v2/connect/logicaldatabase/logicalDatabases/${this.databaseId}`,
+    );
+    runInAction(() => {
+      this.tables =
+        data?.data?.logicalTables?.map((table: ITable) => ({
+          info: {
+            tableName: table.name,
+            character: table?.character,
+            collation: table?.collation,
+            comment: table?.comment,
+            DDL: table?.ddlSql,
+            updateTime: table?.gmtModified,
+            createTime: table?.gmtCreated,
+            tableSize: table?.tableSize,
+            authorizedPermissionTypes: table?.authorizedPermissionTypes || [],
+            isLogicalTable: true,
+            tableId: table?.id,
+            databaseId: this?.databaseId,
+          },
+        })) || [];
+    });
+  }
+
+  @action
+  public async loadTable(tableInfo: TableInfo, isExternalTable?: boolean) {
+    const { tableName, authorizedPermissionTypes, isLogicalTable, tableId, databaseId } = tableInfo;
+    let table;
+    if (isLogicalTable) {
+      table = await getLogicTableInfo(databaseId, tableId);
+    } else {
+      table = await getTableInfo(tableName, this.dbName, this.sessionId, isExternalTable);
+    }
     if (!table) {
       return;
     }
@@ -141,7 +230,21 @@ class DatabaseStore {
     if (table.info) {
       table.info.authorizedPermissionTypes = authorizedPermissionTypes;
     }
+
     const idx = this.tables.findIndex((t) => t.info.tableName === tableName);
+
+    // 外表数据
+    const externalTableIdx = this.externalTableTables.findIndex(
+      (t) => t.info.tableName === tableName,
+    );
+
+    if (externalTableIdx > -1 && isExternalTable) {
+      const newExternalTable = [...this.externalTableTables];
+      newExternalTable[externalTableIdx] = table;
+      runInAction(() => {
+        this.externalTableTables = newExternalTable;
+      });
+    }
     if (idx > -1) {
       const newTables = [...this.tables];
       newTables[idx] = table;
@@ -153,11 +256,28 @@ class DatabaseStore {
 
   @action
   public async getViewList() {
-    const sid = generateDatabaseSid(this.dbName, this.sessionId);
-    const ret = await request.get(`/api/v1/view/list/${sid}`);
+    const params: { databaseId: number; includePermittedAction: boolean; type?: string } = {
+      databaseId: this.databaseId,
+      includePermittedAction: true,
+      type: DbObjectType.view,
+    };
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-view`);
+    const res = await request.get(`/api/v2/databaseSchema/tables`, {
+      params,
+    });
+    DatabaseStore.resetRefreshKey();
     runInAction(() => {
-      this.viewVersion = Date.now();
-      this.views = ret?.data || [];
+      this.views =
+        res?.data?.contents?.map((t) => {
+          return {
+            ...t,
+            viewName: t.name,
+            schemaName: t?.database?.name,
+            info: {
+              authorizedPermissionTypes: t.authorizedPermissionTypes,
+            },
+          };
+        }) || [];
     });
   }
 
@@ -177,15 +297,62 @@ class DatabaseStore {
   }
 
   @action
+  public async loadMaterializedView(materializedViewInfo) {
+    const { name: materializedViewName } = materializedViewInfo;
+    const newMvView = await getMaterializedView({
+      materializedViewName,
+      sessionId: this.sessionId,
+      dbName: this.dbName,
+    });
+    if (newMvView.info) {
+      newMvView.info.authorizedPermissionTypes = materializedViewInfo.authorizedPermissionTypes;
+    }
+    const idx = this.materializedView.findIndex((t) => t?.info?.name === materializedViewName);
+    if (idx > -1) {
+      const newMvViews = [...this.materializedView];
+      newMvViews[idx] = newMvView;
+      runInAction(() => {
+        this.materializedView = newMvViews;
+      });
+    }
+  }
+
+  @action
+  public async getMaterializedViewList() {
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-materializedView`);
+    const res = await request.get(
+      `/api/v2/connect/sessions/${this.sessionId}/databases/${this.databaseId}/materializedViews`,
+      {
+        params: {
+          materializedViews: true,
+          includePermittedAction: true,
+        },
+      },
+    );
+    DatabaseStore.resetRefreshKey();
+    runInAction(() => {
+      this.materializedView =
+        res?.data?.contents?.map((t) => {
+          return {
+            info: {
+              ...t,
+            },
+          };
+        }) || [];
+    });
+  }
+
+  @action
   public async getFunctionList(ignoreError?: boolean) {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-function-pkg`);
     const ret = await request.get(`/api/v1/function/list/${sid}`, {
       params: {
         ignoreError,
       },
     });
+    DatabaseStore.resetRefreshKey();
     runInAction(() => {
-      this.functionVersion = Date.now();
       this.functions = ret?.data || [];
     });
   }
@@ -211,9 +378,10 @@ class DatabaseStore {
   @action
   public async getProcedureList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-procedure`);
     const ret = await request.get(`/api/v1/procedure/list/${sid}`);
+    DatabaseStore.resetRefreshKey();
     runInAction(() => {
-      this.procedureVersion = Date.now();
       this.procedures = ret?.data || [];
     });
   }
@@ -239,9 +407,10 @@ class DatabaseStore {
   @action
   public async getTriggerList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-trigger`);
     const res = await request.get(`/api/v1/trigger/list/${sid}`);
+    DatabaseStore.resetRefreshKey();
     runInAction(() => {
-      this.triggerVersion = Date.now();
       this.triggers = res?.data || [];
     });
   }
@@ -250,16 +419,100 @@ class DatabaseStore {
   public async getSequenceList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = (await request.get(`/api/v1/sequence/list/${sid}`)) || {};
-    this.sequenceVersion = Date.now();
     this.sequences = ret?.data || [];
   }
 
   @action
   public async getTypeList() {
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-type`);
     const types = await getTypeList(this.dbName, this.sessionId);
+    DatabaseStore.resetRefreshKey();
 
-    this.typeVersion = Date.now();
     this.types = types || [];
+  }
+
+  @action
+  public async getExternalResourceList() {
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-externalResource`);
+    const externalResources = await getExternalResourceList(this.dbName, this.sessionId);
+    DatabaseStore.resetRefreshKey();
+
+    runInAction(() => {
+      this.externalResources = externalResources;
+    });
+  }
+
+  @action
+  public async loadExternalResource(resourceInfo: Partial<IExternalResource>) {
+    try {
+      const { name: resourceName } = resourceInfo;
+      const resourceData = await loadExternalResourceDetail(
+        resourceName,
+        this.dbName,
+        this.sessionId,
+      );
+
+      if (resourceData) {
+        // 更新当前资源的详细信息
+        const idx = this.externalResources.findIndex((r) => r.name === resourceName);
+        if (idx > -1) {
+          const newExternalResources = [...this.externalResources];
+          newExternalResources[idx] = {
+            ...newExternalResources[idx],
+            ...resourceData,
+          };
+          runInAction(() => {
+            this.externalResources = newExternalResources;
+          });
+        }
+        return resourceData;
+      } else {
+        console.error('加载外部资源详情失败');
+      }
+    } catch (error) {
+      console.error('加载外部资源详情异常:', error);
+    }
+    return null;
+  }
+
+  @action
+  public async downloadExternalResource(resourceInfo: IExternalResource) {
+    try {
+      const { name: resourceName } = resourceInfo;
+      return await downloadExternalResourceFile(resourceName, this.dbName, this.sessionId);
+    } catch (error) {
+      console.error('下载外部资源异常:', error);
+      return false;
+    }
+  }
+
+  @action
+  public async deleteExternalResource(resourceInfo: IExternalResource) {
+    try {
+      const { name: resourceName } = resourceInfo;
+      const detail = await loadExternalResourceDetail(resourceName, this.dbName, this.sessionId);
+      const success = await removeExternalResource(
+        resourceName,
+        this.dbName,
+        this.sessionId,
+        detail.type,
+      );
+
+      if (success) {
+        // 从本地数组中移除该资源
+        runInAction(() => {
+          this.externalResources = this.externalResources.filter((r) => r.name !== resourceName);
+        });
+        console.log('删除外部资源成功');
+        return true;
+      } else {
+        console.error('删除外部资源失败');
+        return false;
+      }
+    } catch (error) {
+      console.error('删除外部资源异常:', error);
+      return false;
+    }
   }
 
   @action
@@ -281,8 +534,9 @@ class DatabaseStore {
   @action
   public async getPackageList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-package`);
     const ret = await request.get(`/api/v1/package/list/${sid}`);
-    this.packageVersion = Date.now();
+    DatabaseStore.resetRefreshKey();
     this.packages = ret?.data || [];
   }
 
@@ -352,8 +606,11 @@ class DatabaseStore {
 
     if (!packageHead && !packageBody) {
       throw new Error(
-        formatMessage({ id: 'odc.src.store.schema.TheHeaderOfTheObtained' }), //获取包体包头为空
-      );
+        formatMessage({
+          id: 'odc.src.store.schema.TheHeaderOfTheObtained',
+          defaultMessage: '获取包体包头为空',
+        }),
+      ); //获取包体包头为空
     }
     const idx = this.packages.findIndex((t) => t.packageName === packageName);
     if (idx !== -1) {
@@ -365,7 +622,6 @@ class DatabaseStore {
   @action
   public async getSynonymList() {
     const synonym = await getSynonymList(SynonymType.COMMON, this.dbName, this.sessionId);
-    this.synonymVersion = Date.now();
 
     this.synonyms = synonym || [];
   }
@@ -373,7 +629,6 @@ class DatabaseStore {
   @action
   public async getPublicSynonymList() {
     const synonym = await getSynonymList(SynonymType.PUBLIC, this.dbName, this.sessionId);
-    this.publicSynonymVersion = Date.now();
 
     this.publicSynonyms = synonym || [];
   }

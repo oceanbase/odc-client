@@ -31,7 +31,7 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
   const dbName = database.name;
   const views = dbSession?.database?.views;
   const treeData: TreeDataNode = {
-    title: formatMessage({ id: 'odc.ResourceTree.Nodes.view.View' }), //视图
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.view.View', defaultMessage: '视图' }), //视图
     key: `${database.id}-${dbName}-view`,
     type: ResourceNodeType.ViewRoot,
     data: database,
@@ -41,11 +41,11 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
   if (views) {
     const dataTypes = sessionManager.sessionMap.get(dbSession?.sessionId)?.dataTypes;
     treeData.children = views.map((view) => {
-      const viewKey = `${database.id}-${dbSession?.database?.viewVersion}-${dbName}-view-${view.viewName}`;
+      const viewKey = `${database.id}-${dbName}-view-${view.viewName}`;
       let columnRoot: TreeDataNode;
       if (view.columns) {
         columnRoot = {
-          title: formatMessage({ id: 'odc.ResourceTree.Nodes.view.Column' }), //列
+          title: formatMessage({ id: 'odc.ResourceTree.Nodes.view.Column', defaultMessage: '列' }), //列
           type: ResourceNodeType.ViewColumnRoot,
           key: `${viewKey}-view`,
           sessionId: dbSession?.sessionId,
@@ -85,7 +85,7 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
         type: ResourceNodeType.View,
         data: view,
         dbObjectType: DbObjectType.view,
-        doubleClick(session, node, databaseFrom) {
+        doubleClick(session, node) {
           openViewViewPage(
             view.viewName,
             TopTab.PROPS,

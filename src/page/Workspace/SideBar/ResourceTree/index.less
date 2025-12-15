@@ -31,6 +31,9 @@
         color: var(--text-color-link);
       }
     }
+    .titleText {
+      font-weight: 600;
+    }
     .titleAction {
       margin-left: 4px;
       flex-shrink: 0;
@@ -39,7 +42,52 @@
   }
   .search {
     flex: 0;
-    padding: 0px 12px 4px 12px;
+    display: flex;
+    padding: 0px 6px 4px 6px;
+    align-items: center;
+    .newDataSourceButton {
+      flex-shrink: 0;
+      flex-grow: 0;
+      margin-left: 4px;
+      height: 23px;
+      width: 23px;
+    }
+    .searchInput {
+      flex: 1;
+      height: 25px;
+      :global {
+        .ant-input-wrapper {
+          height: 100%;
+          .ant-input {
+            height: 100%;
+          }
+          .ant-input-affix-wrapper {
+            height: 100%;
+          }
+          .ant-input-group-addon {
+            height: 100%;
+
+            .ant-btn {
+              height: 100%;
+            }
+          }
+        }
+        .anticon {
+          color: var(--icon-color-normal);
+        }
+      }
+    }
+    .shortCut {
+      color: var(--text-color-hint);
+      background-color: var(--hover-color2);
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+      padding: 0px 2px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      font-size: 10px;
+    }
   }
   .tree {
     flex: 1;
@@ -54,7 +102,7 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         word-break: break-all;
-        padding-right: 10px;
+        padding-right: 20px;
       }
 
       .ant-tree-treenode {
@@ -70,6 +118,11 @@
             display: none;
             align-items: center;
             background-color: transparent;
+            :global {
+              .anticon {
+                color: var(--icon-color-normal);
+              }
+            }
           }
           .env {
             position: absolute;
@@ -109,14 +162,28 @@
         > .ant-tree-switcher {
           width: 16px;
           line-height: 24px;
+          margin-inline-end: 0px;
+          &:hover::before {
+            background-color: transparent;
+          }
         }
 
         .ant-tree-node-content-wrapper .ant-tree-iconEle {
           flex: 0;
           flex-basis: 20px;
-          width: 20px;
+          width: auto;
+          justify-content: center;
         }
       }
+
+      .ant-tree-treenode:has(
+          > .ant-tree-node-content-wrapper > .ant-tree-title .ant-dropdown-open
+        ) {
+        &:not(.ant-tree-treenode-selected) {
+          background-color: var(--hover-color2);
+        }
+      }
+
       .ant-tree-node-content-wrapper {
         display: flex;
         flex: 1;
@@ -132,12 +199,44 @@
           background-color: transparent;
         }
         &:hover {
+          :local(.actions) {
+            display: flex;
+            justify-content: center;
+          }
           background-color: unset;
+          :local(.envTip.envTipPersonal) {
+            display: none;
+          }
+        }
+        :local(.envTip) {
+          :global {
+            .ant-badge-status-dot {
+              border-radius: 0;
+            }
+          }
+        }
+        :local(.actions) {
+          display: none;
+          flex: 0;
+          flex-basis: 25px;
         }
       }
     }
   }
   .content {
     padding: 4px 12px;
+  }
+}
+
+.dropdownMenu {
+  :global {
+    .ant-dropdown-menu {
+      .ant-dropdown-menu-submenu {
+        transition: background-color 0.3s ease;
+      }
+      .ant-dropdown-menu-submenu-open:not(:hover) {
+        background-color: var(--hover-color);
+      }
+    }
   }
 }

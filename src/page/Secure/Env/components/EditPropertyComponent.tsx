@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import SQLConfigContext from '@/component/SQLConfig/SQLConfigContext';
 import { ComponentType, PropertyMetadata } from '@/d.ts/rule';
+import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
+import { useContext } from '@@node_modules/@types/react';
 import { Form, Input, InputNumber, Radio, Select } from 'antd';
 interface EditPropertyComponentMapProps {
   propertyMetadata: PropertyMetadata;
@@ -34,13 +37,17 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
   const name = `activeKey${index}`;
   const option = `options${index}`;
   const { componentType = '', candidates = [], defaultValue, type } = propertyMetadata;
+
   switch (componentType) {
     case ComponentType.INPUT_STRING: {
       return (
         <Form.Item label={label} name={name} tooltip={description}>
           <Input
             placeholder={
-              formatMessage({ id: 'odc.src.page.Secure.Env.components.PleaseEnter' }) /* 请输入 */
+              formatMessage({
+                id: 'odc.src.page.Secure.Env.components.PleaseEnter',
+                defaultMessage: '请输入',
+              }) /* 请输入 */
             }
           />
         </Form.Item>
@@ -57,20 +64,40 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
               message: formatMessage(
                 {
                   id: 'odc.Env.components.EditPropertyComponent.EnterLabel',
+                  defaultMessage: '请输入{label}',
                 },
-                {
-                  label: label,
-                },
+                { label },
               ), //`请输入${label}`
+            },
+            {
+              validator: (_, value) => {
+                const max = setting.spaceConfigurations?.['odc.sqlexecute.default.maxQueryLimit'];
+                if (value !== undefined && value > max) {
+                  return Promise.reject(
+                    formatMessage(
+                      {
+                        id: 'src.page.Secure.Env.components.260700F2',
+                        defaultMessage: '不超过查询条数上限 {max}',
+                      },
+                      { max },
+                    ),
+                  );
+                }
+                return Promise.resolve();
+              },
             },
           ]}
           tooltip={description}
         >
           <InputNumber
+            precision={0}
             defaultValue={defaultValue}
             min={0}
             placeholder={
-              formatMessage({ id: 'odc.src.page.Secure.Env.components.PleaseEnter.1' }) /* 请输入 */
+              formatMessage({
+                id: 'odc.src.page.Secure.Env.components.PleaseEnter.1',
+                defaultMessage: '请输入',
+              }) /* 请输入 */
             }
           />
         </Form.Item>
@@ -87,10 +114,9 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
               message: formatMessage(
                 {
                   id: 'odc.Env.components.EditPropertyComponent.SelectLabel',
+                  defaultMessage: '请选择{label}',
                 },
-                {
-                  label: label,
-                },
+                { label },
               ), //`请选择${label}`
             },
           ]}
@@ -114,7 +140,10 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
           <Select
             options={initData?.[option] || []}
             placeholder={
-              formatMessage({ id: 'odc.src.page.Secure.Env.components.PleaseChoose' }) /* 请选择 */
+              formatMessage({
+                id: 'odc.src.page.Secure.Env.components.PleaseChoose',
+                defaultMessage: '请选择',
+              }) /* 请选择 */
             }
           />
         </Form.Item>
@@ -131,6 +160,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Secure.Env.components.PleaseChoose.1',
+                defaultMessage: '请选择',
               }) /* 请选择 */
             }
           />
@@ -148,6 +178,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Secure.Env.components.PleaseChoose.2',
+                defaultMessage: '请选择',
               }) /* 请选择 */
             }
           />

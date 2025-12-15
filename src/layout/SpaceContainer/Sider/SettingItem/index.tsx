@@ -15,11 +15,11 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
-import MenuItem from '../MenuItem';
-import { SettingOutlined } from '@ant-design/icons';
 import ODCSetting from '@/component/ODCSetting';
 import modal from '@/store/modal';
+import { SettingOutlined } from '@ant-design/icons';
+import React from 'react';
+import MenuItem from '../MenuItem';
 
 interface IProps {
   collapsed?: boolean;
@@ -29,12 +29,15 @@ const SettingItem: React.FC<IProps> = function ({ collapsed }) {
   return (
     <>
       <MenuItem
-        onClick={() => {
-          modal.changeOdcSettingVisible(true);
+        onClick={async () => {
+          await modal.changeOdcSettingVisible(true);
         }}
         icon={SettingOutlined}
         collapsed={collapsed}
-        label={formatMessage({ id: 'src.layout.SpaceContainer.Sider.SettingItem.CBBE0F8B' })}
+        label={formatMessage({
+          id: 'src.layout.SpaceContainer.Sider.SettingItem.CBBE0F8B',
+          defaultMessage: '设置',
+        })}
       />
 
       <ODCSetting />

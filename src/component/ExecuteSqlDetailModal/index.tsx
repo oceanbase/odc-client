@@ -1,39 +1,57 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import modal from '@/store/modal';
-import { Tabs, Button, message, Modal, Radio, Space, Tooltip, Input, Spin } from 'antd';
-import styles from './index.less';
-import { ModalStore } from '@/store/modal';
-import { inject, observer } from 'mobx-react';
-import { getSQLExecuteProfile, getSQLExplain } from '@/common/network/sql';
-import Flow from '@/component/ProfileFlow';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  getFullLinkTraceDownloadUrl,
+  getSQLExecuteProfile,
+  getSQLExplain,
+} from '@/common/network/sql';
 import DisplayTable from '@/component/DisplayTable';
-import {
-  getSqlProfileColumns,
-  getSqlExplainColumns,
-} from '@/page/Workspace/components/SQLExplain/column';
+import Flow from '@/component/ProfileFlow';
 import { handleShowOutputFilter } from '@/page/Workspace/components/SQLExplain';
-import { formatMessage } from '@/util/intl';
-import { getFullLinkTraceDownloadUrl } from '@/common/network/sql';
-import { downloadFile } from '@/util/utils';
-import TraceComp from '@/page/Workspace/components/Trace/TraceComponent';
-import { TraceTabsType } from '@/page/Workspace/components/Trace';
 import {
-  ProfileType,
-  TypeMap,
-  EXECUTE_PAGE_TYPE,
-  PLAN_PAGE_TYPE,
-  initConfig,
-  traceViewOptions,
+  getSqlExplainColumns,
+  getSqlProfileColumns,
+} from '@/page/Workspace/components/SQLExplain/column';
+import { TraceTabsType } from '@/page/Workspace/components/Trace';
+import TraceComp from '@/page/Workspace/components/Trace/TraceComponent';
+import modal, { ModalStore } from '@/store/modal';
+import { formatMessage } from '@/util/intl';
+import { downloadFile } from '@/util/data/file';
+import { Button, Input, message, Modal, Radio, Space, Spin, Tooltip } from 'antd';
+import { inject, observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
+import {
   executeViewOptions,
   executeViewOptionsInPlan,
+  EXECUTE_PAGE_TYPE,
+  initConfig,
   initTabViewConfig,
   planTabLabel,
+  PLAN_PAGE_TYPE,
+  ProfileType,
+  traceViewOptions,
+  TypeMap,
 } from './constant';
+import styles from './index.less';
 
-import CopyToClipboard from 'react-copy-to-clipboard';
-import { CopyOutlined } from '@ant-design/icons';
 import { IProfileStatus } from '@/d.ts';
 import { randomUUID } from '@/page/Workspace/components/Trace';
+import { CopyOutlined } from '@ant-design/icons';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -145,11 +163,17 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
               if (data?.originalText?.length) {
                 if (result) {
                   message.success(
-                    formatMessage({ id: 'odc.component.Log.CopiedSuccessfully' }), //复制成功
+                    formatMessage({
+                      id: 'odc.component.Log.CopiedSuccessfully',
+                      defaultMessage: '复制成功',
+                    }), //复制成功
                   );
                 } else {
                   message.error(
-                    formatMessage({ id: 'odc.component.Log.ReplicationFailed' }), //复制失败
+                    formatMessage({
+                      id: 'odc.component.Log.ReplicationFailed',
+                      defaultMessage: '复制失败',
+                    }), //复制失败
                   );
                 }
               }
@@ -200,6 +224,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
         title={
           formatMessage({
             id: 'odc.src.page.Workspace.components.Trace.ExportTheJSONFileThat',
+            defaultMessage: '导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看',
           }) //'导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看'
         }
       >
@@ -207,6 +232,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           {
             formatMessage({
               id: 'odc.src.page.Workspace.components.Trace.ExportJson',
+              defaultMessage: '\n            导出 Json\n          ',
             }) /* 
           导出 Json
           */
@@ -228,7 +254,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
         >
           {option?.map((i) => {
             return (
-              <Radio.Button value={i.value}>
+              <Radio.Button value={i.value} key={i?.value}>
                 <Tooltip title={i?.message}>{i?.icon}</Tooltip>
               </Radio.Button>
             );
@@ -272,6 +298,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.SearchForTheKeyword',
+                defaultMessage: '搜索关键字',
               }) /* 搜索关键字 */
             }
             onSearch={(e) => setSearchValue(e)}
@@ -286,7 +313,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           >
             {traceViewOptions.map((i) => {
               return (
-                <Radio.Button value={i.value}>
+                <Radio.Button value={i.value} key={i?.value}>
                   <Tooltip title={i?.message}>{i?.icon}</Tooltip>
                 </Radio.Button>
               );
@@ -314,7 +341,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       title: formatMessage(
         {
           id: 'src.component.ExecuteSqlDetailModal.5B8FA08A',
-          defaultMessage: 'Trace ID 为 "${modalStore?.executeSqlDetailData?.traceId}" 的执行画像',
+          defaultMessage: 'Trace ID 为 "{modalStoreExecuteSqlDetailDataTraceId}" 的执行画像',
         },
         { modalStoreExecuteSqlDetailDataTraceId: modalStore?.executeSqlDetailData?.traceId },
       ),
@@ -400,7 +427,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
                 >
                   {page?.radioOption.map((i) => {
                     return (
-                      <Radio.Button value={i.value} disabled={i.disabled}>
+                      <Radio.Button value={i.value} disabled={i.disabled} key={i?.value}>
                         <Tooltip title={getDisabledTooltip(i.label)}>{i.label}</Tooltip>
                       </Radio.Button>
                     );
@@ -409,6 +436,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
               ) : (
                 <div className={styles.tabTitle}>{planTabLabel}</div>
               )}
+
               <Space>{page?.pageConfig?.[tab]?.toolBar}</Space>
             </div>
             {page?.pageConfig?.[tab]?.children}

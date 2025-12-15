@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
+import { getPartitionPlanKeyDataTypes } from '@/common/network/task';
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getPartitionPlanKeyDataTypes } from '@/common/network/task';
+import { IPartitionTableConfig, PARTITION_KEY_INVOKER } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import {
+import Icon, {
   EditOutlined,
+  ExclamationCircleFilled,
   FilterOutlined,
   SearchOutlined,
-  ExclamationCircleFilled,
+  FolderOpenFilled,
 } from '@ant-design/icons';
-import { PARTITION_KEY_INVOKER, TaskPartitionStrategy } from '@/d.ts';
-import { Checkbox, Tooltip, Space } from 'antd';
+import { Button, Checkbox, Space, Tooltip } from 'antd';
 import React, { useRef, useState } from 'react';
-import ConfigDrawer, { NameRuleType } from './configModal';
-import { START_DATE } from './const';
+import { ITableConfig } from '@/component/Schedule/modals/PartitionPlan/Create';
 import { getStrategyLabel } from '../PartitionPolicyTable';
-import { ITableConfig } from '../../PartitionTask/CreateModal';
+import ConfigDrawer from './configModal';
+import { NameRuleType, revertPartitionKeyInvokerByIncrementFieldType, START_DATE } from './const';
 import styles from './index.less';
-
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
+import DetailConfigDrawer from '../PartitionPolicyTable/ConfigDrawer';
 const defaultIntervalPrecision = 3;
 
 interface IProps {
@@ -45,6 +47,8 @@ interface IProps {
   theme?: string;
   onLoad?: () => Promise<any>;
   onPlansConfigChange?: (values: ITableConfig[]) => void;
+  isEdit?: boolean;
+  allPartitionPlanTableConfigs?: IPartitionTableConfig[];
 }
 
 interface ITableFilter {
@@ -53,12 +57,24 @@ interface ITableFilter {
 
 const ActionFilters = [
   {
-    text: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.CB8E9B9E' }), //'创建策略'
-    value: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.1CF98543' }), //'创建策略'
+    text: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.CB8E9B9E',
+      defaultMessage: '创建策略',
+    }), //'创建策略'
+    value: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.1CF98543',
+      defaultMessage: '创建策略',
+    }), //'创建策略'
   },
   {
-    text: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.04BF5ADD' }), //'删除策略'
-    value: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.FD99EEF0' }), //'删除策略'
+    text: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.04BF5ADD',
+      defaultMessage: '删除策略',
+    }), //'删除策略'
+    value: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.FD99EEF0',
+      defaultMessage: '删除策略',
+    }), //'删除策略'
   },
 ];
 
@@ -72,8 +88,12 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     theme,
     onLoad,
     onPlansConfigChange,
+    isEdit = false,
+    allPartitionPlanTableConfigs,
   } = props;
   const [visible, setVisible] = useState(false);
+  const [detailVisible, setDetailVisible] = useState(false);
+  const [activeTableName, setActiveTableName] = useState(undefined);
   const [activeConfigKeys, setActiveConfigKeys] = useState([]);
   const [selectedConfigKeys, setSelectedConfigKeys] = useState([]);
   const [isOnlyNoSetTable, setIsOnlyNoSetTable] = useState(false);
@@ -83,11 +103,12 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
   const tableResource = handleFilter(tableConfigs);
   const activeConfigs = tableConfigs?.filter((item) => activeConfigKeys.includes(item.__id));
   const selectedConfigs = tableConfigs?.filter((item) => selectedConfigKeys.includes(item.__id));
-
+  const [dateTypes, setDateTypes] = useState(false);
   const columns = [
     {
       title: formatMessage({
         id: 'src.component.Task.component.PartitionPolicyFormTable.E6BC178D',
+        defaultMessage: 'Range 分区表',
       }), //'Range 分区表'
       key: 'tableName',
       dataIndex: 'tableName',
@@ -99,6 +120,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
             placeholder={
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.90B10A59',
+                defaultMessage: '请输入表名',
               }) /*"请输入表名"*/
             }
           />
@@ -112,16 +134,28 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
       render: (tableName, record) => {
         return (
           <Space size={5}>
-            {tableName}
+            <span title={tableName}>{tableName}</span>
             {(record?.containsCreateStrategy || record?.containsDropStrategy) && (
               <Tooltip
                 title={
-                  formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyFormTable.6C03EDE8',
-                  }) /*"当前表已存在分区策略，重新设置后将覆盖原有策略"*/
+                  isEdit
+                    ? formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.6C03EDE8',
+                        defaultMessage: '当前表已存在分区策略，重新设置后将覆盖原有策略',
+                      })
+                    : formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.E4416F26',
+                        defaultMessage: '当前表已存在有效的分区策略，不可重复设置',
+                      })
                 }
               >
-                <ExclamationCircleFilled style={{ color: 'var(--icon-orange-color)' }} />
+                <ExclamationCircleFilled
+                  style={
+                    isEdit
+                      ? { color: 'var(--icon-orange-color)' }
+                      : { color: 'var(--icon-color-disable)' }
+                  }
+                />
               </Tooltip>
             )}
           </Space>
@@ -131,6 +165,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     {
       title: formatMessage({
         id: 'src.component.Task.component.PartitionPolicyFormTable.6020D1A1',
+        defaultMessage: '已有分区数量',
       }), //'已有分区数量'
       key: 'definitionCount',
       dataIndex: 'definitionCount',
@@ -139,6 +174,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     {
       title: formatMessage({
         id: 'src.component.Task.component.PartitionPolicyFormTable.787E8B6F',
+        defaultMessage: '分区策略',
       }), //'分区策略'
       key: 'action',
       width: 310,
@@ -149,33 +185,54 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         return (
           <div className={styles.rangConfig}>
             {label?.length ? (
-              <Space>
+              <Space style={{ flex: 1 }}>
                 <span>
                   {
                     formatMessage({
                       id: 'src.component.Task.component.PartitionPolicyFormTable.619CFFCB' /*已设置:*/,
+                      defaultMessage: '已设置：',
                     }) /* 已设置: */
                   }
                 </span>
                 <span>{label}</span>
               </Space>
             ) : (
-              <span>-</span>
+              <div style={{ flex: 1 }}>-</div>
             )}
-
-            <Tooltip
-              title={
-                formatMessage({
-                  id: 'src.component.Task.component.PartitionPolicyFormTable.A0E5BE83',
-                }) /*"设置分区策略"*/
-              }
-            >
-              <EditOutlined
-                onClick={() => {
-                  handleConfig(record?.__id);
-                }}
-              />
-            </Tooltip>
+            {isDisable(record) ? (
+              <Tooltip
+                title={formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyFormTable.28A3C7C1',
+                  defaultMessage: '查看分区策略',
+                })}
+              >
+                <Button
+                  icon={<Icon type="view" component={ViewSvg} />}
+                  type="text"
+                  onClick={() => {
+                    setActiveTableName(record?.tableName);
+                    setDetailVisible(true);
+                  }}
+                />
+              </Tooltip>
+            ) : (
+              <Tooltip
+                title={
+                  formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.A0E5BE83',
+                    defaultMessage: '设置分区策略',
+                  }) /*"设置分区策略"*/
+                }
+              >
+                <Button
+                  icon={<EditOutlined style={{ color: 'var(--text-color-primary)' }} />}
+                  type="text"
+                  onClick={() => {
+                    handleConfig(record?.__id);
+                  }}
+                />
+              </Tooltip>
+            )}
           </div>
         );
       },
@@ -186,61 +243,57 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     const tableName = tableConfigs?.find((item) => keys.includes(item.__id))?.tableName;
     const activeConfigs = tableConfigs?.filter((item) => keys.includes(item.__id));
     const res = await getPartitionPlanKeyDataTypes(sessionId, databaseId, tableName);
-    const createdTableConfig = createdTableConfigs?.find((item) => item?.tableName === tableName);
+    const currentTableConfigs = createdTableConfigs
+      ?.filter((item) => item?.tableName === tableName)
+      .sort((a, b) => {
+        return a?.hasOwnProperty('keepLatestCount') ? -1 : 1;
+      });
+    const createdTableConfig = currentTableConfigs?.length
+      ? Object.assign({}, ...currentTableConfigs)
+      : null;
     const isInit = activeConfigs?.some((item) => !item?.__isCreate);
     let partitionConfig = activeConfigs?.[0];
     if (!!createdTableConfig && isInit) {
-      const isOnlyDropStrategie =
-        partitionConfig?.strategies?.length === 1 &&
-        partitionConfig?.strategies?.includes(TaskPartitionStrategy.DROP);
-      if (isOnlyDropStrategie) {
-        partitionConfig = createdTableConfig;
-      } else {
-        const isLengthEqual =
-          createdTableConfig?.option?.partitionKeyConfigs?.length === res?.contents?.length;
-        const isValidOriginPartitionKeyConfigs = isLengthEqual
-          ? res?.contents?.every((item, index) => {
-              const partitionKeyInvokers = [PARTITION_KEY_INVOKER.CUSTOM_GENERATOR];
-              if (item?.localizedMessage) {
-                partitionKeyInvokers.push(PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR);
-              }
-              return partitionKeyInvokers.includes(
-                createdTableConfig?.option?.partitionKeyConfigs?.[index]?.partitionKeyInvoker,
-              );
-            })
-          : false;
-        if (isValidOriginPartitionKeyConfigs) {
-          partitionConfig = createdTableConfig;
-        }
-      }
+      partitionConfig = createdTableConfig;
     }
     console.log('createdTableConfig', !!createdTableConfig, isInit);
     console.log('partitionConfig', partitionConfig);
 
     const dateTypes = res?.contents?.find((item) => !!item?.localizedMessage);
-    const nameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
+    setDateTypes(!!dateTypes);
+
+    const initNameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
+    const nameRuleType = createdTableConfig?.generateExpr ? NameRuleType.CUSTOM : initNameRuleType;
     const values = activeConfigs.map((item) => {
       return {
+        generateCount: null,
         nameRuleType,
         ...partitionConfig,
         ...item,
         option: {
           partitionKeyConfigs: res?.contents?.map((type, index) => {
-            const isDateType = !!type?.localizedMessage;
-            const defaultKeyConfig = isDateType
-              ? {
-                  fromCurrentTime: START_DATE.CURRENT_DATE,
-                  intervalPrecision: defaultIntervalPrecision,
-                }
-              : {};
+            const defaultKeyConfig = {
+              fromCurrentTime: START_DATE.CURRENT_DATE,
+              intervalPrecision: defaultIntervalPrecision,
+            };
             const name = item.option?.partitionKeyConfigs?.[index]?.name;
             return {
-              partitionKeyInvoker: isDateType
-                ? PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR
-                : PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
               ...defaultKeyConfig,
               name,
+              fromCurrentTime: START_DATE.CURRENT_DATE,
+              intervalPrecision: defaultIntervalPrecision,
+              incrementFieldType:
+                createdTableConfig?.option?.partitionKeyConfigs?.[index]?.fieldType,
+              incrementFieldTypeInDate:
+                createdTableConfig?.option?.partitionKeyConfigs?.[index]?.timeFormat,
+              intervalGenerateExpr:
+                createdTableConfig?.option?.partitionKeyConfigs?.[index]?.numberInterval,
               ...partitionConfig?.option?.partitionKeyConfigs?.[index],
+              partitionKeyInvoker:
+                revertPartitionKeyInvokerByIncrementFieldType(
+                  partitionConfig?.option?.partitionKeyConfigs?.[index]?.partitionKeyInvoker,
+                  partitionConfig?.option?.partitionKeyConfigs?.[index]?.fieldType,
+                ) || PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
               type,
             };
           }),
@@ -266,7 +319,9 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
   function handleFilter(data: ITableConfig[]) {
     const { tableName } = filters ?? {};
     return data
-      ?.filter((item) => (isOnlyNoSetTable ? !item?.strategies?.length : true))
+      ?.filter((item) =>
+        isOnlyNoSetTable ? !item?.containsCreateStrategy && !item?.containsDropStrategy : true,
+      )
       ?.filter((item) => {
         const searchText = tableName?.[0]?.toLocaleLowerCase?.() ?? '';
         return searchText ? item.tableName?.toLocaleLowerCase().indexOf(searchText) > -1 : true;
@@ -282,6 +337,13 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     setIsOnlyNoSetTable(e.target.checked);
   };
 
+  /**
+   * 新建,如果该表有有效的分区策略，无法重新设置新的策略
+   */
+  const isDisable = (record: ITableConfig) => {
+    return (record?.containsCreateStrategy || record?.containsDropStrategy) && !isEdit;
+  };
+
   return (
     <div>
       <CommonTable
@@ -290,6 +352,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         titleContent={{
           description: formatMessage({
             id: 'src.component.Task.component.PartitionPolicyFormTable.9E6847BC',
+            defaultMessage: '仅支持 Range 分区表，可设置对应的分区创建和删除策略',
           }), //'仅支持 Range 分区表，可设置对应的分区创建和删除策略'
         }}
         filterContent={{
@@ -303,6 +366,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
                       {
                         formatMessage({
                           id: 'src.component.Task.component.PartitionPolicyFormTable.51D8B2E7' /*仅显示未设置的表*/,
+                          defaultMessage: '仅显示未设置的表',
                         }) /* 仅显示未设置的表 */
                       }
                     </Checkbox>
@@ -323,9 +387,15 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
               return (
                 <Tooltip
                   title={
-                    formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.E009861F',
-                    }) /*"该表的分区和已经勾选的表分区不同，无法批量设置"*/
+                    isDisable(record as ITableConfig)
+                      ? formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.281F6168',
+                          defaultMessage: '当前表已存在有效的分区策略，不可重复设置',
+                        })
+                      : formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.E009861F',
+                          defaultMessage: '该表的分区和已经勾选的表分区不同，无法批量设置',
+                        }) /*"该表的分区和已经勾选的表分区不同，无法批量设置"*/
                   }
                 >
                   {node}
@@ -335,15 +405,17 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
             return node;
           },
           getCheckboxProps: (record: ITableConfig) => {
-            const disabled =
+            let disabled =
               !!selectedConfigs?.length &&
               record?.partitionMode !== selectedConfigs?.[0]?.partitionMode;
+            disabled = disabled || isDisable(record);
             return { disabled };
           },
           options: [
             {
               okText: formatMessage({
                 id: 'odc.components.PartitionPolicyTable.BatchSettings',
+                defaultMessage: '批量设置',
               }), //批量设置
               onOk: handleBatchConfig,
             },
@@ -362,7 +434,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           },
           scroll: {
             x: 650,
-            y: 240,
+            y: 290,
           },
         }}
       />
@@ -376,6 +448,15 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         onChange={onPlansConfigChange}
         onClose={() => {
           setVisible(false);
+        }}
+        dateTypes={dateTypes}
+      />
+
+      <DetailConfigDrawer
+        visible={detailVisible}
+        config={allPartitionPlanTableConfigs?.find((item) => item?.tableName === activeTableName)}
+        onClose={() => {
+          setDetailVisible(false);
         }}
       />
     </div>

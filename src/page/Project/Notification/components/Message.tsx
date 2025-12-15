@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import {
   detailMessage,
   getChannelsList,
   getMessagesList,
 } from '@/common/network/projectNotification';
 import CommonTable from '@/component/CommonTable';
+import { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
+import { IResponseData } from '@/d.ts';
+import { IMessage } from '@/d.ts/projectNotification';
+import { useLoop } from '@/util/hooks/useLoop';
+import { formatMessage } from '@/util/intl';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Drawer } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import { IResponseData } from '@/d.ts';
-import { EMessageStatus, IMessage } from '@/d.ts/projectNotification';
 import { getMessageColumns } from './columns';
 import styles from './index.less';
-import { getLocalFormatDateTime } from '@/util/utils';
-import { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { EMessageStatusMap } from './interface';
-import { useLoop } from '@/util/hooks/useLoop';
 
 const Message: React.FC<{
   projectId: number;
@@ -142,6 +142,7 @@ const DetailDrawer: React.FC<{
       title={
         formatMessage({
           id: 'src.page.Project.Notification.components.7E3088E2',
+          defaultMessage: '推送记录详情',
         }) /*"推送记录详情"*/
       }
       width={520}
@@ -152,7 +153,10 @@ const DetailDrawer: React.FC<{
       <Descriptions column={1}>
         <Descriptions.Item
           label={
-            formatMessage({ id: 'src.page.Project.Notification.components.68CAD20E' }) /*"事件"*/
+            formatMessage({
+              id: 'src.page.Project.Notification.components.68CAD20E',
+              defaultMessage: '事件',
+            }) /*"事件"*/
           }
         >
           {message?.title || '-'}
@@ -161,6 +165,7 @@ const DetailDrawer: React.FC<{
           label={
             formatMessage({
               id: 'src.page.Project.Notification.components.48F9F94C',
+              defaultMessage: '推送通道',
             }) /*"消息通道"*/
           }
         >
@@ -170,6 +175,7 @@ const DetailDrawer: React.FC<{
           label={
             formatMessage({
               id: 'src.page.Project.Notification.components.DA2AAC4F',
+              defaultMessage: '生效时间',
             }) /*"生效时间"*/
           }
         >
@@ -179,6 +185,7 @@ const DetailDrawer: React.FC<{
           label={
             formatMessage({
               id: 'src.page.Project.Notification.components.9A3FA11B',
+              defaultMessage: '最后推送时间',
             }) /*"最后推送时间"*/
           }
         >
@@ -188,6 +195,7 @@ const DetailDrawer: React.FC<{
           label={
             formatMessage({
               id: 'src.page.Project.Notification.components.A6D3B9A2',
+              defaultMessage: '推送状态',
             }) /*"推送状态"*/
           }
         >
@@ -197,6 +205,7 @@ const DetailDrawer: React.FC<{
           label={
             formatMessage({
               id: 'src.page.Project.Notification.components.56685F5A',
+              defaultMessage: '消息内容',
             }) /*"消息内容"*/
           }
         >

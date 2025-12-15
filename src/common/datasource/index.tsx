@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConnectType, ConnectionMode } from '@/d.ts';
+import { ConnectType, ConnectionMode, DatasourceGroup } from '@/d.ts';
 import { IDataSourceModeConfig } from './interface';
 import { IDataSourceType } from '@/d.ts/datasource';
 import obOracle from './oceanbase/oboracle';
@@ -22,16 +22,30 @@ import obMySQL from './oceanbase/obmysql';
 import oracle from './oracle';
 import MySQL from './mysql';
 import Doris from './doris';
+import PG from './pg';
+import FileSystem from './fileSystem';
 import { ReactComponent as OBSvg } from '@/svgr/source_ob.svg';
 import { ReactComponent as DBOBSvg } from '@/svgr/database_oceanbase.svg';
 import { ReactComponent as MySQLSvg } from '@/svgr/mysql.svg';
 import { ReactComponent as DBMySQLSvg } from '@/svgr/database_mysql.svg';
 import { ReactComponent as DorisSvg } from '@/svgr/doris.svg';
+import { ReactComponent as PGSvg } from '@/svgr/pg.svg';
 import { ReactComponent as DBDorisSvg } from '@/svgr/database_doris.svg';
 import { ReactComponent as OracleSvg } from '@/svgr/oracle.svg';
 import { ReactComponent as DBOracleSvg } from '@/svgr/database_oracle.svg';
+import { DBType, BooleanOptionType } from '@/d.ts/database';
+import { ReactComponent as DBPGSvg } from '@/svgr/database_pg.svg';
+import { ReactComponent as OSSSvg } from '@/svgr/oss.svg';
+import { ReactComponent as DBOSSSvg } from '@/svgr/oss_file.svg';
+import { ReactComponent as COSSvg } from '@/svgr/COS.svg';
+import { ReactComponent as DBCOSSvg } from '@/svgr/cos_file.svg';
+import { ReactComponent as OBSSvg } from '@/svgr/OBS.svg';
+import { ReactComponent as DBOBSSvg } from '@/svgr/obs_file.svg';
+import { ReactComponent as S3Svg } from '@/svgr/S3.svg';
+import { ReactComponent as DBS3Svg } from '@/svgr/S3_file.svg';
+import odc from '@/plugins/odc';
 
-const _types: Map<
+export const _types: Map<
   IDataSourceType,
   {
     connectTypes: ConnectType[];
@@ -78,9 +92,66 @@ const _styles = {
       component: DBOracleSvg,
     },
   },
+  [IDataSourceType.PG]: {
+    icon: {
+      component: PGSvg,
+      color: '#000000',
+    },
+    dbIcon: {
+      component: DBPGSvg,
+    },
+  },
+  [IDataSourceType.ALIYUNOSS]: {
+    icon: {
+      component: OSSSvg,
+      color: '#000000',
+    },
+    dbIcon: {
+      component: DBOSSSvg,
+    },
+  },
+  [IDataSourceType.HUAWEI]: {
+    icon: {
+      component: OBSSvg,
+      color: '#000000',
+    },
+    dbIcon: {
+      component: DBOBSSvg,
+    },
+  },
+  [IDataSourceType.AWSS3]: {
+    icon: {
+      component: S3Svg,
+      color: '#000000',
+    },
+    dbIcon: {
+      component: DBS3Svg,
+    },
+  },
+  [IDataSourceType.QCLOUD]: {
+    icon: {
+      component: COSSvg,
+      color: '#000000',
+    },
+    dbIcon: {
+      component: DBCOSSvg,
+    },
+  },
 };
 
-const connectType2Ds: Map<ConnectType, IDataSourceType> = new Map();
+const _gruops = {
+  [IDataSourceType.OceanBase]: DatasourceGroup.OceanBaseDatabase,
+  [IDataSourceType.MySQL]: DatasourceGroup.OtherDatabase,
+  [IDataSourceType.Doris]: DatasourceGroup.OtherDatabase,
+  [IDataSourceType.Oracle]: DatasourceGroup.OtherDatabase,
+  [IDataSourceType.PG]: DatasourceGroup.OtherDatabase,
+  [IDataSourceType.ALIYUNOSS]: DatasourceGroup.FileSystem,
+  [IDataSourceType.AWSS3]: DatasourceGroup.FileSystem,
+  [IDataSourceType.HUAWEI]: DatasourceGroup.FileSystem,
+  [IDataSourceType.QCLOUD]: DatasourceGroup.FileSystem,
+};
+
+export const connectType2Ds: Map<ConnectType, IDataSourceType> = new Map();
 
 function register(
   dataSourceType: IDataSourceType,
@@ -88,6 +159,9 @@ function register(
 ) {
   const connectTypes: ConnectType[] = Object.entries(items)
     .map(([key, value]) => {
+      if (odc.datasourceSupport && !odc.datasourceSupport?.(key as ConnectType, value)) {
+        return null;
+      }
       if (value?.disable) {
         return null;
       }
@@ -116,11 +190,18 @@ function register(
   _types.set(dataSourceType, obj);
 }
 
-register(IDataSourceType.OceanBase, obOracle);
-register(IDataSourceType.OceanBase, obMySQL);
-register(IDataSourceType.MySQL, MySQL);
-register(IDataSourceType.Doris, Doris);
-register(IDataSourceType.Oracle, oracle);
+function initDatasource() {
+  register(IDataSourceType.OceanBase, obOracle);
+  register(IDataSourceType.OceanBase, obMySQL);
+  register(IDataSourceType.MySQL, MySQL);
+  register(IDataSourceType.Doris, Doris);
+  register(IDataSourceType.Oracle, oracle);
+  register(IDataSourceType.PG, PG);
+  register(IDataSourceType.ALIYUNOSS, FileSystem.ALIYUN);
+  register(IDataSourceType.AWSS3, FileSystem.AWSS3);
+  register(IDataSourceType.HUAWEI, FileSystem.HUAWEI);
+  register(IDataSourceType.QCLOUD, FileSystem.QCLOUD);
+}
 
 function getAllConnectTypes(ds?: IDataSourceType): ConnectType[] {
   if (!ds) {
@@ -129,6 +210,28 @@ function getAllConnectTypes(ds?: IDataSourceType): ConnectType[] {
     }, []);
   }
   return _types.get(ds)?.connectTypes;
+}
+
+function getBooleanOptionsType(): string[] {
+  return Object.entries(BooleanOptionType)?.reduce((prev, [key, value]) => {
+    return prev.concat(BooleanOptionType?.[key]);
+  }, []);
+}
+
+function getIsDBAvailableInDataSourceTypes(): string[] {
+  return getBooleanOptionsType();
+}
+
+function getIsDBBelongsToProjectsInDataSourceTypes(): string[] {
+  return getBooleanOptionsType();
+}
+
+function getAllDBTypes(dbType?: DBType): DBType[] {
+  if (!dbType) {
+    return Object.entries(DBType)?.reduce((prev, [key, value]) => {
+      return prev.concat(DBType?.[key]);
+    }, []);
+  }
 }
 
 function getDataSourceModeConfig(connectType: ConnectType) {
@@ -151,6 +254,14 @@ function getDataSourceStyleByConnectType(ct: ConnectType) {
   return getDataSourceStyle(connectType2Ds[ct]);
 }
 
+function getDataSourceGroup(ds: IDataSourceType) {
+  return _gruops[ds];
+}
+
+function getDataSourceGroupByConnectType(ct: ConnectType) {
+  return getDataSourceGroup(connectType2Ds[ct]);
+}
+
 function getDsByConnectType(ct: ConnectType) {
   return connectType2Ds[ct];
 }
@@ -159,12 +270,27 @@ function getDefaultConnectType(ds: IDataSourceType) {
   return _types.get(ds)?.defaultConnectType;
 }
 
+function isFileSystemSupport() {
+  for (const [dsType, dsConfig] of _types) {
+    if (Object.values(dsConfig.config)?.some((item) => item?.isFileSystem)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export {
+  initDatasource,
   getAllConnectTypes,
   getDataSourceModeConfig,
   getDataSourceModeConfigByConnectionMode,
   getDataSourceStyle,
   getDataSourceStyleByConnectType,
+  getDataSourceGroupByConnectType,
   getDefaultConnectType,
   getDsByConnectType,
+  getAllDBTypes,
+  getIsDBAvailableInDataSourceTypes,
+  getIsDBBelongsToProjectsInDataSourceTypes,
+  isFileSystemSupport,
 };

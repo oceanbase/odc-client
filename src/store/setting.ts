@@ -19,18 +19,25 @@ import { formatMessage } from '@/util/intl';
  * 样式与功能开关
  */
 
-import { getServerSystemInfo, getSystemConfig, getPublicKey } from '@/common/network/other';
+import { getPublicKey, getServerSystemInfo, getSystemConfig } from '@/common/network/other';
 import type { IUserConfig, ServerSystemInfo } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { isClient } from '@/util/env';
 import request from '@/util/request';
-import { initTracert } from '@/util/tracert';
+import { isLinux, isWin64 } from '@/util/env';
+import { kbToMb } from '@/util/data/byte';
 import { message } from 'antd';
-import { action, observable } from 'mobx';
-import { isLinux, isWin64 } from '@/util/utils';
-import login from './login';
+import { action, observable, computed } from 'mobx';
+import login, { sessionKey } from '@/store/login';
+import {
+  EShareableIdentifierType,
+  makeDataShareable,
+} from '@/util/communication/makeDataShareable';
+import { IAIConfig, IModel } from '@/d.ts/llm';
+import { getAIConfig, updateAIConfig } from '@/common/network/largeModel';
 
 export const themeKey = 'odc-theme';
+export const getCurrentOrganizationId = () => sessionStorage.getItem(sessionKey);
 
 interface IThemeConfig {
   editorTheme: Record<string, string>;
@@ -96,6 +103,96 @@ export class SettingStore {
   @observable
   public enableDataExport: boolean = false;
 
+  /**
+   * NL2SQL
+   */
+  @observable
+  public enableAIInlineCompletion: boolean = true;
+
+  @observable
+  public AIConfig: IAIConfig;
+
+  @computed
+  public get AIEnabled() {
+    return this.AIConfig?.copilotEnabled || this.AIConfig?.completionEnabled || false;
+  }
+
+  @observable
+  public isAIThinking: boolean = false;
+
+  /**
+   * 所有可用的 AI 模型列表
+   */
+  @observable
+  public allModels: IModel[] = [];
+
+  @observable
+  public modelsLoading: boolean = false;
+
+  /**
+   * 是否有未被接受的 AI 补全内容
+   */
+  @observable
+  public hasUnacceptedAICompletion: boolean = false;
+
+  /**
+   * 多库变更
+   */
+  @observable
+  public enableMultipleAsyncTask: boolean = false;
+
+  /**
+   * 影子表同步
+   */
+  @observable
+  public enableShadowTableSync: boolean = false;
+
+  /**
+   * 结构对比
+   */
+  public enableStructureCompare: boolean = false;
+
+  /**
+   * SQL 计划
+   */
+  public enableSQLPlan: boolean = false;
+
+  /**
+   * 分区计划
+   */
+  public enablePartitionPlan: boolean = false;
+
+  /**
+   * 数据归档
+   */
+  public enableDataArchive: boolean = false;
+
+  /**
+   * 数据清理
+   */
+  public enableDataClear: boolean = false;
+
+  /**
+   * 申请库权限
+   */
+  public enableApplyDBAuth: boolean = false;
+
+  /**
+   * 申请项目权限
+   */
+  public enableApplyProjectAuth: boolean = false;
+
+  /**
+   * 申请表权限
+   */
+  public enableApplyTableAuth: boolean = false;
+
+  /**
+   * 工作台
+   */
+  @observable
+  public enableWorkbench: boolean = false;
+
   @observable
   public enableAsyncTask: boolean = false;
 
@@ -119,6 +216,9 @@ export class SettingStore {
 
   @observable
   public enableMockdata: boolean = false;
+
+  @observable
+  public enableLogicaldatabase: boolean = false;
 
   /**
    * 上传文件是否为oss，s3之类的云存储
@@ -190,10 +290,32 @@ export class SettingStore {
   public configurations: Partial<IUserConfig> = null;
 
   @observable
+  public spaceConfigurations: Partial<IUserConfig> = null;
+
+  @observable
   public headerStyle: any = {
     background: '#1F293D',
     boxShadow: '0px 1px 4px 0px rgba(0,21,41,0.12)',
   };
+
+  constructor() {
+    makeDataShareable(this, 'configurations', {
+      channelName: `user-config`,
+      identifierType: EShareableIdentifierType.USER,
+    });
+    makeDataShareable(this, 'spaceConfigurations', {
+      channelName: `space-config`,
+      identifierType: EShareableIdentifierType.ORGANIZATION,
+    });
+    makeDataShareable(this, 'AIConfig', {
+      channelName: `ai-config`,
+      identifierType: EShareableIdentifierType.ORGANIZATION,
+    });
+    makeDataShareable(this, 'allModels', {
+      channelName: `all-models`,
+      identifierType: EShareableIdentifierType.ORGANIZATION,
+    });
+  }
 
   @action
   public setHeaderStyle(headerStyle: any) {
@@ -234,10 +356,51 @@ export class SettingStore {
   }
 
   @action
-  public async getUserConfig() {
-    const res = await request.get('/api/v2/config/users/me/configurations');
-    if (res?.data) {
-      this.configurations = res?.data?.contents?.reduce((data, item) => {
+  public disableAI() {
+    localStorage.setItem('odc.enableAIInlineCompletion', 'false');
+    this.enableAIInlineCompletion = false;
+  }
+  @action
+  public enableAI() {
+    localStorage.setItem('odc.enableAIInlineCompletion', 'true');
+    this.enableAIInlineCompletion = true;
+  }
+  @action async getAIConfig() {
+    const res = await getAIConfig();
+    this.AIConfig = res;
+  }
+
+  @action async updateAIConfig(data) {
+    try {
+      const res = await updateAIConfig(data);
+      if (res) {
+        this.AIConfig = data;
+      }
+    } catch {
+      console.log('fail to update ai config');
+    }
+  }
+
+  @action
+  public setAllModels(models: IModel[]) {
+    this.allModels = models;
+  }
+
+  @action
+  public setModelsLoading(loading: boolean) {
+    this.modelsLoading = loading;
+  }
+
+  @action
+  public async getUserConfig(initData?: any) {
+    this.enableAIInlineCompletion =
+      !localStorage.getItem('odc.enableAIInlineCompletion') ||
+      localStorage.getItem('odc.enableAIInlineCompletion') === 'true';
+    const data = initData
+      ? initData
+      : (await request.get('/api/v2/config/users/me/configurations'))?.data?.contents;
+    if (data) {
+      this.configurations = data?.reduce((data, item) => {
         data[item.key] = item.value;
         return data;
       }, {});
@@ -248,15 +411,32 @@ export class SettingStore {
   }
 
   @action
+  public async getSpaceConfig() {
+    const res = await request.get('/api/v2/config/organization/configurations');
+    if (res?.data) {
+      const config = res?.data?.contents?.reduce((data, item) => {
+        data[item.key] = item.value;
+        return data;
+      }, {});
+
+      this.spaceConfigurations = config;
+      return config;
+    } else {
+      this.spaceConfigurations = null;
+    }
+  }
+
+  @action
   public async getSystemConfig() {
     const res = await getSystemConfig();
     const isMacClient = isClient() && !isWin64() && !isLinux();
+    const isPrivateSpace = login.isPrivateSpace();
     const maxResultsetRows =
       parseInt(res?.['odc.session.sql-execute.max-result-set-rows']) || Number.MAX_SAFE_INTEGER;
     const maxSessionCount =
       parseInt(res?.['odc.session.sql-execute.max-single-session-count']) ||
       Number.MAX_SAFE_INTEGER;
-    this.enableDataExport = res?.['odc.data.export.enabled'] === 'true' ?? false;
+    this.enableDataExport = res?.['odc.data.export.enabled'] === 'true' || false;
     this.enableOBClient = res?.['odc.features.obclient.enabled'] === 'true' && !isMacClient;
     this.maxResultSetRows = maxResultsetRows === -1 ? Number.MAX_SAFE_INTEGER : maxResultsetRows;
     this.maxSessionCount = maxSessionCount === -1 ? Number.MAX_SAFE_INTEGER : maxSessionCount;
@@ -269,8 +449,9 @@ export class SettingStore {
     this.enableDBExport =
       res?.['odc.features.task.export.enabled'] === 'true' && this.enableDataExport;
     this.enableMockdata = res?.['odc.features.task.mockdata.enabled'] === 'true';
+    this.enableLogicaldatabase = res?.['odc.features.logicaldatabase.enabled'] === 'true';
     this.enableOSC = res?.['odc.features.task.osc.enabled'] === 'true';
-    if (login.isPrivateSpace()) {
+    if (isPrivateSpace) {
       this.enableOSC = res?.['odc.features.task.osc.individual.space.enabled'] === 'true';
     }
     this.enableOSCLimiting = res?.['odc.osc.rate-limit.enabled'] === 'true';
@@ -278,7 +459,29 @@ export class SettingStore {
     this.maxSingleTaskRowLimit =
       parseInt(res?.['odc.task.dlm.max-single-task-row-limit']) || Number.MAX_SAFE_INTEGER;
     this.maxSingleTaskDataSizeLimit =
-      parseInt(res?.['odc.task.dlm.max-single-task-data-size-limit']) || Number.MAX_SAFE_INTEGER;
+      kbToMb?.(parseInt(res?.['odc.task.dlm.max-single-task-data-size-limit'])) ||
+      Number.MAX_SAFE_INTEGER;
+
+    this.enableMultipleAsyncTask =
+      res?.['odc.features.task.multiple-async.enabled'] === 'true' && !isPrivateSpace;
+    this.enableShadowTableSync = res?.['odc.features.task.shadowtable-sync.enabled'] === 'true';
+    this.enableStructureCompare =
+      res?.['odc.features.task.structure-comparison.enabled'] === 'true';
+    this.enableSQLPlan = res?.['odc.features.task.sql-plan.enabled'] === 'true' && !isClient();
+    this.enablePartitionPlan =
+      res?.['odc.features.task.partition-plan.enabled'] === 'true' && !isClient();
+    this.enableDataArchive =
+      res?.['odc.features.task.data-archive.enabled'] === 'true' && !isClient();
+    this.enableDataClear = res?.['odc.features.task.data-delete.enabled'] === 'true' && !isClient();
+    this.enableApplyDBAuth =
+      res?.['odc.features.task.apply-database-permission.enabled'] === 'true' && !isPrivateSpace;
+    this.enableApplyProjectAuth =
+      res?.['odc.features.task.apply-project-permission.enabled'] === 'true' && !isPrivateSpace;
+    this.enableApplyTableAuth =
+      res?.['odc.features.task.apply-table-permission.enabled'] === 'true' && !isPrivateSpace;
+    this.enableWorkbench =
+      res?.['odc.features.workbench.enabled'] === 'true' ||
+      !res?.['odc.features.workbench.enabled'];
   }
 
   @action
@@ -297,6 +500,47 @@ export class SettingStore {
       await this.getUserConfig();
     }
     return !!data;
+  }
+
+  @action
+  public async updateSpaceConfig(newData: IUserConfig) {
+    const serverData = Object.keys(newData).map((key) => {
+      return {
+        key,
+        value: newData[key],
+      };
+    });
+
+    const res = await request.patch('/api/v2/config/organization/configurations', {
+      data: serverData,
+    });
+    const data = res?.data?.contents;
+    if (data) {
+      this.spaceConfigurations = { ...this.spaceConfigurations, ...newData };
+    }
+    return !!data;
+  }
+
+  @action
+  public async resetSpaceConfig() {
+    const res = await request.get('/api/v2/config/organization/default/configurations');
+    const data = res?.data?.contents;
+    if (data) {
+      const res = await request.patch('/api/v2/config/organization/configurations', {
+        data,
+      });
+      const userConfig = res?.data?.contents;
+      if (userConfig) {
+        await this.getSpaceConfig();
+      }
+    }
+    return !!data;
+  }
+
+  public async updateOneUserConfig(params: { key: string; value: string | boolean }) {
+    const res = await request.put(`/api/v2/config/users/me/configurations/${params.key}`, {
+      data: params,
+    });
   }
 
   @action
@@ -337,6 +581,7 @@ export class SettingStore {
       message.error(
         formatMessage({
           id: 'odc.src.store.setting.SystemInitializationFailedRefreshAnd',
+          defaultMessage: '系统初始化失败，请刷新重试！',
         }), // 系统初始化失败，请刷新重试！
       );
     }
@@ -349,8 +594,9 @@ export class SettingStore {
       throw new Error(
         formatMessage({
           id: 'odc.src.store.setting.SystemConfigurationQueryFailed',
-        }), // 系统配置查询失败
-      );
+          defaultMessage: '系统配置查询失败',
+        }),
+      ); // 系统配置查询失败
     }
     try {
       console.log('server buildTime:', new Date(info.buildTime));

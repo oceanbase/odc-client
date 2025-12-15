@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getType } from '@/common/network/type';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
@@ -30,8 +31,8 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { downloadPLDDL } from '@/util/database/sqlExport';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import {
   AlignLeftOutlined,
   CloudDownloadOutlined,
@@ -39,7 +40,7 @@ import {
   FileSearchOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Layout, message, Tabs } from 'antd';
+import { Layout, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
 import SessionContext from '../SessionContextWrap/context';
@@ -48,17 +49,19 @@ import ToolContentWrpper from '../ToolContentWrapper';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
 
 const ToolbarButton = Toolbar.Button;
 
 const TypeCodeMap = {
-  OBJECT: formatMessage({ id: 'odc.components.TypePage.Object' }), // 对象
-  VARRAY: formatMessage({ id: 'odc.components.TypePage.Array' }), // 数组
-  TABLE: formatMessage({ id: 'odc.components.TypePage.Table' }), // 表
-  COLLECTION: formatMessage({ id: 'src.page.Workspace.components.TypePage.ACF1EB3E' }), //'集合'
+  OBJECT: formatMessage({ id: 'odc.components.TypePage.Object', defaultMessage: '对象' }), // 对象
+  VARRAY: formatMessage({ id: 'odc.components.TypePage.Array', defaultMessage: '数组' }), // 数组
+  TABLE: formatMessage({ id: 'odc.components.TypePage.Table', defaultMessage: '表' }), // 表
+  COLLECTION: formatMessage({
+    id: 'src.page.Workspace.components.TypePage.ACF1EB3E',
+    defaultMessage: '集合',
+  }), //'集合'
 };
 interface IProps {
   sqlStore: SQLStore;
@@ -139,7 +142,10 @@ class TypePage extends Component<
       });
     } else {
       message.error(
-        formatMessage({ id: 'odc.components.TypePage.FailedToLoadTheType' }), // 加载类型失败
+        formatMessage({
+          id: 'odc.components.TypePage.FailedToLoadTheType',
+          defaultMessage: '加载类型失败',
+        }), // 加载类型失败
       );
     }
   };
@@ -188,6 +194,7 @@ class TypePage extends Component<
                   key: TypePropsTab.BASE_INFO,
                   label: formatMessage({
                     id: 'odc.components.TypePage.BasicInformation',
+                    defaultMessage: '基本信息',
                   }),
                   children: (
                     <ToolContentWrpper>
@@ -197,6 +204,7 @@ class TypePage extends Component<
                             {
                               formatMessage({
                                 id: 'odc.components.TypePage.Name.1',
+                                defaultMessage: '名称：',
                               })
                               /* 名称: */
                             }
@@ -208,6 +216,7 @@ class TypePage extends Component<
                             {
                               formatMessage({
                                 id: 'odc.components.TypePage.Owner.1',
+                                defaultMessage: '所有者:',
                               })
                               /* 所有者: */
                             }
@@ -219,6 +228,7 @@ class TypePage extends Component<
                             {
                               formatMessage({
                                 id: 'odc.components.TypePage.Type.1',
+                                defaultMessage: '类型：',
                               })
                               /* 类型: */
                             }
@@ -230,6 +240,7 @@ class TypePage extends Component<
                             {
                               formatMessage({
                                 id: 'odc.components.TypePage.Created',
+                                defaultMessage: '创建时间:',
                               })
                               /* 创建时间: */
                             }
@@ -243,6 +254,7 @@ class TypePage extends Component<
                             {
                               formatMessage({
                                 id: 'odc.components.TypePage.ModificationTime',
+                                defaultMessage: '修改时间:',
                               })
 
                               /* 修改时间: */
@@ -266,6 +278,7 @@ class TypePage extends Component<
                           <ToolbarButton
                             text={formatMessage({
                               id: 'workspace.window.session.button.edit',
+                              defaultMessage: '编辑',
                             })}
                             icon={<EditOutlined />}
                             onClick={this.handleEditType}
@@ -274,7 +287,10 @@ class TypePage extends Component<
 
                         <ToolbarButton
                           text={
-                            formatMessage({ id: 'odc.components.TypePage.Download' }) //下载
+                            formatMessage({
+                              id: 'odc.components.TypePage.Download',
+                              defaultMessage: '下载',
+                            }) //下载
                           }
                           icon={<CloudDownloadOutlined />}
                           onClick={() => {
@@ -290,6 +306,7 @@ class TypePage extends Component<
                         <ToolbarButton
                           text={formatMessage({
                             id: 'workspace.window.sql.button.search',
+                            defaultMessage: '查找',
                           })}
                           icon={<FileSearchOutlined />}
                           onClick={this.showSearchWidget}
@@ -298,6 +315,7 @@ class TypePage extends Component<
                         <ToolbarButton
                           text={formatMessage({
                             id: 'workspace.window.session.button.refresh',
+                            defaultMessage: '刷新',
                           })}
                           icon={<SyncOutlined />}
                           onClick={this.reloadType}
@@ -308,10 +326,12 @@ class TypePage extends Component<
                             formated
                               ? formatMessage({
                                   id: 'odc.components.TypePage.Unformat',
+                                  defaultMessage: '取消格式化',
                                 })
                               : // 取消格式化
                                 formatMessage({
                                   id: 'odc.components.TypePage.Formatting',
+                                  defaultMessage: '格式化',
                                 })
                             // 格式化
                           }
@@ -343,12 +363,17 @@ class TypePage extends Component<
     );
   }
 }
-export default WrapSessionPage(function (props: IProps) {
-  return (
-    <SessionContext.Consumer>
-      {({ session }) => {
-        return <TypePage {...props} session={session} />;
-      }}
-    </SessionContext.Consumer>
-  );
-}, true);
+export default WrapSessionPage(
+  function (props: IProps) {
+    return (
+      <SessionContext.Consumer>
+        {({ session }) => {
+          return <TypePage {...props} session={session} />;
+        }}
+      </SessionContext.Consumer>
+    );
+  },
+  true,
+  false,
+  true,
+);

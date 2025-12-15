@@ -18,13 +18,13 @@ import Action from '@/component/Action';
 import SearchFilter from '@/component/SearchFilter';
 import TreeFilter from '@/component/TreeFilter';
 import UserPopover from '@/component/UserPopover';
+import { AuditEventActionMap, AuditEventMetaMap, IUserMap } from '@/constant/record';
 import { AuditEventResult } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { FilterFilled, SearchOutlined } from '@ant-design/icons';
 import { DataNode } from 'antd/lib/tree';
 import { Status } from './component';
-import { AuditEventActionMap, AuditEventMetaMap, IUserMap } from '@/constant/record';
 
 export const getPageColumns = (params: {
   openDetailModal: (args: { id: number; [key: string]: any }) => void;
@@ -42,7 +42,7 @@ export const getPageColumns = (params: {
 
   return [
     {
-      title: formatMessage({ id: 'odc.components.RecordPage.No' }), //序号
+      title: formatMessage({ id: 'odc.components.RecordPage.No', defaultMessage: '序号' }), //序号
       dataIndex: 'id',
       key: 'id',
       ellipsis: true,
@@ -53,7 +53,10 @@ export const getPageColumns = (params: {
     },
 
     {
-      title: formatMessage({ id: 'odc.components.RecordPage.EventType' }), //事件类型
+      title: formatMessage({
+        id: 'odc.components.RecordPage.EventType',
+        defaultMessage: '事件类型',
+      }), //事件类型
       width: 120,
       ellipsis: true,
       key: 'typeName',
@@ -63,7 +66,10 @@ export const getPageColumns = (params: {
     },
 
     {
-      title: formatMessage({ id: 'odc.components.RecordPage.EventAction' }), //事件操作
+      title: formatMessage({
+        id: 'odc.components.RecordPage.EventAction',
+        defaultMessage: '事件操作',
+      }), //事件操作
       width: 160,
       ellipsis: true,
       key: 'actionName',
@@ -81,7 +87,10 @@ export const getPageColumns = (params: {
     },
 
     {
-      title: formatMessage({ id: 'odc.components.RecordPage.column.DataSource' }), //数据源
+      title: formatMessage({
+        id: 'odc.components.RecordPage.column.DataSource',
+        defaultMessage: '数据源',
+      }), //数据源
       ellipsis: true,
       key: 'connectionName',
       filterDropdown: (props) => {
@@ -89,7 +98,10 @@ export const getPageColumns = (params: {
           <SearchFilter
             {...props}
             placeholder={
-              formatMessage({ id: 'odc.components.RecordPage.column.EnterADataSource' }) //请输入所属数据源
+              formatMessage({
+                id: 'odc.components.RecordPage.column.EnterADataSource',
+                defaultMessage: '请输入所属数据源',
+              }) //请输入所属数据源
             }
           />
         );
@@ -103,7 +115,7 @@ export const getPageColumns = (params: {
     },
 
     {
-      title: formatMessage({ id: 'odc.components.RecordPage.IpSource' }), //IP来源
+      title: formatMessage({ id: 'odc.components.RecordPage.IpSource', defaultMessage: 'IP 来源' }), //IP来源
       width: 132,
       ellipsis: true,
       key: 'clientIpAddress',
@@ -113,6 +125,7 @@ export const getPageColumns = (params: {
             {...props}
             placeholder={formatMessage({
               id: 'odc.components.RecordPage.EnterAnIpSource',
+              defaultMessage: '请输入 IP 来源',
             })}
 
             /*请输入IP来源*/
@@ -128,7 +141,7 @@ export const getPageColumns = (params: {
     },
 
     {
-      title: formatMessage({ id: 'odc.components.RecordPage.Executor' }), //执行人
+      title: formatMessage({ id: 'odc.components.RecordPage.Executor', defaultMessage: '执行人' }), //执行人
       width: 120,
       ellipsis: true,
       key: 'username',
@@ -139,6 +152,7 @@ export const getPageColumns = (params: {
             {...props}
             placeholder={formatMessage({
               id: 'odc.components.RecordPage.EnterTheExecutor',
+              defaultMessage: '请输入执行人',
             })}
 
             /*请输入执行人*/
@@ -159,7 +173,10 @@ export const getPageColumns = (params: {
     },
 
     {
-      title: formatMessage({ id: 'odc.components.RecordPage.ExecutionTime' }), //执行时间
+      title: formatMessage({
+        id: 'odc.components.RecordPage.ExecutionTime',
+        defaultMessage: '执行时间',
+      }), //执行时间
       width: 190,
       ellipsis: true,
       key: 'startTime',
@@ -169,19 +186,25 @@ export const getPageColumns = (params: {
     },
 
     {
-      title: formatMessage({ id: 'odc.components.RecordPage.ExecutionResult' }), //执行结果
+      title: formatMessage({
+        id: 'odc.components.RecordPage.ExecutionResult',
+        defaultMessage: '执行结果',
+      }), //执行结果
       width: 100,
       ellipsis: true,
       key: 'result',
       dataIndex: 'result',
       filters: [
         {
-          text: formatMessage({ id: 'odc.components.RecordPage.Successful' }), //成功
+          text: formatMessage({
+            id: 'odc.components.RecordPage.Successful',
+            defaultMessage: '成功',
+          }), //成功
           value: AuditEventResult.SUCCESS,
         },
 
         {
-          text: formatMessage({ id: 'odc.components.RecordPage.Failed' }), //失败
+          text: formatMessage({ id: 'odc.components.RecordPage.Failed', defaultMessage: '失败' }), //失败
           value: AuditEventResult.FAILED,
         },
       ],
@@ -190,7 +213,7 @@ export const getPageColumns = (params: {
     },
 
     {
-      title: formatMessage({ id: 'odc.components.RecordPage.Actions' }), //操作
+      title: formatMessage({ id: 'odc.components.RecordPage.Actions', defaultMessage: '操作' }), //操作
       width: 60,
       key: 'action',
       render: (value, record) => (
@@ -199,7 +222,7 @@ export const getPageColumns = (params: {
             params.openDetailModal(record);
           }}
         >
-          {formatMessage({ id: 'odc.components.RecordPage.View' }) /*查看*/}
+          {formatMessage({ id: 'odc.components.RecordPage.View', defaultMessage: '查看' }) /*查看*/}
         </Action.Link>
       ),
     },

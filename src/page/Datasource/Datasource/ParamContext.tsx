@@ -29,16 +29,23 @@ export enum SearchType {
 export const SearchTypeText = {
   [SearchType.ALL]: formatMessage({
     id: 'odc.Connecion.ConnectionList.ParamContext.All',
+    defaultMessage: '全部',
   }), //全部
-  [SearchType.NAME]: formatMessage({ id: 'odc.Datasource.Datasource.ParamContext.DataSourceName' }), //数据源名
+  [SearchType.NAME]: formatMessage({
+    id: 'odc.Datasource.Datasource.ParamContext.DataSourceName',
+    defaultMessage: '数据源名',
+  }), //数据源名
   [SearchType.CLUSTER]: formatMessage({
     id: 'odc.Connecion.ConnectionList.ParamContext.Cluster',
+    defaultMessage: '集群',
   }), //集群
   [SearchType.TENANT]: formatMessage({
     id: 'odc.Connecion.ConnectionList.ParamContext.Tenant',
+    defaultMessage: '租户',
   }), //租户
   [SearchType.HOST]: formatMessage({
     id: 'odc.Connecion.ConnectionList.ParamContext.HostPort',
+    defaultMessage: '主机端口',
   }), //主机端口
 };
 
@@ -52,9 +59,11 @@ export enum SortType {
 export const PermissionText = {
   [actionTypes.writeAndReadConnect]: formatMessage({
     id: 'odc.Connecion.ConnectionList.ParamContext.PublicReadWriteConnection',
+    defaultMessage: '公共读写连接',
   }), //公共读写连接
   [actionTypes.readonlyconnect]: formatMessage({
     id: 'odc.Connecion.ConnectionList.ParamContext.PublicReadOnlyConnection',
+    defaultMessage: '公共只读连接',
   }), //公共只读连接
 };
 
@@ -65,7 +74,8 @@ interface IParamContext {
   setSortType?: (v: SortType) => void;
   connectType: ConnectType[];
   setConnectType?: (v: ConnectType[]) => void;
-  reloadTable?: () => Promise<boolean>;
+  reloadTable?: () => void;
+  loading?: boolean;
   editDatasource?: (id: number) => void;
   setCopyDatasourceId?: (id: number) => void;
 }

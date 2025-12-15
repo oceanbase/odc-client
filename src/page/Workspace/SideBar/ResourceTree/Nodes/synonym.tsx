@@ -16,12 +16,12 @@
 
 import { DbObjectType, SynonymType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
+import { openSynonymViewPage } from '@/store/helper/page';
 import SessionStore from '@/store/sessionManager/session';
 import { ReactComponent as SynonymSvg } from '@/svgr/menuSynonym.svg';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
-import { openSynonymViewPage } from '@/store/helper/page';
 
 export function SynonymTreeData(
   dbSession: SessionStore,
@@ -32,8 +32,11 @@ export function SynonymTreeData(
   const synonyms = isPublic ? dbSession?.database?.publicSynonyms : dbSession?.database?.synonyms;
   const treeData: TreeDataNode = {
     title: isPublic
-      ? formatMessage({ id: 'odc.ResourceTree.Nodes.synonym.CommonSynonyms' }) //公共同义词
-      : formatMessage({ id: 'odc.ResourceTree.Nodes.synonym.Synonym' }), //同义词
+      ? formatMessage({
+          id: 'odc.ResourceTree.Nodes.synonym.CommonSynonyms',
+          defaultMessage: '公共同义词',
+        }) //公共同义词
+      : formatMessage({ id: 'odc.ResourceTree.Nodes.synonym.Synonym', defaultMessage: '同义词' }), //同义词
     key: `${database.id}-${dbName}-synonym-${isPublic}`,
     type: isPublic ? ResourceNodeType.PublicSynonymRoot : ResourceNodeType.SynonymRoot,
     data: database,
@@ -42,9 +45,7 @@ export function SynonymTreeData(
   };
   if (synonyms) {
     treeData.children = synonyms.map((synonym) => {
-      const key = `${database.id}-${
-        isPublic ? dbSession?.database?.publicSynonymVersion : dbSession?.database?.synonymVersion
-      }-${dbName}-sequence-${synonym.synonymName}`;
+      const key = `${database.id}-${dbName}-synonym-${isPublic}-${synonym.synonymName}`;
       return {
         title: synonym.synonymName,
         key,
@@ -59,7 +60,8 @@ export function SynonymTreeData(
             }}
           />
         ),
-        doubleClick(session, node, databaseFrom) {
+
+        doubleClick(session, node) {
           openSynonymViewPage(
             synonym.synonymName,
             isPublic ? SynonymType.PUBLIC : SynonymType.COMMON,

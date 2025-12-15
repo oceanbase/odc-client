@@ -16,15 +16,16 @@
 
 import { exportAudit, getConnectionOptionList, getUserOptionList } from '@/common/network/manager';
 import ConnectionPopover from '@/component/ConnectionPopover';
+import { AuditEventActionMap } from '@/constant/record';
 import type { IManagerPublicConnection, IManagerUser } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { downloadFile, getPreTime } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
+import { getPreTime } from '@/util/data/dateTime';
 import { Button, DatePicker, Drawer, Form, Popover, Select, Space, TreeSelect } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import type { DataNode } from 'antd/lib/tree';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
-import { AuditEventActionMap } from '@/constant/record';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -122,15 +123,17 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
         width={520}
         title={formatMessage({
           id: 'odc.components.FormRecordExportModal.ExportOperationRecords',
+          defaultMessage: '导出操作记录',
         })}
         /*导出操作记录*/
-        className={styles.exportModal}
+        rootClassName={styles.exportModal}
         footer={
           <Space>
             <Button onClick={handleClose}>
               {
                 formatMessage({
                   id: 'odc.components.FormRecordExportModal.Cancel',
+                  defaultMessage: '取消',
                 })
 
                 /*取消*/
@@ -140,6 +143,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.components.FormRecordExportModal.Export',
+                  defaultMessage: '导出',
                 })
 
                 /*导出*/
@@ -158,12 +162,13 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
           initialValues={{
             event,
             format: 'CSV',
-            dateRange: [moment(getPreTime(7)), moment()],
+            dateRange: [dayjs(getPreTime(7)), dayjs()],
           }}
         >
           <Form.Item
             label={formatMessage({
               id: 'odc.components.FormRecordExportModal.ExecutionTimeRange',
+              defaultMessage: '执行时间范围',
             })}
             /*执行时间范围*/ name="dateRange"
             required
@@ -174,6 +179,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.components.FormRecordExportModal.EventAction',
+              defaultMessage: '事件操作',
             })}
             /*事件操作*/ name="event"
           >
@@ -181,6 +187,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
               treeCheckable
               placeholder={formatMessage({
                 id: 'odc.components.FormRecordExportModal.SelectAllByDefault',
+                defaultMessage: '默认选择全部',
               })}
               /*默认选择全部*/ treeData={eventOptions}
             />
@@ -188,12 +195,14 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'src.page.Secure.components.FormRecordExportModal.2906C216',
+              defaultMessage: '所属公共数据源',
             })}
             name="connectionIds"
           >
             <Select
               placeholder={formatMessage({
                 id: 'odc.components.FormRecordExportModal.SelectAllByDefault',
+                defaultMessage: '默认选择全部',
               })}
               /*默认选择全部*/
               mode="multiple"
@@ -220,12 +229,14 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.components.FormRecordExportModal.Executor',
+              defaultMessage: '执行人',
             })}
             /*执行人*/ name="userIds"
           >
             <Select
               placeholder={formatMessage({
                 id: 'odc.components.FormRecordExportModal.SelectAllByDefault',
+                defaultMessage: '默认选择全部',
               })}
               /*默认选择全部*/
               mode="multiple"
@@ -238,6 +249,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.components.FormRecordExportModal.ExecutionResult',
+              defaultMessage: '执行结果',
             })}
             /*执行结果*/ name="results"
             style={{ width: '340px' }}
@@ -245,6 +257,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
             <Select
               placeholder={formatMessage({
                 id: 'odc.components.FormRecordExportModal.SelectAllByDefault',
+                defaultMessage: '默认选择全部',
               })}
               /*默认选择全部*/
               mode="multiple"
@@ -252,6 +265,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
                 {
                   label: formatMessage({
                     id: 'odc.components.FormRecordExportModal.Successful',
+                    defaultMessage: '成功',
                   }),
 
                   //成功
@@ -261,6 +275,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
                 {
                   label: formatMessage({
                     id: 'odc.components.FormRecordExportModal.Failed',
+                    defaultMessage: '失败',
                   }),
 
                   //失败
@@ -272,6 +287,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.components.FormRecordExportModal.ExportFormat',
+              defaultMessage: '导出格式',
             })}
             /*导出格式*/ name="format"
             style={{ width: '160px' }}
@@ -282,6 +298,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
                 {
                   label: formatMessage({
                     id: 'odc.components.FormRecordExportModal.ExcelFormat',
+                    defaultMessage: 'Excel 格式',
                   }),
 
                   //Excel 格式
@@ -291,6 +308,7 @@ const FormResourceGroupModal: React.FC<IProps> = (props) => {
                 {
                   label: formatMessage({
                     id: 'odc.components.FormRecordExportModal.CsvFormat',
+                    defaultMessage: 'CSV 格式',
                   }),
 
                   //CSV 格式

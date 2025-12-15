@@ -15,9 +15,9 @@
  */
 
 import setting from '@/store/setting';
-import { uploadFileToOSS } from '@/util/aliyun';
+import { uploadFileToOSS } from '@/common/network/aliyun';
 import { formatMessage } from '@/util/intl';
-import { encodeRegexpStr } from '@/util/utils';
+import { encodeRegexpStr } from '@/util/data/string';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useUnmountedRef } from 'ahooks';
 import { Button, Input, Space, Tooltip, Upload } from 'antd';
@@ -26,12 +26,12 @@ import type { UploadFile } from 'antd/lib/upload/interface';
 import update from 'immutability-helper';
 import _ from 'lodash';
 import React, {
+  forwardRef,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
-  useImperativeHandle,
-  forwardRef,
 } from 'react';
 import FileList from './FileList';
 import styles from './index.less';
@@ -80,7 +80,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
       _.throttle((list: UploadFile[]) => {
         handleFileChange(list);
         if (clearSuccess) {
-          setFileList(list.filter((file) => file.status !== 'success'));
+          setFileList(list.filter((file) => file.status !== 'done'));
         } else {
           setFileList(list);
         }
@@ -92,7 +92,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
       _.throttle((list: UploadFile[]) => {
         handleFileChange(list);
         if (clearSuccess) {
-          setFileList(list.filter((file) => file.status !== 'success'));
+          setFileList(list.filter((file) => file.status !== 'done'));
         } else {
           setFileList(list);
         }
@@ -113,6 +113,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
 
     const params = {
       ...props,
+      ref: null,
       onChange(info) {
         const files = info.fileList;
         const uploadingListLen = files?.filter((file) => file.status === 'uploading')?.length;
@@ -247,6 +248,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
                       prefix={<SearchOutlined />}
                       placeholder={formatMessage({
                         id: 'odc.component.OSSDragger2.SearchForFileName',
+                        defaultMessage: '搜索文件名称',
                       })}
                       /*搜索文件名称*/
                       onSearch={(value, e) => {
@@ -265,6 +267,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
                       {
                         formatMessage({
                           id: 'odc.component.OSSDragger2.Cancel',
+                          defaultMessage: '取消',
                         })
                         /*取消*/
                       }
@@ -278,6 +281,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
                           ? tip
                           : formatMessage({
                               id: 'odc.component.OSSDragger2.SupportsDragAndDropFile',
+                              defaultMessage: '支持拖拽文件上传',
                             }) //支持拖拽文件上传
                       }
                     </div>
@@ -286,6 +290,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
                         <Tooltip
                           title={formatMessage({
                             id: 'odc.component.OSSDragger2.Search',
+                            defaultMessage: '搜索',
                           })}
                           /*搜索*/
                         >
@@ -296,9 +301,11 @@ const ODCDragger: React.FC<IProps> = React.memo(
                           />
                         </Tooltip>
                       )}
+
                       <Tooltip
                         title={formatMessage({
                           id: 'odc.component.OSSDragger2.Add',
+                          defaultMessage: '添加',
                         })}
                         /*添加*/
                       >

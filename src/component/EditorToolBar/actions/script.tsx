@@ -20,15 +20,20 @@ import { PLType } from '@/constant/plType';
 import { PLPage } from '@/page/Workspace/components/PLPage';
 import { PLPageType } from '@/store/helper/page/pages/pl';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 import { Modal } from 'antd'; // @ts-ignore
 import { ToolBarActions } from '..';
+import AIState from '@/component/AIState';
+import AICompletionState from '@/component/AICompletionState';
 
 const { confirm } = Modal;
 const scriptActions: ToolBarActions = {
   SNIPPET: {
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.script.SyntaxHelp' }), // 代码片段
+    name: formatMessage({
+      id: 'odc.EditorToolBar.actions.script.SyntaxHelp',
+      defaultMessage: '代码片段',
+    }), // 代码片段
     icon: 'SNIPPET',
     statusFunc: (ctx) => {
       return ctx.state.showGrammerHelpSider ? IConStatus.ACTIVE : IConStatus.INIT;
@@ -42,7 +47,10 @@ const scriptActions: ToolBarActions = {
   },
 
   SNIPPET_SECTION_GROUP: {
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.script.Placeholder' }), // 占位符
+    name: formatMessage({
+      id: 'odc.EditorToolBar.actions.script.Placeholder',
+      defaultMessage: '占位符',
+    }), // 占位符
     icon: 'ADD_SNIPPET_SECTION',
     menu: ['ADD_SNIPPET_SECTION', 'REMOVE_SNIPPET_SECTION'],
   },
@@ -50,6 +58,7 @@ const scriptActions: ToolBarActions = {
   ADD_SNIPPET_SECTION: {
     name: formatMessage({
       id: 'odc.EditorToolBar.actions.script.AddPlaceholder',
+      defaultMessage: '添加占位符',
     }),
     // 添加占位符
     icon: 'ADD_SNIPPET_SECTION',
@@ -88,6 +97,7 @@ const scriptActions: ToolBarActions = {
   REMOVE_SNIPPET_SECTION: {
     name: formatMessage({
       id: 'odc.EditorToolBar.actions.script.DeletePlaceholder',
+      defaultMessage: '删除占位符',
     }),
     // 删除占位符
     icon: 'REMOVE_SNIPPET_SECTION',
@@ -125,7 +135,10 @@ const scriptActions: ToolBarActions = {
   },
 
   DOWNLOAD: {
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.script.Download' }), //下载
+    name: formatMessage({
+      id: 'odc.EditorToolBar.actions.script.Download',
+      defaultMessage: '下载',
+    }), //下载
     icon: CloudDownloadOutlined,
     async action(ctx: PLPage) {
       const text = ctx?.props?.params?.scriptText || '';
@@ -139,6 +152,12 @@ const scriptActions: ToolBarActions = {
         downloadPLDDL(params?.plSchema?.plName, params?.plSchema?.plType, text, dbName);
       }
     },
+  },
+  AI: {
+    Component: AIState,
+  },
+  AIComplete: {
+    Component: AICompletionState,
   },
 };
 

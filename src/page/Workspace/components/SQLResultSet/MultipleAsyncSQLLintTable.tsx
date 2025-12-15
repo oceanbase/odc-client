@@ -1,23 +1,42 @@
-import { formatMessage } from '@/util/intl';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
+import { IDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
-import { groupByPropertyName } from '@/util/utils';
+import { formatMessage } from '@/util/intl';
+import { groupByPropertyName } from '@/util/data/array';
 import { Table } from 'antd';
 import classNames from 'classnames';
 import { useCallback, useEffect, useState } from 'react';
-import styles from './index.less';
 import { getMultipleAsyncColumns } from './columns';
-import { IDatabase } from '@/d.ts/database';
+import styles from './index.less';
 const LintResultTip = {
   default: formatMessage({
     id: 'odc.src.page.Workspace.components.SQLResultSet.CurrentSQLCanBeExecuted',
+    defaultMessage: '当前 SQL 可直接执行',
   }), //'当前 SQL 可直接执行'
   suggest: formatMessage({
     id: 'odc.src.page.Workspace.components.SQLResultSet.TheCurrentSQLNeedsApproval',
+    defaultMessage: '当前 SQL 存在需要审批项，请发起审批或修改后再执行',
   }), //'当前 SQL 存在需要审批项，请发起审批或修改后再执行'
   must: formatMessage({
     id: 'odc.src.page.Workspace.components.SQLResultSet.TheCurrentSQLExistenceMust',
+    defaultMessage: '当前 SQL 存在必须改进项，请修改后再执行',
   }), //'当前 SQL 存在必须改进项，请修改后再执行'
 };
 export interface ILintResultTableProps {

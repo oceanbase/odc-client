@@ -66,6 +66,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
         this.props.onSave(Step.ADVANCED, values);
       })
       .catch((errorInfo) => {
+        this?.formRef?.current?.scrollToField(errorInfo?.errorFields?.[0]?.name);
         throw new Error(errorInfo);
       });
   };
@@ -107,6 +108,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
           <Form.Item
             label={formatMessage({
               id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.TriggerType',
+              defaultMessage: '触发器类型',
             })}
             /* 触发器类型 */
             name="triggerType"
@@ -115,6 +117,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
                 required: true,
                 message: formatMessage({
                   id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.SelectATriggerType',
+                  defaultMessage: '请选择触发器类型',
                 }), // 请选择触发器类型
               },
             ]}
@@ -133,6 +136,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
             }}
             label={formatMessage({
               id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.Trigger',
+              defaultMessage: '触发',
             })}
             /* 触发 */
             name="triggerMode"
@@ -141,6 +145,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
                 required: true,
                 message: formatMessage({
                   id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.SelectTrigger',
+                  defaultMessage: '请选择触发',
                 }), // 请选择触发
               },
             ]}
@@ -154,6 +159,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
           <Form.Item
             label={formatMessage({
               id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.Level',
+              defaultMessage: '级别',
             })}
             /* 级别 */
             name="triggerGrade"
@@ -162,6 +168,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
                 required: true,
                 message: formatMessage({
                   id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.SelectALevel',
+                  defaultMessage: '请选择级别',
                 }), // 请选择级别
               },
             ]}
@@ -172,6 +179,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.RowLevel',
+                    defaultMessage: '行级',
                   })
                   /* 行级 */
                 }
@@ -187,6 +195,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
             <Form.Item
               label={formatMessage({
                 id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.Event',
+                defaultMessage: '事件',
               })}
               /* 事件 */
               name="triggerEvents"
@@ -195,6 +204,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
                   required: true,
                   message: formatMessage({
                     id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.SelectAtLeastOneEvent',
+                    defaultMessage: '请至少选择一个事件',
                   }),
                   // 请至少选择一个事件
                 },
@@ -214,6 +224,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
               <Form.Item
                 label={formatMessage({
                   id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.ColumnOptional',
+                  defaultMessage: '列',
                 })} /* 列 */
                 name="triggerColumns"
                 rules={[
@@ -221,6 +232,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
                     required: true,
                     message: formatMessage({
                       id: 'odc.components.CreateTriggerPage.SelectUpdateEventTheColumn',
+                      defaultMessage: '选择 Update 事件，列不能为空',
                     }),
                   },
                 ]}
@@ -236,6 +248,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
                         {
                           formatMessage({
                             id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.SelectAll',
+                            defaultMessage: '全选',
                           }) /* 全选 */
                         }
                       </Checkbox>
@@ -262,6 +275,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
             <Form.Item
               label={formatMessage({
                 id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.ReferenceOldValuesOptional',
+                defaultMessage: '引用旧值',
               })}
               /* 引用旧值 */ name="referencesOldValue"
             >
@@ -269,6 +283,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
                 onChange={this.handleChange}
                 placeholder={formatMessage({
                   id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.ReferenceOldValues',
+                  defaultMessage: '引用旧值',
                 })}
                 /* 引用旧值 */
                 disabled={!enableTriggerReferences}
@@ -285,6 +300,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
             <Form.Item
               label={formatMessage({
                 id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.ReferenceNewValueOptional',
+                defaultMessage: '引用新值',
               })}
               /* 引用新值 */ name="referencesNewValue"
             >
@@ -292,6 +308,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
                 onChange={this.handleChange}
                 placeholder={formatMessage({
                   id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.ReferenceANewValue',
+                  defaultMessage: '引用新值',
                 })}
                 /* 引用新值 */
                 disabled={!enableTriggerReferences}
@@ -304,6 +321,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
             <Form.Item
               label={formatMessage({
                 id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.ClauseConditionOptional',
+                defaultMessage: '子句条件',
               })}
               /* 子句条件（选填） */ name="sqlExpression"
             >
@@ -311,6 +329,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
                 onChange={this.handleChange}
                 placeholder={formatMessage({
                   id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.ClauseCondition',
+                  defaultMessage: '子句条件',
                 })}
 
                 /* 子句条件 */
@@ -329,6 +348,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
               {
                 formatMessage({
                   id: 'odc.CreateTriggerPage.component.AdvancedInfoFrom.Determine',
+                  defaultMessage: '确定',
                 })
                 /* 确定 */
               }

@@ -20,8 +20,8 @@ import { inject, observer } from 'mobx-react';
 import React from 'react';
 export function getConfirmTitle(isRollback?: boolean) {
   const text = isRollback
-    ? formatMessage({ id: 'odc.component.SubmitConfirm.Rollback' }) //回滚
-    : formatMessage({ id: 'odc.component.SubmitConfirm.Submitted' }); //提交
+    ? formatMessage({ id: 'odc.component.SubmitConfirm.Rollback', defaultMessage: '回滚' }) //回滚
+    : formatMessage({ id: 'odc.component.SubmitConfirm.Submitted', defaultMessage: '提交' }); //提交
   return (
     <div
       style={{
@@ -39,8 +39,9 @@ export function getConfirmTitle(isRollback?: boolean) {
           formatMessage(
             {
               id: 'odc.component.SubmitConfirm.ConfirmTheTextCurrentTransaction',
+              defaultMessage: '是否确认{text}当前事务？',
             },
-            { text: text },
+            { text },
           ) /*确认{text}当前事务？*/
         }
       </div>
@@ -49,6 +50,7 @@ export function getConfirmTitle(isRollback?: boolean) {
           {
             formatMessage({
               id: 'odc.component.SubmitConfirm.TheCurrentConnectionUsesA',
+              defaultMessage: '当前连接采用共享 Session，',
             }) /*当前连接采用共享session，*/
           }
         </div>
@@ -56,6 +58,7 @@ export function getConfirmTitle(isRollback?: boolean) {
         {
           formatMessage({
             id: 'odc.component.SubmitConfirm.TheOperationTakesEffectFor',
+            defaultMessage: '操作会对所有窗口生效。',
           }) /*操作会对所有窗口生效。*/
         }
       </div>
@@ -70,8 +73,8 @@ const SubmitConfirm: React.FC<{
   disabled?: boolean;
 }> = function (props) {
   const text = props.isRollback
-    ? formatMessage({ id: 'odc.component.SubmitConfirm.Rollback' }) //回滚
-    : formatMessage({ id: 'odc.component.SubmitConfirm.Submitted' }); //提交
+    ? formatMessage({ id: 'odc.component.SubmitConfirm.Rollback', defaultMessage: '回滚' }) //回滚
+    : formatMessage({ id: 'odc.component.SubmitConfirm.Submitted', defaultMessage: '提交' }); //提交
   return (
     <>
       {React.Children.map(props.children, (child) => {

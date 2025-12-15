@@ -15,32 +15,41 @@
  */
 import { getDatabasePermissions, reclaimDatabasePermission } from '@/common/network/project';
 import { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
+import HelpDoc from '@/component/helpDoc';
 import type { IResponseData } from '@/d.ts';
 import { DatabasePermissionType } from '@/d.ts/database';
 import { IDatabasePermission, PermissionSourceType } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
-import { Modal, Radio, Space, Typography, message } from 'antd';
+import { message, Modal, Radio, Typography } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import CreateAuth from './CreateAuth';
+import styles from './index.less';
 import { databasePermissionStatusMap } from './Status';
 import TaskApplyList from './TaskApplyList';
 import UserAuthList from './UserAuthList';
-import styles from './index.less';
-import HelpDoc from '@/component/helpDoc';
 
 const { Text } = Typography;
 
 export const databasePermissionTypeMap = {
   [DatabasePermissionType.QUERY]: {
-    text: formatMessage({ id: 'src.page.Project.User.ManageModal.CDB8A0AA' }), //'查询'
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.CDB8A0AA',
+      defaultMessage: '查询',
+    }), //'查询'
     value: DatabasePermissionType.QUERY,
   },
   [DatabasePermissionType.EXPORT]: {
-    text: formatMessage({ id: 'src.page.Project.User.ManageModal.6CDF0607' }), //'导出'
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.6CDF0607',
+      defaultMessage: '导出',
+    }), //'导出'
     value: DatabasePermissionType.EXPORT,
   },
   [DatabasePermissionType.CHANGE]: {
-    text: formatMessage({ id: 'src.page.Project.User.ManageModal.2DDCB471' }), //'变更'
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.2DDCB471',
+      defaultMessage: '变更',
+    }), //'变更'
     value: DatabasePermissionType.CHANGE,
   },
   [DatabasePermissionType.ACCESS]: {
@@ -60,11 +69,12 @@ interface IProps {
   projectId: number;
   userId: number;
   isOwner: boolean;
+  isDBA: boolean;
   onClose: () => void;
 }
 
 const ManageModal: React.FC<IProps> = (props) => {
-  const { isOwner, projectId, userId } = props;
+  const { isOwner, projectId, userId, isDBA } = props;
   const [dataSource, setDataSource] = useState<IResponseData<IDatabasePermission>>(null);
   const [authorizationType, setAuthorizationType] = useState(
     PermissionSourceType.TICKET_APPLICATION,
@@ -95,6 +105,9 @@ const ManageModal: React.FC<IProps> = (props) => {
       page: current,
       size: pageSize,
     };
+    if (pageSize === 0) {
+      return;
+    }
     // sorter
     params.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
     const res = await getDatabasePermissions(params);
@@ -115,28 +128,44 @@ const ManageModal: React.FC<IProps> = (props) => {
   const handleReclaim = async (ids: number[]) => {
     const isBatch = ids?.length > 1;
     const title = isBatch
-      ? formatMessage({ id: 'src.page.Project.User.ManageModal.A23DCE27' })
-      : formatMessage({ id: 'src.page.Project.User.ManageModal.8B929D18' });
+      ? formatMessage({
+          id: 'src.page.Project.User.ManageModal.A23DCE27',
+          defaultMessage: '确认要批量回收权限吗？',
+        })
+      : formatMessage({
+          id: 'src.page.Project.User.ManageModal.8B929D18',
+          defaultMessage: '确认要回收权限吗？',
+        });
     Modal.confirm({
       title,
       content: (
-        <Text type="secondary">
+        <Text>
           {
             formatMessage({
               id: 'src.page.Project.User.ManageModal.B7377F46' /*回收后不可撤回*/,
+              defaultMessage: '回收后不可撤回',
             }) /* 回收后不可撤回 */
           }
         </Text>
       ),
 
-      cancelText: formatMessage({ id: 'src.page.Project.User.ManageModal.2FE8276F' }), //'取消'
-      okText: formatMessage({ id: 'src.page.Project.User.ManageModal.1C087F21' }), //'确定'
+      cancelText: formatMessage({
+        id: 'src.page.Project.User.ManageModal.2FE8276F',
+        defaultMessage: '取消',
+      }), //'取消'
+      okText: formatMessage({
+        id: 'src.page.Project.User.ManageModal.1C087F21',
+        defaultMessage: '确定',
+      }), //'确定'
       centered: true,
       onOk: async () => {
         const res = await reclaimDatabasePermission(projectId, ids);
         if (res) {
           message.success(
-            formatMessage({ id: 'src.page.Project.User.ManageModal.B3D76C33' /*'操作成功'*/ }),
+            formatMessage({
+              id: 'src.page.Project.User.ManageModal.B3D76C33' /*'操作成功'*/,
+              defaultMessage: '操作成功',
+            }),
           );
           tableRef.current?.resetSelectedRows();
           handleReload();
@@ -144,12 +173,6 @@ const ManageModal: React.FC<IProps> = (props) => {
       },
     });
   };
-
-  useEffect(() => {
-    if (projectId && userId) {
-      loadData();
-    }
-  }, [userId, projectId, authorizationType]);
 
   const handleSwitchUserTab = () => {
     if (authorizationType === PermissionSourceType.USER_AUTHORIZATION) {
@@ -174,13 +197,14 @@ const ManageModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'src.page.Project.User.ManageModal.28BC85BF' /*用户授权*/,
+                  defaultMessage: '用户授权',
                 }) /* 用户授权 */
               }
             </Radio.Button>
           </Radio.Group>
           <HelpDoc isTip leftText doc="userManageTip" />
         </div>
-        {isOwner && (
+        {(isOwner || isDBA) && (
           <CreateAuth projectId={projectId} userId={userId} onSwitchUserTab={handleSwitchUserTab} />
         )}
       </div>
@@ -191,6 +215,7 @@ const ManageModal: React.FC<IProps> = (props) => {
             dataSource={dataSource}
             params={params}
             isOwner={isOwner}
+            isDBA={isDBA}
             tableRef={tableRef}
             onLoad={loadData}
             onChange={handleChange}
@@ -202,6 +227,7 @@ const ManageModal: React.FC<IProps> = (props) => {
             dataSource={dataSource}
             params={params}
             isOwner={isOwner}
+            isDBA={isDBA}
             tableRef={tableRef}
             onLoad={loadData}
             onChange={handleChange}

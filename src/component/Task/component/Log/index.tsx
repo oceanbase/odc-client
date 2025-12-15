@@ -18,7 +18,7 @@ import Log from '@/component/Log';
 import { CommonTaskLogType } from '@/d.ts';
 import type { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { Spin, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import styles from './index.less';
@@ -55,6 +55,7 @@ const TaskLog: React.FC<{
         {
           label: formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskLog.AllLogs',
+            defaultMessage: '全部日志',
           }),
           key: CommonTaskLogType.ALL,
           children: (
@@ -76,6 +77,7 @@ const TaskLog: React.FC<{
         {
           label: formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskLog.AlertLogs',
+            defaultMessage: '告警日志',
           }),
           key: CommonTaskLogType.WARN,
           children: (

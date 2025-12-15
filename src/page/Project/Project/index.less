@@ -7,10 +7,13 @@
       line-height: 24px;
       opacity: 0.85;
       &.ant-tabs-tab-active {
-        color: #000000;
+        color: var(--text-color-secondary);
       }
     }
   }
+}
+.projectActions {
+  margin-top: -38px;
 }
 
 .header {
@@ -34,6 +37,8 @@
       overflow: hidden;
       > .ant-spin-container {
         height: 100%;
+        display: flex;
+        flex-direction: column;
       }
     }
   }

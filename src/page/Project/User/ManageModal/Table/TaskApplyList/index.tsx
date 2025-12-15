@@ -23,8 +23,8 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
-import TaskDetailModal from '@/component/Task/DetailModal';
+import TaskDetailModal from '@/component/Task/modals/DetailModals';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 import type { IResponseData } from '@/d.ts';
 import { TaskType } from '@/d.ts';
 import { ITablePermission, TablePermissionStatus } from '@/d.ts/project';
@@ -48,8 +48,8 @@ const getColumns = (params: {
     {
       dataIndex: 'tableName',
       title: formatMessage({
-        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.8F13E12E',
-        defaultMessage: '表',
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.3EEF9DAF',
+        defaultMessage: '表/视图',
       }),
       width: 140,
       ellipsis: true,
@@ -137,6 +137,9 @@ const getColumns = (params: {
 
       filteredValue: filters?.dataSourceName || null,
       filters: [],
+      render(value) {
+        return value || '-';
+      },
     },
     {
       dataIndex: 'ticketId',
@@ -252,6 +255,7 @@ interface IProps {
   dataSource: IResponseData<ITablePermission>;
   params: ITableLoadOptions;
   isOwner: boolean;
+  isDBA: boolean;
   tableRef: React.RefObject<ITableInstance>;
   onReclaim: (ids: number[]) => void;
   onLoad: (args: ITableLoadOptions) => Promise<any>;
@@ -259,7 +263,8 @@ interface IProps {
 }
 
 const TaskApplyList: React.FC<IProps> = (props) => {
-  const { projectId, isOwner, dataSource, params, tableRef, onReclaim, onLoad, onChange } = props;
+  const { projectId, isOwner, isDBA, dataSource, params, tableRef, onReclaim, onLoad, onChange } =
+    props;
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
 
@@ -287,8 +292,12 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         }}
         titleContent={null}
         rowSelecter={
-          isOwner
+          isOwner || isDBA
             ? {
+                selectAllText: formatMessage({
+                  id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.88383CDB',
+                  defaultMessage: '全选当前页',
+                }),
                 options: [
                   {
                     okText: formatMessage({
@@ -310,7 +319,9 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         onLoad={onLoad}
         onChange={onChange}
         tableProps={{
-          columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
+          columns: columns?.filter((item) =>
+            isOwner || isDBA ? true : item?.dataIndex !== 'action',
+          ),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
           scroll: {

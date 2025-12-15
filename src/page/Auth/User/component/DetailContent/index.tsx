@@ -20,31 +20,40 @@ import { canAcess } from '@/component/Acess';
 import ChangePasswordModal from '@/component/ChangePasswordModal';
 import DisplayTable from '@/component/DisplayTable';
 import RoleList, { useRoleListByIds } from '@/component/Manage/RoleList';
+import RelativeResourceModal from '@/component/RelativeResourceModal';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { actionTypes, IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Button, Descriptions, Divider, message, Modal, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getAuthLabelString, resourceAuthMap, ResourceManagementAction } from '../../../utils';
+import { getResourceDependencies } from '@/common/network/relativeResource';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import { openResourceDepNotification } from '@/util/hooks/useResourceDepNotification';
+import { EResourceType, EStatus } from '@/util/hooks/useResourceDepNotification';
+import { EEntityType } from '@/d.ts/relativeResource';
+import { SchedulePageMode } from '@/component/Schedule/interface';
 
 const authFilters = [
   {
-    text: formatMessage({ id: 'odc.component.DetailContent.CanBeCreated' }), //可新建
+    text: formatMessage({
+      id: 'odc.component.DetailContent.CanBeCreated',
+      defaultMessage: '可新建',
+    }), //可新建
     value: ResourceManagementAction.can_create,
   },
   {
-    text: formatMessage({ id: 'odc.component.DetailContent.ViewOnly' }), //仅查看
+    text: formatMessage({ id: 'odc.component.DetailContent.ViewOnly', defaultMessage: '仅查看' }), //仅查看
     value: ResourceManagementAction.can_read,
   },
   {
-    text: formatMessage({ id: 'odc.component.DetailContent.Editable' }), //可编辑
+    text: formatMessage({ id: 'odc.component.DetailContent.Editable', defaultMessage: '可编辑' }), //可编辑
     value: ResourceManagementAction.can_update,
   },
   {
-    text: formatMessage({ id: 'odc.component.DetailContent.Manageable' }), //可管理
+    text: formatMessage({ id: 'odc.component.DetailContent.Manageable', defaultMessage: '可管理' }), //可管理
     value: ResourceManagementAction.can_manage,
   },
 ];
@@ -53,13 +62,17 @@ const getColumns = () => {
   return [
     {
       dataIndex: 'name',
-      title: formatMessage({ id: 'odc.component.DetailContent.DataSource' }), //数据源
+      title: formatMessage({
+        id: 'odc.component.DetailContent.DataSource',
+        defaultMessage: '数据源',
+      }), //数据源
       ellipsis: true,
     },
     {
       dataIndex: 'permittedActions',
       title: formatMessage({
         id: 'odc.components.UserPage.component.Permissions',
+        defaultMessage: '权限',
       }),
       // 权限
       width: 108,
@@ -92,46 +105,67 @@ const UserDetail: React.FC<{
     extraProperties,
   } = data;
   const [visible, setVisible] = useState(false);
+  const [openDepResourceModal, setOpenDepResourceModal] = useState(false);
   const relatedRoles = useRoleListByIds(roles, roleIds);
 
-  const handleDeleteUser = async () => {
-    const res = await deleteUser(id);
-    if (res) {
-      message.success(
-        formatMessage({ id: 'odc.components.UserPage.component.Deleted' }), // 删除成功
-      );
+  const handleDeleteUserWithNotification = async () => {
+    openResourceDepNotification({ name, type: EResourceType.USER, status: EStatus.LOADING });
+    const isSuccess = await deleteUser(id, true);
+    if (isSuccess) {
+      openResourceDepNotification({ name, type: EResourceType.USER, status: EStatus.SUCCESS });
       handleCloseAndReload();
     } else {
-      message.error(
-        formatMessage({
-          id: 'odc.components.UserPage.component.UnableToDelete',
-        }),
-        // 删除失败
-      );
+      openResourceDepNotification({
+        name,
+        type: EResourceType.USER,
+        status: EStatus.FAILED,
+      });
     }
   };
 
-  const handleDelete = () => {
-    Modal.confirm({
-      title: formatMessage({
-        id: 'odc.components.UserPage.component.AreYouSureYouWant',
-      }),
-      // 确定要删除用户吗？
-      icon: <ExclamationCircleFilled style={{ color: '#faad14' }} />,
-      content: formatMessage({
-        id: 'odc.components.UserPage.component.AfterAUserIsDeleted',
-      }), // 删除用户后，用户将无法登录系统，相关数据也无法恢复
-      cancelText: formatMessage({
-        id: 'odc.components.UserPage.component.Cancel',
-      }),
-      // 取消
-      okText: formatMessage({
-        id: 'odc.components.UserPage.component.Determine',
-      }),
-      // 确定
-      centered: true,
-      onOk: handleDeleteUser,
-    });
+  const handleDeleteUser = async () => {
+    const isSuccess = await deleteUser(id);
+    if (isSuccess) {
+      handleCloseAndReload();
+    }
+  };
+
+  const handleDelete = async () => {
+    const res = await getResourceDependencies({ userId: id });
+    const data = res?.data;
+    const total =
+      data?.flowDependencies?.length ||
+      0 + data?.scheduleDependencies?.length ||
+      0 + data?.scheduleTaskDependencies?.length ||
+      0;
+    if (total > 0) {
+      setOpenDepResourceModal(true);
+    } else if (res?.successful) {
+      Modal.confirm({
+        title: formatMessage({
+          id: 'odc.components.UserPage.component.AreYouSureYouWant',
+          defaultMessage: '是否确定删除用户？',
+        }),
+        // 确定要删除用户吗？
+        icon: <ExclamationCircleFilled style={{ color: '#faad14' }} />,
+        content: formatMessage({
+          id: 'odc.components.UserPage.component.AfterAUserIsDeleted',
+          defaultMessage: '删除用户后，用户将无法登录系统，相关数据也无法恢复',
+        }), // 删除用户后，用户将无法登录系统，相关数据也无法恢复
+        cancelText: formatMessage({
+          id: 'odc.components.UserPage.component.Cancel',
+          defaultMessage: '取消',
+        }),
+        // 取消
+        okText: formatMessage({
+          id: 'odc.components.UserPage.component.Determine',
+          defaultMessage: '确定',
+        }),
+        // 确定
+        centered: true,
+        onOk: handleDeleteUser,
+      });
+    }
   };
 
   const handleSubmit = async ({ password }) => {
@@ -145,6 +179,7 @@ const UserDetail: React.FC<{
       message.success(
         formatMessage({
           id: 'odc.components.UserPage.component.ThePasswordHasBeenReset',
+          defaultMessage: '重置密码成功',
         }), // 重置密码成功
       );
     }
@@ -160,6 +195,12 @@ const UserDetail: React.FC<{
     );
   };
 
+  const canDelete = () =>
+    canAcess({
+      resourceIdentifier: IManagerResourceType.user,
+      action: actionTypes.delete,
+    }).accessible;
+
   return (
     <>
       <Descriptions column={1}>
@@ -167,6 +208,7 @@ const UserDetail: React.FC<{
           contentStyle={{ whiteSpace: 'pre' }}
           label={formatMessage({
             id: 'odc.components.UserPage.component.Account',
+            defaultMessage: '账号',
           })}
           /* 账号 */
         >
@@ -175,6 +217,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Name',
+            defaultMessage: '姓名',
           })} /* 姓名 */
         >
           {name}
@@ -182,6 +225,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Password',
+            defaultMessage: '密码',
           })}
           /* 密码 */
         >
@@ -197,6 +241,7 @@ const UserDetail: React.FC<{
                 {
                   formatMessage({
                     id: 'odc.components.UserPage.component.ResetPassword',
+                    defaultMessage: '重置密码',
                   })
                   /* 重置密码 */
                 }
@@ -207,6 +252,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Role',
+            defaultMessage: '角色',
           })}
           /* 角色 */
         >
@@ -215,6 +261,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Note',
+            defaultMessage: '备注',
           })}
           /* 备注 */
         >
@@ -223,6 +270,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.ExtraProperties',
+            defaultMessage: '自定义属性',
           })}
           /* 自定义属性 */
         >
@@ -234,6 +282,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Founder',
+            defaultMessage: '创建人',
           })}
           /* 创建人 */
         >
@@ -242,6 +291,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Created',
+            defaultMessage: '创建时间',
           })}
           /* 创建时间 */
         >
@@ -250,6 +300,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.UpdateTime',
+            defaultMessage: '更新时间',
           })}
           /* 更新时间 */
         >
@@ -257,12 +308,13 @@ const UserDetail: React.FC<{
         </Descriptions.Item>
       </Descriptions>
       <Divider />
-      {odc.appConfig.manage.user.delete && (
+      {odc.appConfig.manage.user.delete && canDelete() && (
         <Space size={5}>
           <span>
             {
               formatMessage({
                 id: 'odc.components.UserPage.component.AfterAUserIsDeleted',
+                defaultMessage: '删除用户后，用户将无法登录系统，相关数据也无法恢复',
               })
               /* 删除用户后，用户将无法登录系统，相关数据也无法恢复 */
             }
@@ -271,6 +323,7 @@ const UserDetail: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.UserPage.component.DeleteAUser',
+                defaultMessage: '删除用户',
               })
               /* 删除用户 */
             }
@@ -282,6 +335,7 @@ const UserDetail: React.FC<{
         <ChangePasswordModal
           title={formatMessage({
             id: 'odc.components.UserPage.component.ResetPassword',
+            defaultMessage: '重置密码',
           })}
           /* 重置密码 */
           visible={visible}
@@ -293,6 +347,25 @@ const UserDetail: React.FC<{
           isExternal
         />
       )}
+
+      <RelativeResourceModal
+        mode={EEntityType.USER}
+        open={openDepResourceModal}
+        id={id}
+        title={formatMessage(
+          {
+            id: 'src.page.Auth.User.component.DetailContent.C264E6A2',
+            defaultMessage: '确定要删除用户 {name} 吗？',
+          },
+          { name },
+        )}
+        onCancel={() => setOpenDepResourceModal(false)}
+        customSuccessHandler={async () => {
+          await handleDeleteUserWithNotification();
+          setOpenDepResourceModal(false);
+          handleCloseAndReload();
+        }}
+      />
     </>
   );
 };
@@ -342,7 +415,7 @@ const UserDetailContent: React.FC<{
     <DetailContent
       data={{ ...data }}
       disabledOp={disabledOp}
-      roles={roles}
+      roles={data?.roles}
       handleCloseAndReload={handleCloseAndReload}
     />
   );

@@ -31,7 +31,7 @@ function genRiskLevel(riskLevel: IRiskLevel): {
   origin: IRiskLevel;
 } {
   return {
-    label: RiskLevelMap[riskLevel?.level],
+    label: RiskLevelMap(riskLevel?.level),
     value: riskLevel?.level,
     origin: riskLevel,
   };
@@ -82,13 +82,15 @@ const RiskLevel = ({ userStore }) => {
         />
       }
       content={
-        <Spin spinning={loading}>
-          <InnerRiskLevel
-            key={currentRiskLevel?.id}
-            currentRiskLevel={currentRiskLevel}
-            memoryReload={memoryReload}
-          />
-        </Spin>
+        <div style={{ height: '100%', overflowY: 'auto' }}>
+          <Spin spinning={loading}>
+            <InnerRiskLevel
+              key={currentRiskLevel?.id}
+              currentRiskLevel={currentRiskLevel}
+              memoryReload={memoryReload}
+            />
+          </Spin>
+        </div>
       }
     />
   );

@@ -16,10 +16,11 @@
 
 import { getImportFileMeta } from '@/common/network/exportAndImport';
 import setting from '@/store/setting';
-import { uploadFileToOSS } from '@/util/aliyun';
+import { uploadFileToOSS } from '@/common/network/aliyun';
 import { Upload } from 'antd';
 import { DraggerProps } from 'antd/lib/upload';
 import React from 'react';
+import { getImportTypeByFileExtension } from '../Task/modals/ImportTask/CreateModal/ImportForm/helper';
 
 interface IProps extends DraggerProps {
   uploadFileOpenAPIName?: string;
@@ -46,7 +47,10 @@ const ODCDragger: React.FC<IProps> = function (props) {
   }
   if (props?.clientMode) {
     props.customRequest = async ({ file, filename, onSuccess }) => {
-      const data = await getImportFileMeta((file as any).path);
+      const fileExtension = (file as File)?.name?.split('.')?.pop();
+      const fileType = getImportTypeByFileExtension(fileExtension);
+      if (!fileType) return;
+      const data = await getImportFileMeta((file as any).path, fileType);
       setTimeout(() => {
         onSuccess(
           {

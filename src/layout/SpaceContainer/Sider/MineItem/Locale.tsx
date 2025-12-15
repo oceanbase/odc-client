@@ -17,11 +17,10 @@
 import { localeList } from '@/constant';
 import odc from '@/plugins/odc';
 import { defaultLocale, formatMessage } from '@/util/intl';
+import { getLocale, setLocale } from '@umijs/max';
 import { Menu } from 'antd';
 import React from 'react';
-import { getLocale, setLocale } from '@umijs/max';
 import DropMenu from '../DropMenu';
-import MenuItem from '../DropMenu/MenuItem';
 
 interface IProps {}
 
@@ -51,7 +50,9 @@ const Locale: React.FC<IProps> = function () {
         />
       }
     >
-      <div>{formatMessage({ id: 'odc.Sider.MineItem.Locale.Language' })}</div>
+      <div>
+        {formatMessage({ id: 'odc.Sider.MineItem.Locale.Language', defaultMessage: '语言' })}
+      </div>
     </DropMenu>
   );
 };

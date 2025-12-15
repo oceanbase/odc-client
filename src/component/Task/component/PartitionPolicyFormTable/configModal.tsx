@@ -14,70 +14,47 @@
  * limitations under the License.
  */
 
-import FormItemPanel from '@/component/FormItemPanel';
 import { previewPartitionPlans } from '@/common/network/task';
-import HelpDoc from '@/component/helpDoc';
 import Action from '@/component/Action';
-import { TaskPartitionStrategy, PARTITION_KEY_INVOKER, PARTITION_NAME_INVOKER } from '@/d.ts';
+import FormItemPanel from '@/component/FormItemPanel';
+import { PartitionBound } from '@/constant';
+import { PARTITION_KEY_INVOKER, PARTITION_NAME_INVOKER, TaskPartitionStrategy } from '@/d.ts';
+import odc from '@/plugins/odc';
 import { formatMessage, getLocalDocs } from '@/util/intl';
-import { TaskPartitionStrategyMap } from '../../const';
-import { START_DATE } from './const';
-import EditTable from './EditTable';
-import PreviewSQLModal from './PreviewSQLModal';
-import { ITableConfig } from '../../PartitionTask/CreateModal';
 import {
   Alert,
   Button,
   Checkbox,
   Descriptions,
-  Form,
-  Input,
-  InputNumber,
   Drawer,
+  Form,
+  InputNumber,
   Popconfirm,
   Select,
   Space,
-  Tag,
-  Radio,
+  Tooltip,
   Typography,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { ITableConfig } from '@/component/Schedule/modals/PartitionPlan/Create';
+import {
+  getPartitionKeyInvokerByIncrementFieldType,
+  INCREAMENT_FIELD_TYPE,
+  NameRuleType,
+  rules,
+  START_DATE,
+  StrategyOptions,
+} from './const';
+import EditTable from './components/EditTable';
 import styles from './index.less';
-import odc from '@/plugins/odc';
+import PreviewSQLModal from './components/PreviewSQLModal';
+import { filteredNameRuleOptions, getAlertMessage } from './utils';
+import DropPatitionFormItems from './components/DropPartitionFormItems';
+import IntervalGenerateExprFormItem from './components/IntervalGenerateExprFormItem';
+import PreSuffixNamingRules from './components/PreSuffixNamingRules';
+import CustomNamingRules from './components/CustomNamingRules';
 
 const { Text } = Typography;
-
-export enum NameRuleType {
-  PRE_SUFFIX = 'PRE_SUFFIX',
-  CUSTOM = 'CUSTOM',
-}
-
-export const intervalPrecisionOptions = [
-  {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.436BC171' }), //'秒'
-    value: 63,
-  },
-  {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.0E0CEBAC' }), //'分'
-    value: 31,
-  },
-  {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.9EC2D1FF' }), //'时'
-    value: 15,
-  },
-  {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.1E11DFEA' }), //'日'
-    value: 7,
-  },
-  {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.1FB1ABDC' }), //'月'
-    value: 3,
-  },
-  {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.069255DB' }), //'年'
-    value: 1,
-  },
-];
 
 const defaultInitialValues = {
   strategies: [TaskPartitionStrategy.CREATE, TaskPartitionStrategy.DROP],
@@ -86,23 +63,8 @@ const defaultInitialValues = {
   reloadIndexes: true,
   namingPrefix: 'p',
   namingSuffixExpression: 'yyyyMMdd',
+  namingSuffixStrategy: PartitionBound.PARTITION_LOWER_BOUND,
 };
-
-const StrategyOptions = Object.keys(TaskPartitionStrategyMap)?.map((key) => ({
-  label: TaskPartitionStrategyMap[key],
-  value: key,
-}));
-
-const nameRuleOptions = [
-  {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.EB655A6C' }), //'前缀 + 后缀'
-    value: NameRuleType.PRE_SUFFIX,
-  },
-  {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.AB4964B2' }), //'自定义'
-    value: NameRuleType.CUSTOM,
-  },
-];
 
 interface IProps {
   visible: boolean;
@@ -112,60 +74,11 @@ interface IProps {
   theme?: string;
   onClose: () => void;
   onChange?: (values: ITableConfig[]) => void;
+  dateTypes: boolean;
 }
 
-const suffixOptions = [
-  {
-    label: 'yyyy',
-    value: 'yyyy',
-  },
-
-  {
-    label: 'yyyyMMdd',
-    value: 'yyyyMMdd',
-  },
-
-  {
-    label: 'yyyyMM',
-    value: 'yyyyMM',
-  },
-
-  {
-    label: 'yyyy_MM_dd',
-    value: 'yyyy_MM_dd',
-  },
-
-  {
-    label: 'yyyy_MM',
-    value: 'yyyy_MM',
-  },
-];
-
-const DropConfigMessage = formatMessage({
-  id: 'src.component.Task.component.PartitionPolicyFormTable.A9C95E9D',
-}); /*"当前表如果包含全局索引，删除分区会导致全局索引失效，请谨慎操作，如果选择重建全局索引可能耗时很久，请谨慎操作"*/
-
-const CreateConfigMessage = formatMessage({
-  id: 'src.component.Task.component.PartitionPolicyFormTable.8DC77765',
-}); /*"当前表如果属于表组（tablegroup），创建分区可能会失败或破坏负载均衡，请谨慎配置创建策略"*/
-
-export const getAlertMessage = (strategies: TaskPartitionStrategy[]) => {
-  const messages = [];
-  if (strategies?.includes(TaskPartitionStrategy.DROP)) {
-    messages.push(DropConfigMessage);
-  }
-  if (strategies?.includes(TaskPartitionStrategy.CREATE)) {
-    messages.push(CreateConfigMessage);
-  }
-  return messages;
-};
-
-export const getUnitLabel = (value: number) => {
-  return intervalPrecisionOptions.find((item) => item.value === value)?.label;
-};
-
 const ConfigDrawer: React.FC<IProps> = (props) => {
-  const { visible, configs, isBatch, sessionId, theme, onClose } = props;
+  const { visible, configs, isBatch, sessionId, theme, onClose, dateTypes } = props;
   const [previewSQLVisible, setPreviewSQLVisible] = useState(false);
   const [ruleExample, setRuleExample] = useState('');
   const [previewData, setPreviewData] = useState<
@@ -177,9 +90,17 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const strategies = Form.useWatch('strategies', form);
   const nameRuleType = Form.useWatch('nameRuleType', form);
+  const generateCount = Form.useWatch('generateCount', form);
+  const incrementFieldType = Form.useWatch(
+    ['option', 'partitionKeyConfigs', '0', 'incrementFieldType'],
+    form,
+  );
   const partitionKeyOptions =
     configs?.[0]?.option?.partitionKeyConfigs
-      ?.filter((item) => item?.type?.localizedMessage)
+      ?.filter(
+        (item) =>
+          item?.type?.localizedMessage || incrementFieldType === INCREAMENT_FIELD_TYPE.TIME_STRING,
+      )
       ?.map((item) => ({
         label: item?.name,
         value: item?.name,
@@ -188,6 +109,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const isDropConfigVisible = strategies?.includes(TaskPartitionStrategy.DROP);
   const isCreateConfigVisible = strategies?.includes(TaskPartitionStrategy.CREATE);
   const isCustomRuleType = nameRuleType === NameRuleType.CUSTOM;
+
   const tableNames = configs?.map((item) => item.tableName);
 
   const tableLen = configs?.length;
@@ -196,8 +118,9 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       ? formatMessage(
           {
             id: 'odc.components.PartitionPolicyTable.configModal.WaitForTablelenTables',
+            defaultMessage: '...等 {tableLen} 个表',
           },
-          { tableLen: tableLen },
+          { tableLen },
         ) //`...等 ${tableLen} 个表`
       : '';
   const tableLabels = configs
@@ -237,6 +160,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           refPartitionKey,
           intervalGenerateExpr,
           reloadIndexes,
+          namingSuffixStrategy,
         } = data;
         const partitionKeyConfigs =
           option?.partitionKeyConfigs?.map((item) => {
@@ -249,7 +173,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               interval,
               intervalPrecision,
               intervalGenerateExpr,
+              incrementFieldType,
+              incrementFieldTypeInDate,
             } = item;
+            // 创建方式: 自定义
             if (partitionKeyInvoker === PARTITION_KEY_INVOKER.CUSTOM_GENERATOR) {
               return {
                 partitionKey,
@@ -265,16 +192,42 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 },
               };
             } else {
+              // 创建方式: 顺序递增
+              // 时间类型
+              // 非时间类型
+              const tempPartitionKeyInvoker = getPartitionKeyInvokerByIncrementFieldType(
+                partitionKeyInvoker,
+                incrementFieldType,
+              );
               const currentTimeParameter = {
                 fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
                 baseTimestampMillis: baseTimestampMillis?.valueOf(),
+                fieldType: incrementFieldType,
+                // 数值
+                numberInterval: intervalGenerateExpr,
+                // 时间日期
+                timeFormat: incrementFieldTypeInDate,
               };
               if (fromCurrentTime !== START_DATE.CUSTOM_DATE) {
                 delete currentTimeParameter.baseTimestampMillis;
               }
+              if (
+                [INCREAMENT_FIELD_TYPE.NUMBER, INCREAMENT_FIELD_TYPE.TIMESTAMP]?.includes(
+                  incrementFieldType,
+                )
+              ) {
+                delete currentTimeParameter.timeFormat;
+              }
+              if (
+                [INCREAMENT_FIELD_TYPE.TIME_STRING, INCREAMENT_FIELD_TYPE.TIMESTAMP]?.includes(
+                  incrementFieldType,
+                )
+              ) {
+                delete currentTimeParameter.numberInterval;
+              }
               return {
                 partitionKey,
-                partitionKeyInvoker,
+                partitionKeyInvoker: tempPartitionKeyInvoker,
                 strategy: 'CREATE',
                 partitionKeyInvokerParameters: {
                   generateCount,
@@ -320,6 +273,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               namingPrefix,
               namingSuffixExpression,
               refPartitionKey,
+              namingSuffixStrategy,
             },
           };
         } else {
@@ -381,17 +335,91 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     }
   }, [configs, visible]);
 
+  useEffect(() => {
+    if (nameRuleType === NameRuleType.PRE_SUFFIX) {
+      form.setFieldValue('refPartitionKey', partitionKeyOptions?.[0]?.value);
+    }
+  }, [nameRuleType]);
+
+  useEffect(() => {
+    if (
+      configs?.[0]?.option?.partitionKeyConfigs?.[0]?.incrementFieldType ===
+      INCREAMENT_FIELD_TYPE.TIME_STRING
+    ) {
+      form.setFieldValue('nameRuleType', NameRuleType.PRE_SUFFIX);
+    }
+  }, [configs]);
+
+  const submitBtn = () => {
+    const isSingleGenerateCount = generateCount === 1;
+    const isSingleGenerateCountMessage = formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.B988E243',
+      defaultMessage:
+        '当前预创建分区数量过小，若调度失败恐影响业务运行，建议调整预创建分区数量至2个及以上。',
+    });
+    const renderConfirmButton = () => {
+      return (
+        <Button type="primary" onClick={handleOk}>
+          {
+            formatMessage({
+              id: 'odc.components.PartitionPolicyTable.configModal.Ok',
+              defaultMessage: '确定',
+            }) /*确定*/
+          }
+        </Button>
+      );
+    };
+
+    if (isSingleGenerateCount) {
+      return (
+        <Popconfirm
+          styles={{
+            root: {
+              width: '216px',
+            },
+          }}
+          title={<div>{isSingleGenerateCountMessage}</div>}
+          onConfirm={handleOk}
+          okText={formatMessage({
+            id: 'odc.components.PartitionPolicyTable.configModal.Ok',
+            defaultMessage: '确定',
+          })} /*确定*/
+          cancelText={formatMessage({
+            id: 'odc.components.PartitionPolicyTable.configModal.Return',
+            defaultMessage: '返回',
+          })} /*返回*/
+        >
+          <Button type="primary" onClick={handleOk}>
+            {
+              formatMessage({
+                id: 'odc.components.PartitionPolicyTable.configModal.Ok',
+                defaultMessage: '确定',
+              }) /*确定*/
+            }
+          </Button>
+        </Popconfirm>
+      );
+    }
+    return renderConfirmButton();
+  };
+
   return (
     <Drawer
       title={
         isBatch
-          ? formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.C3B6B344' })
-          : formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.F441A07F' })
+          ? formatMessage({
+              id: 'src.component.Task.component.PartitionPolicyFormTable.C3B6B344',
+              defaultMessage: '批量设置分区策略',
+            })
+          : formatMessage({
+              id: 'src.component.Task.component.PartitionPolicyFormTable.F441A07F',
+              defaultMessage: '设置分区策略',
+            })
       }
       open={visible}
       destroyOnClose
-      width={720}
-      className={styles.configDrawer}
+      width={750}
+      rootClassName={styles.configDrawer}
       onClose={handleClose}
       footer={
         <Space style={{ float: 'right' }}>
@@ -399,51 +427,35 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.components.PartitionPolicyTable.configModal.Cancel',
+                defaultMessage: '取消',
               }) /*取消*/
             }
           </Button>
-          <Button
-            onClick={() => {
-              handlePreview();
-            }}
-          >
-            {
-              formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyFormTable.E0664950' /*预览 SQL*/,
-              }) /* 预览 SQL */
+          <Tooltip
+            title={
+              strategies?.length
+                ? null
+                : formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.E753A67D',
+                    defaultMessage: '暂未设置创建策略，无 SQL 可预览',
+                  })
             }
-          </Button>
-          {isBatch ? (
-            <Popconfirm
-              overlayStyle={{ width: '216px' }}
-              title={formatMessage({
-                id: 'odc.components.PartitionPolicyTable.configModal.BatchSettingWillOverwriteThe',
-              })} /*批量设置将覆盖原有的策略，是否确定设置？*/
-              onConfirm={handleOk}
-              okText={formatMessage({
-                id: 'odc.components.PartitionPolicyTable.configModal.Ok',
-              })} /*确定*/
-              cancelText={formatMessage({
-                id: 'odc.components.PartitionPolicyTable.configModal.Return',
-              })} /*返回*/
+          >
+            <Button
+              onClick={() => {
+                handlePreview();
+              }}
+              disabled={!strategies?.length}
             >
-              <Button type="primary">
-                {
-                  formatMessage({
-                    id: 'odc.components.PartitionPolicyTable.configModal.Ok',
-                  }) /*确定*/
-                }
-              </Button>
-            </Popconfirm>
-          ) : (
-            <Button type="primary" onClick={handleOk}>
               {
                 formatMessage({
-                  id: 'odc.components.PartitionPolicyTable.configModal.Ok',
-                }) /*确定*/
+                  id: 'src.component.Task.component.PartitionPolicyFormTable.E0664950' /*预览 SQL*/,
+                  defaultMessage: '预览 SQL',
+                }) /* 预览 SQL */
               }
             </Button>
-          )}
+          </Tooltip>
+          {submitBtn()}
         </Space>
       }
     >
@@ -457,33 +469,37 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         }}
         onChange={handleChange}
       >
-        <Descriptions column={1}>
-          <Descriptions.Item
-            label={
-              formatMessage({
+        <Descriptions
+          column={1}
+          style={{ paddingBottom: 24 }}
+          items={[
+            {
+              key: 1,
+              label: formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.AE09B3CB',
-              }) /*"分区表"*/
-            }
-          >
-            {`${tableLabels}${moreText}`}
-          </Descriptions.Item>
-          <Descriptions.Item
-            label={
-              formatMessage({
+                defaultMessage: '分区表',
+              }) /*"分区表"*/,
+              children: `${tableLabels}${moreText}`,
+            },
+            {
+              key: '2',
+              label: formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.D50C1358',
-              }) /*"分区类型"*/
-            }
-          >
-            Range
-          </Descriptions.Item>
-        </Descriptions>
+                defaultMessage: '分区类型',
+              }) /*"分区类型"*/,
+              children: 'Range',
+            },
+          ]}
+        />
         <Form.Item
           name="strategies"
           label={
             formatMessage({
               id: 'src.component.Task.component.PartitionPolicyFormTable.7632AF45',
+              defaultMessage: '分区策略',
             }) /*"分区策略"*/
           }
+          style={{ marginBottom: 16 }}
         >
           <Checkbox.Group options={StrategyOptions} />
         </Form.Item>
@@ -493,7 +509,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               <div>{item}</div>
             ))}
             type="warning"
-            style={{ marginBottom: '8px' }}
+            style={{ marginBottom: '16px' }}
             showIcon
           />
         )}
@@ -504,6 +520,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             label={
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.8686ABA2',
+                defaultMessage: '创建分区',
               }) /*"创建分区"*/
             }
           >
@@ -513,24 +530,20 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               label={
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyFormTable.C0FD367F',
+                  defaultMessage: '预创建分区数量',
                 }) /*"预创建分区数量"*/
               }
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyFormTable.16355175',
-                  }), //'请输入预创建分区数量'
-                },
-              ]}
+              rules={rules.generateCount}
             >
               <InputNumber
                 placeholder={
                   formatMessage({
                     id: 'src.component.Task.component.PartitionPolicyFormTable.F4F136CA',
+                    defaultMessage: '请输入',
                   }) /*"请输入"*/
                 }
-                min={0}
+                min={1}
+                precision={0}
                 style={{ width: 100 }}
               />
             </Form.Item>
@@ -542,19 +555,22 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     {
                       formatMessage({
                         id: 'src.component.Task.component.PartitionPolicyFormTable.C28CD656' /*创建规则*/,
+                        defaultMessage: '创建规则',
                       }) /* 创建规则 */
                     }
                   </span>
                   <Action.Link
                     onClick={() => {
                       window.open(
-                        odc.appConfig?.docs.url || getLocalDocs('320.set-partition-strategy.html'),
+                        odc.appConfig?.docs.url ||
+                          getLocalDocs('320.set-partitioning-strategies.html'),
                       );
                     }}
                   >
                     {
                       formatMessage({
                         id: 'src.component.Task.component.PartitionPolicyFormTable.DF75EB9E' /*如何配置*/,
+                        defaultMessage: '如何配置',
                       }) /* 如何配置 */
                     }
                   </Action.Link>
@@ -567,166 +583,45 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               label={
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyFormTable.C49FCEB6',
+                  defaultMessage: '命名方式',
                 }) /*"命名方式"*/
               }
               name="nameRuleType"
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyFormTable.87D4D0BB',
-                  }), //'请选择'
-                },
-              ]}
+              tooltip={formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.18397BFF',
+                defaultMessage: '分区名的生成方式',
+              })}
+              rules={rules.nameRuleType}
             >
-              <Select options={nameRuleOptions} style={{ width: 120 }} />
+              <Select
+                options={filteredNameRuleOptions(dateTypes, incrementFieldType)}
+                style={{ width: 120 }}
+              />
             </Form.Item>
             <Form.Item
               label={
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyFormTable.D82DD59C',
+                  defaultMessage: '命名规则',
                 }) /*"命名规则"*/
               }
               required
               style={{ marginBottom: '0' }}
+              tooltip={
+                isCustomRuleType
+                  ? formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.044700A2',
+                      defaultMessage:
+                        "分区名的生成规则，可引用变量。比如：concat('P_',${COL1})，其中 COL1 表示分区表的分区键。",
+                    })
+                  : null
+              }
             >
               <Space size={8} align="start" style={{ width: '100%' }}>
                 {isCustomRuleType ? (
-                  <Space>
-                    <Form.Item
-                      name="generateExpr"
-                      className={styles.noMarginBottom}
-                      rules={[
-                        {
-                          required: true,
-                          message: formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.E5DA1FA4',
-                          }), //'请输入表达式'
-                        },
-                      ]}
-                      style={{ width: 320 }}
-                    >
-                      <Input
-                        placeholder={
-                          formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.23B74BBB',
-                          }) /*"请输入表达式"*/
-                        }
-                        addonBefore={
-                          formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.D97787FE',
-                          }) /*"表达式"*/
-                        }
-                      />
-                    </Form.Item>
-                  </Space>
+                  <CustomNamingRules />
                 ) : (
-                  <Space size={8} align="start">
-                    <Form.Item
-                      validateFirst
-                      className={styles.noMarginBottom}
-                      name="namingPrefix"
-                      rules={[
-                        {
-                          required: true,
-                          message: formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.4293BED4',
-                          }), //'请输入前缀'
-                        },
-                        {
-                          pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
-                          message: formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.F70A7891',
-                          }), //'仅支持英文/数字/下划线，且以英文开头'
-                        },
-                        {
-                          max: 32,
-                          message: formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.D76C944C',
-                          }), //'不超过32个字符'
-                        },
-                      ]}
-                      style={{ width: 140 }}
-                    >
-                      <Input
-                        addonBefore={
-                          formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.7D91EBA7',
-                          }) /*"前缀"*/
-                        }
-                        placeholder={
-                          formatMessage({
-                            id: 'src.component.Task.component.PartitionPolicyFormTable.D2573F4C',
-                          }) /*"请输入前缀"*/
-                        }
-                      />
-                    </Form.Item>
-                    <Input.Group compact>
-                      <Tag className={styles.suffix}>
-                        <HelpDoc
-                          leftText
-                          isTip
-                          title={
-                            formatMessage({
-                              id: 'src.component.Task.component.PartitionPolicyFormTable.2CF17EE5',
-                            }) /*"后缀根据指定的分区键上界时间生成"*/
-                          }
-                        >
-                          {
-                            formatMessage({
-                              id: 'src.component.Task.component.PartitionPolicyFormTable.0F79EE9C' /*后缀*/,
-                            }) /* 后缀 */
-                          }
-                        </HelpDoc>
-                      </Tag>
-                      <Form.Item
-                        name="refPartitionKey"
-                        className={styles.noMarginBottom}
-                        rules={[
-                          {
-                            required: true,
-                            message: formatMessage({
-                              id: 'src.component.Task.component.PartitionPolicyFormTable.CC74D506',
-                            }), //'请选择'
-                          },
-                        ]}
-                      >
-                        <Select
-                          placeholder={
-                            formatMessage({
-                              id: 'src.component.Task.component.PartitionPolicyFormTable.B7A571C8',
-                            }) /*"请选择"*/
-                          }
-                          optionLabelProp="label"
-                          options={partitionKeyOptions}
-                          dropdownMatchSelectWidth={154}
-                          style={{ width: 135 }}
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name="namingSuffixExpression"
-                        className={styles.noMarginBottom}
-                        rules={[
-                          {
-                            required: true,
-                            message: formatMessage({
-                              id: 'src.component.Task.component.PartitionPolicyFormTable.7183DAA0',
-                            }), //'请选择后缀'
-                          },
-                        ]}
-                      >
-                        <Select
-                          placeholder={
-                            formatMessage({
-                              id: 'src.component.Task.component.PartitionPolicyFormTable.0259BAC2',
-                            }) /*"请选择"*/
-                          }
-                          style={{ width: 124 }}
-                          options={suffixOptions}
-                        />
-                      </Form.Item>
-                    </Input.Group>
-                  </Space>
+                  <PreSuffixNamingRules partitionKeyOptions={partitionKeyOptions} />
                 )}
               </Space>
             </Form.Item>
@@ -735,6 +630,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'src.component.Task.component.PartitionPolicyFormTable.8067C91E' /*测试生成*/,
+                    defaultMessage: '测试生成',
                   }) /* 测试生成 */
                 }
               </Action.Link>
@@ -742,112 +638,18 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 <Text type="secondary">
                   {formatMessage({
                     id: 'src.component.Task.component.PartitionPolicyFormTable.B0571B5B' /*分区名示例:*/,
+                    defaultMessage: '分区名示例：',
                   })}
 
                   {ruleExample}
                 </Text>
               )}
             </Space>
-            {isCustomRuleType && (
-              <Form.Item
-                name="intervalGenerateExpr"
-                label={
-                  formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyFormTable.7BC3752C',
-                  }) /*"命名间隔"*/
-                }
-              >
-                <Input
-                  style={{ width: 180 }}
-                  placeholder={
-                    formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.07788524',
-                    }) /*"请输入"*/
-                  }
-                />
-              </Form.Item>
-            )}
+            {isCustomRuleType && <IntervalGenerateExprFormItem />}
           </FormItemPanel>
         )}
 
-        {isDropConfigVisible && (
-          <FormItemPanel
-            keepExpand
-            label={
-              formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyFormTable.40F7E641',
-              }) /*"删除分区"*/
-            }
-          >
-            <Space size={40} align="start">
-              <Form.Item
-                required
-                name="keepLatestCount"
-                label={
-                  <HelpDoc doc="partitionKeepLatestCount" leftText>
-                    {
-                      formatMessage({
-                        id: 'src.component.Task.component.PartitionPolicyFormTable.7D6F23AE' /*分区保留数量*/,
-                      }) /* 分区保留数量 */
-                    }
-                  </HelpDoc>
-                }
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.967356C8',
-                    }), //'请输入'
-                  },
-                ]}
-              >
-                <InputNumber
-                  placeholder={
-                    formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.94B98AF7',
-                    }) /*"请输入"*/
-                  }
-                  min={0}
-                  style={{ width: 100 }}
-                />
-              </Form.Item>
-              <Form.Item
-                required
-                name="reloadIndexes"
-                label={
-                  formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyFormTable.3C92777E',
-                  }) /*"删除后是否重建索引"*/
-                }
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.393D1F82',
-                    }), //'请选择'
-                  },
-                ]}
-              >
-                <Radio.Group>
-                  <Radio value={true}>
-                    {
-                      formatMessage({
-                        id: 'src.component.Task.component.PartitionPolicyFormTable.77C8BE4D' /*是*/,
-                      }) /* 是 */
-                    }
-                  </Radio>
-                  <Radio value={false}>
-                    {
-                      formatMessage({
-                        id: 'src.component.Task.component.PartitionPolicyFormTable.E374E7C8' /*否*/,
-                      }) /* 否 */
-                    }
-                  </Radio>
-                </Radio.Group>
-              </Form.Item>
-            </Space>
-          </FormItemPanel>
-        )}
+        {isDropConfigVisible && <DropPatitionFormItems />}
       </Form>
       <PreviewSQLModal
         theme={theme}

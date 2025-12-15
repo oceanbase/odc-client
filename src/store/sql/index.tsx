@@ -17,7 +17,6 @@
 import { generateDatabaseSid } from '@/common/network/pathUtil';
 import { executeSQL, stopExec } from '@/common/network/sql';
 import { executePL } from '@/common/network/sql/executePL';
-import { IExecuteTaskResult } from '@/common/network/sql/executeSQL';
 import { PLType } from '@/constant/plType';
 import {
   ConnectionMode,
@@ -40,6 +39,7 @@ import { action, observable, runInAction } from 'mobx';
 import { generateResultSetColumns } from '../helper';
 import sessionManager from '../sessionManager';
 import setting from '../setting';
+import { EquerySqlResultDisplayMode } from '@/component/ODCSetting/config/user/database';
 
 export enum ExcecuteSQLMode {
   PL = 'PL',
@@ -49,18 +49,30 @@ export enum ExcecuteSQLMode {
   SYNONYM = 'SYNONYM',
   TYPE = 'TYPE',
 }
+
+// 结果集显示限制常量（与SQLResultSet组件保持一致）
+export const RESULT_TAB_LIMIT = 30;
+export const HISTORY_RESULT_LIMIT = RESULT_TAB_LIMIT - 1; // 30 - 1(日志) = 29
+
+export const isResultTab = (r: IResultSet) =>
+  r.columns?.length && r.status === ISqlExecuteResultStatus.SUCCESS;
+export const isLogTab = (r: IResultSet) => r.type === 'LOG';
+
 export enum PL_RUNNING_STATUS {
   // @ts-ignore
   COMPILE = formatMessage({
     id: 'odc.src.store.sql.Compile',
+    defaultMessage: '编译',
   }),
   // @ts-ignore
   EXEC = formatMessage({
     id: 'odc.src.store.sql.Run',
+    defaultMessage: '运行',
   }),
   // @ts-ignore
   DEBUG = formatMessage({
     id: 'odc.src.store.sql.Debugging',
+    defaultMessage: '调试',
   }),
 }
 export class SQLStore {
@@ -68,8 +80,6 @@ export class SQLStore {
   public records: ISqlExecuteResult[] = [];
   @observable.shallow
   public resultSets: Map<string, IResultSet[]> = new Map();
-  @observable.shallow
-  public lockedResultSets: IResultSet[] = []; // 编译|运行|调试中的 PL 对象 name, state
 
   /** 正在执行提交的Page */
   @observable
@@ -132,7 +142,10 @@ export class SQLStore {
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
-          formatMessage({ id: 'odc.src.store.sql.SubmittedSuccessfully' }), //提交成功
+          formatMessage({
+            id: 'odc.src.store.sql.SubmittedSuccessfully',
+            defaultMessage: '提交成功',
+          }), //提交成功
         );
       }
     } finally {
@@ -151,7 +164,7 @@ export class SQLStore {
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
-          formatMessage({ id: 'odc.src.store.sql.RollbackSucceeded' }), //回滚成功
+          formatMessage({ id: 'odc.src.store.sql.RollbackSucceeded', defaultMessage: '回滚成功' }), //回滚成功
         );
       }
     } finally {
@@ -167,7 +180,10 @@ export class SQLStore {
 
       if (data) {
         message.success(
-          formatMessage({ id: 'odc.src.store.sql.StoppedSuccessfully' }), //停止成功
+          formatMessage({
+            id: 'odc.src.store.sql.StoppedSuccessfully',
+            defaultMessage: '停止成功',
+          }), //停止成功
         );
       }
     } finally {
@@ -242,11 +258,52 @@ export class SQLStore {
           });
           const resultSet = this.resultSets.get(pageKey);
           if (resultSet) {
-            const lockedResultSets = resultSet.filter((r) => r.locked); // @ts-ignore
+            const lockedResultSets = resultSet.filter((r) => r.locked);
+            if (
+              setting.configurations['odc.sqlexecute.querySqlResultDisplayMode'] ===
+              EquerySqlResultDisplayMode.APPEND
+            ) {
+              // 获取未锁定的历史结果（排除LOG类型）
+              const unlockedHistoryResults = resultSet.filter((r) => !r.locked && isResultTab(r));
+
+              const historySqlIDs = resultSet.map((r) => r.sqlId);
+              // 去重处理：避免轮询时对同一个SQL对应结果重复渲染
+              const newInfo = info.results?.filter((r) => !historySqlIDs.includes(r.sqlId));
+
+              // 限制执行记录+日志一共30个tab
+              const newInfoLength = newInfo.length || 0;
+
+              const maxHistoryResults = Math.max(
+                0,
+                HISTORY_RESULT_LIMIT - newInfoLength - lockedResultSets?.length,
+              );
+              const limitedHistoryResults = unlockedHistoryResults.slice(-maxHistoryResults);
+
+              // 生成新的结果集
+              const newResultSets = generateResultSetColumns(
+                newInfo,
+                session?.connection?.dialectType,
+              );
+
+              // 设置结果集：锁定结果集 + 历史结果集 + 新的日志tab + 去重后的新结果集
+              this.resultSets.set(pageKey, [
+                ...lockedResultSets,
+                this.getLogTab(info),
+                ...limitedHistoryResults,
+                ...newResultSets,
+              ]);
+              return;
+            }
+            // 生成新的结果集
+            const newResultSets = generateResultSetColumns(
+              info?.results,
+              session?.connection?.dialectType,
+            );
+
             this.resultSets.set(pageKey, [
               ...lockedResultSets,
               this.getLogTab(info),
-              ...generateResultSetColumns(info.results, session?.connection?.dialectType),
+              ...newResultSets,
             ]);
           }
         });
@@ -261,7 +318,7 @@ export class SQLStore {
             originSql: i.sqlTuple.originalSql,
             executeSql: i.sqlTuple.executedSql,
             sqlId: i.sqlTuple.sqlId,
-            status: ISqlExecuteResultStatus.WAITING,
+            status: ISqlExecuteResultStatus.CREATED,
             timer: null,
             track: null,
             total: null,
@@ -290,6 +347,7 @@ export class SQLStore {
           }),
           ...this.records,
         ];
+
         this.initLog(pageKey, info);
       };
 
@@ -322,6 +380,7 @@ export class SQLStore {
     } catch (e) {
       throw e;
     } finally {
+      this.logLoading = false;
       this.runningPageKey.delete(pageKey);
       this.isRunningSection.delete(pageKey);
     }
@@ -329,9 +388,21 @@ export class SQLStore {
 
   private initLog(pageKey: string, info: IExecutingInfo) {
     const resultSet = this.resultSets.get(pageKey);
-    const lockedResultSets = resultSet.filter((r) => r.locked);
-    this.resultSets.set(pageKey, [...lockedResultSets, this.getLogTab(info)]);
-    this.setActiveTab(pageKey, this.resultSets.get(pageKey)?.find((i) => i.type == 'LOG')?.uniqKey);
+    const lockedResultSets = resultSet?.filter((r) => r.locked);
+    const historyResultSets = resultSet?.filter((r) => !r.locked && isResultTab(r));
+    if (
+      setting.configurations['odc.sqlexecute.querySqlResultDisplayMode'] ===
+      EquerySqlResultDisplayMode.APPEND
+    ) {
+      this.resultSets.set(pageKey, [
+        ...lockedResultSets,
+        this.getLogTab(info),
+        ...historyResultSets,
+      ]);
+    } else {
+      this.resultSets.set(pageKey, [...lockedResultSets, this.getLogTab(info)]);
+    }
+    this.setActiveTab(pageKey, this.resultSets.get(pageKey)?.find((i) => isLogTab(i))?.uniqKey);
   }
 
   public getLogTab(record?: IExecutingInfo): IResultSet {
@@ -404,7 +475,7 @@ export class SQLStore {
   }) {
     const sid = generateDatabaseSid(params.dbName, params.sessionId);
     const res = await request.post(
-      `/api/v2/connect/sessions/${sid}/currentDatabase/batchCompilations`,
+      `/api/v2/connect/sessions/${encodeURIComponent(sid)}/currentDatabase/batchCompilations`,
       {
         data: params,
       },
@@ -416,7 +487,7 @@ export class SQLStore {
   public async getBatchCompilePLResult(id: string, sessionId: string, dbName: string) {
     const sid = generateDatabaseSid(dbName, sessionId);
     const res = await request.get(
-      `/api/v2/connect/sessions/${sid}/currentDatabase/batchCompilations/${id}`,
+      `/api/v2/connect/sessions/${encodeURIComponent(sid)}/currentDatabase/batchCompilations/${id}`,
     );
     return res?.data;
   }
@@ -425,7 +496,7 @@ export class SQLStore {
   public async deleteBatchCompilePL(id: string, sessionId: string, dbName: string) {
     const sid = generateDatabaseSid(dbName, sessionId);
     const res = await request.delete(
-      `/api/v2/connect/sessions/${sid}/currentDatabase/batchCompilations/${id}`,
+      `/api/v2/connect/sessions/${encodeURIComponent(sid)}/currentDatabase/batchCompilations/${id}`,
     );
     return res?.data;
   }
@@ -469,6 +540,7 @@ export class SQLStore {
         return {
           status: 'FAIL',
           errorMessage: 'Request Abort',
+          unauthorizedDBResources: data?.unauthorizedDBResources,
         };
       } else if (
         data?.executeResult?.[0]?.status !== ISqlExecuteResultStatus.SUCCESS &&
@@ -542,6 +614,7 @@ export class SQLStore {
         message.error(
           formatMessage({
             id: 'workspace.window.sql.record.empty',
+            defaultMessage: '无法获得 SQL 执行记录',
           }),
         );
         return;
@@ -554,7 +627,8 @@ export class SQLStore {
           };
         }),
         ...this.records,
-      ]; // 在结果集中重新执行 SQL 肯定只有一条
+      ];
+      // 在结果集中重新执行 SQL 肯定只有一条
 
       resultSet[resultSetIndex] = {
         ...generateResultSetColumns(
@@ -568,16 +642,61 @@ export class SQLStore {
   }
 
   @action
-  public closeResultSet(pageKey: string, resultSetIdx: number) {
+  public closeResultSet(pageKey: string, uniqKey: string) {
     const resultSet = this.resultSets.get(pageKey);
 
     if (resultSet) {
-      /**
-       * 手动去除rows的引用
-       */
-      resultSet[resultSetIdx]?.rows?.splice(0);
-      resultSet.splice(resultSetIdx, 1);
-      this.resultSets.set(pageKey, clone(resultSet));
+      const resultSetIdx = resultSet.findIndex((set) => set.uniqKey === uniqKey);
+
+      if (resultSetIdx !== -1) {
+        /**
+         * 手动去除rows的引用
+         */
+        resultSet[resultSetIdx]?.rows?.splice(0);
+        resultSet.splice(resultSetIdx, 1);
+        this.resultSets.set(pageKey, clone(resultSet));
+      }
+    }
+  }
+
+  @action
+  public closeOtherResultSets(pageKey: string, currentUniqKey: string) {
+    const resultSet = this.resultSets.get(pageKey);
+
+    if (resultSet) {
+      // 保留当前结果集、固定结果集和LOG类型的结果集
+      const remainingResults = resultSet.filter((set) => {
+        return set.uniqKey === currentUniqKey || set.type === 'LOG' || set.locked;
+      });
+
+      // 清理被移除结果集的rows引用
+      resultSet.forEach((set) => {
+        if (set.uniqKey !== currentUniqKey && set.type !== 'LOG' && !set.locked) {
+          set?.rows?.splice(0);
+        }
+      });
+
+      this.resultSets.set(pageKey, clone(remainingResults));
+    }
+  }
+
+  @action
+  public closeAllResultSets(pageKey: string) {
+    const resultSet = this.resultSets.get(pageKey);
+
+    if (resultSet) {
+      // 保留固定的结果集和LOG类型的结果集
+      const logResults = resultSet.filter((set) => set.type === 'LOG');
+      const lockedResults = resultSet.filter((set) => set.locked);
+
+      // 清理被移除结果集的rows引用
+      resultSet.forEach((set) => {
+        if (set.type !== 'LOG' && !set.locked) {
+          set?.rows?.splice(0);
+        }
+      });
+
+      this.resultSets.set(pageKey, clone(lockedResults.concat(logResults)));
     }
   }
 
@@ -587,7 +706,12 @@ export class SQLStore {
     const resultSetIdx = resultSet?.findIndex?.((set) => set.uniqKey === key);
 
     if (resultSetIdx > -1) {
-      resultSet[resultSetIdx].locked = true;
+      const lockedItem = resultSet[resultSetIdx];
+
+      // 标记为锁定
+      lockedItem.locked = true;
+
+      // 更新结果集
       this.resultSets.set(pageKey, clone(resultSet));
     }
   }
@@ -597,8 +721,14 @@ export class SQLStore {
     const resultSet = this.resultSets.get(pageKey);
     const resultSetIdx = resultSet?.findIndex?.((set) => set.uniqKey === key);
 
-    if (resultSet) {
-      resultSet[resultSetIdx].locked = false;
+    if (resultSet && resultSetIdx !== -1) {
+      // 获取被解锁的结果集项
+      const unlockedItem = resultSet[resultSetIdx];
+
+      // 标记为未锁定
+      unlockedItem.locked = false;
+
+      // 更新结果集
       this.resultSets.set(pageKey, clone(resultSet));
     }
   }
@@ -639,7 +769,6 @@ export class SQLStore {
     this.stopingPageKey = new Set();
     this.runningPageKey = new Set();
     this.rollbackPageKey = new Set();
-    this.lockedResultSets = [];
     this.isRunningSection = new Set();
     this.isCompiling = false;
     this.debugLogs = [];
@@ -660,13 +789,24 @@ export class SQLStore {
   public getFirstUnlockedResultKey(pageKey: string) {
     const resultSet = this.resultSets.get(pageKey);
     return (
-      resultSet?.find((r) => !r.locked && r.type !== 'LOG')?.uniqKey ||
-      resultSet?.find((r) => !r.locked && r.type === 'LOG')?.uniqKey
+      resultSet?.find((r) => !r.locked && isResultTab(r))?.uniqKey ||
+      resultSet?.find((r) => !r.locked && isLogTab(r))?.uniqKey
     );
   }
 
+  public getLastUnlockedResultKey(pageKey: string) {
+    const resultSet = this.resultSets.get(pageKey);
+    const logKey = this.getLogKey(pageKey);
+    if (resultSet) {
+      const lastResultKey = [...resultSet]
+        .reverse()
+        .find((r) => !r.locked && isResultTab(r))?.uniqKey;
+      return lastResultKey || logKey;
+    }
+  }
+
   public getLogKey(pageKey: string) {
-    return this.resultSets.get(pageKey)?.find((i) => i.type == 'LOG')?.uniqKey;
+    return this.resultSets.get(pageKey)?.find((i) => isLogTab(i))?.uniqKey;
   }
 
   private formatSQLExplainTree(data: any): ISQLExplainTreeNode {

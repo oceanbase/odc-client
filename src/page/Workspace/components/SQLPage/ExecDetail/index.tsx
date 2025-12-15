@@ -16,23 +16,23 @@
 
 import { formatMessage } from '@/util/intl';
 import { Col, Drawer, message, Row, Spin } from 'antd';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import * as echarts from 'echarts/core';
-import { TooltipComponent, GridComponent, LegendComponent } from 'echarts/components';
 import { BarChart } from 'echarts/charts';
+import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/components';
+import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 echarts.use([TooltipComponent, GridComponent, LegendComponent, BarChart, CanvasRenderer]);
 
 import { getSQLExecuteDetail, getSQLExecuteExplain } from '@/common/network/sql';
 import { ISQLExecuteDetail, ISQLExplain } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
-import styles from './index.less';
-import BasicInfo from './BasicInfo';
-import TimeStatistics from './TimeStatistics';
-import IOStatistics from './IOStatistics';
-import SQLExplain from '../../SQLExplain';
 import setting from '@/store/setting';
+import SQLExplain from '../../SQLExplain';
+import BasicInfo from './BasicInfo';
+import styles from './index.less';
+import IOStatistics from './IOStatistics';
+import TimeStatistics from './TimeStatistics';
 
 interface IProps {
   visible: boolean;
@@ -56,7 +56,10 @@ const ExecDetail: React.FC<IProps> = function (props) {
     async function () {
       if (!traceId) {
         message.error(
-          formatMessage({ id: 'odc.components.SQLPage.TheTraceIdIsEmpty' }), // TRACE ID 为空，请确保该语句运行时 ob_enable_trace_log 变量已设置为 ON
+          formatMessage({
+            id: 'odc.components.SQLPage.TheTraceIdIsEmpty',
+            defaultMessage: 'TRACE ID 为空，请确保该语句运行时 ob_enable_trace_log 变量已设置为 ON',
+          }), // TRACE ID 为空，请确保该语句运行时 ob_enable_trace_log 变量已设置为 ON
         );
         return;
       }
@@ -83,7 +86,11 @@ const ExecDetail: React.FC<IProps> = function (props) {
         setSqlExecuteDetailToShow(detail);
         setSqlExecuteExplainToShow(explain);
 
-        const { queueTime = 0, execTime = 0, totalTime = 0 } = detail || {
+        const {
+          queueTime = 0,
+          execTime = 0,
+          totalTime = 0,
+        } = detail || {
           queueTime: 0,
           waitTime: 0,
           execTime: 0,
@@ -93,14 +100,17 @@ const ExecDetail: React.FC<IProps> = function (props) {
 
         const queueTimeLabel = formatMessage({
           id: 'workspace.window.sql.explain.tab.detail.card.time.label.queueTime',
+          defaultMessage: '排队时间',
         });
 
         const execTimeLabel = formatMessage({
           id: 'workspace.window.sql.explain.tab.detail.card.time.label.execTime',
+          defaultMessage: '执行耗时',
         });
 
         const otherTimeLabel = formatMessage({
           id: 'workspace.window.sql.explain.tab.detail.card.time.label.otherTime',
+          defaultMessage: '其他',
         });
 
         const values = [execTime, queueTime, totalTime - queueTime - execTime];
@@ -165,6 +175,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
             data: [
               formatMessage({
                 id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
+                defaultMessage: '耗时统计（us）',
               }),
             ],
           },
@@ -175,6 +186,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
         message.error(
           formatMessage({
             id: 'workspace.window.sql.explain.detail.failed',
+            defaultMessage: '查看 SQL 执行详情失败',
           }),
         );
       }
@@ -210,6 +222,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
     <Drawer
       title={formatMessage({
         id: 'workspace.window.sql.explain.tab.detail.title',
+        defaultMessage: '执行详情',
       })}
       placement="right"
       closable
@@ -219,7 +232,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
       destroyOnClose={true}
       width="96vw"
       open={visible}
-      className={styles.explainDrawer}
+      rootClassName={styles.explainDrawer}
       bodyStyle={{
         position: 'absolute',
         top: 55,

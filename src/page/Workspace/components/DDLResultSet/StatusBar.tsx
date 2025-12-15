@@ -17,7 +17,7 @@
 import { ISqlExecuteResultTimer, ITableColumn, ResultSetColumn } from '@/d.ts';
 import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
-import { formatTimeTemplate } from '@/util/utils';
+import { formatTimeTemplate } from '@/util/data/dateTime';
 import { Divider, Space, Typography } from 'antd';
 import BigNumber from 'bignumber.js';
 import { inject, observer } from 'mobx-react';
@@ -52,14 +52,23 @@ const StatusBar: React.FC<IProps> = function ({
     if (!columns?.length || !selectedColumnKeys?.length || !fields?.length) {
       return [];
     }
-    const selectColumnNames = new Set(
-      selectedColumnKeys?.map((key) => fields.find((c) => c.key === key)?.columnName),
-    );
 
-    if (!selectColumnNames.size) {
-      return [];
+    const fieldsMap = new Map(fields.map((field) => [field.key, field]));
+    const columnsMap = new Map(columns.map((column) => [column.columnName, column]));
+
+    const result: Partial<ITableColumn>[] = [];
+
+    for (const key of selectedColumnKeys) {
+      const field = fieldsMap.get(String(key));
+      if (!field?.columnName) continue;
+
+      const column = columnsMap.get(field.columnName);
+      if (column) {
+        result.push(column);
+      }
     }
-    return columns?.filter(Boolean).filter((c) => selectColumnNames.has(c.columnName));
+
+    return result;
   }, [columns, fields, selectedColumnKeys]);
   const columnText = selectColumns
     .map((column) => {
@@ -71,27 +80,32 @@ const StatusBar: React.FC<IProps> = function ({
           column.primaryKey
             ? formatMessage({
                 id: 'odc.components.DDLResultSet.StatusBar.PrimaryKey',
+                defaultMessage: '主键',
               })
             : '',
           `${column.dataType}`,
           column.allowNull
             ? formatMessage({
                 id: 'odc.components.DDLResultSet.StatusBar.LeaveThisParameterEmpty',
+                defaultMessage: '允许为空',
               })
             : //允许为空
               formatMessage({
                 id: 'odc.components.DDLResultSet.StatusBar.NotEmpty',
+                defaultMessage: '非空',
               }),
           //非空
           column.autoIncreament
             ? formatMessage({
                 id: 'odc.components.DDLResultSet.StatusBar.AutoIncrement',
+                defaultMessage: '自增',
               })
             : '',
           // 列注释: comment
           column.comment
             ? `${formatMessage({
                 id: 'workspace.window.createView.comment',
+                defaultMessage: '注释',
               })}: ${column.comment}`
             : '',
         ]
@@ -123,6 +137,7 @@ const StatusBar: React.FC<IProps> = function ({
             {
               formatMessage({
                 id: 'odc.components.DDLResultSet.StatusBar.DbTimeConsumption',
+                defaultMessage: 'DB 耗时：',
               }) /*DB 耗时：*/
             }
 
@@ -134,10 +149,10 @@ const StatusBar: React.FC<IProps> = function ({
             <span>
               {formatMessage(
                 {
-                  id: 'src.page.Workspace.components.DDLResultSet.0B7666A0',
-                  defaultMessage: '总耗时：${DBCostTime}',
+                  id: 'src.page.Workspace.components.DDLResultSet.C6B35DB8',
+                  defaultMessage: 'DB 耗时：{DBCostTime}',
                 },
-                { DBCostTime: DBCostTime },
+                { DBCostTime },
               )}
             </span>
           )}
@@ -146,9 +161,10 @@ const StatusBar: React.FC<IProps> = function ({
               formatMessage(
                 {
                   id: 'odc.components.DDLResultSet.StatusBar.TotalNumberOfEntriesRecordcount',
+                  defaultMessage: '总条数：{recordCount} 条',
                 },
 
-                { recordCount: recordCount },
+                { recordCount },
               )
               /*总条数：{recordCount} 条*/
             }

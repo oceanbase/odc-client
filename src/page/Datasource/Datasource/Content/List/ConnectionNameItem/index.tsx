@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { actionTypes, IConnection, IConnectionStatus } from '@/d.ts';
+import { IConnection, IConnectionStatus } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { message, Popover, Space, Tooltip } from 'antd';
+import { Popover, Space, Tooltip } from 'antd';
 import React from 'react';
 
 import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IDatasource } from '@/d.ts/datasource';
 import classNames from 'classnames';
 import styles from './index.less';
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
 
 interface IProps {
   connection: IConnection;
@@ -46,6 +46,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
             placement="top"
             title={formatMessage({
               id: 'odc.components.ConnectionCardList.StatusSynchronizationInProgress',
+              defaultMessage: '状态同步中',
             })}
           >
             <Loading3QuartersOutlined
@@ -63,11 +64,12 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
             placement="top"
             title={formatMessage({
               id: 'odc.components.ConnectionCardList.ValidConnection',
+              defaultMessage: '有效连接',
             })}
           >
             <Icon
               style={{ color: DBIcon.color }}
-              component={DBIcon.component}
+              component={DBIcon?.component}
               className={styles.activeStatus}
             />
           </Tooltip>
@@ -80,6 +82,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
             title={
               formatMessage({
                 id: 'odc.components.ConnectionCardList.TheConnectionPasswordIsNot',
+                defaultMessage: '连接密码未保存，无法获取状态',
               })
 
               // 连接密码未保存，无法获取状态
@@ -95,6 +98,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
             placement="top"
             title={formatMessage({
               id: 'odc.page.ConnectionList.columns.TheConnectionIsDisabled',
+              defaultMessage: '连接已停用',
             })}
 
             /* 连接已停用 */
@@ -108,7 +112,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
         return (
           <Tooltip title={status?.errorMessage} placement="top">
             <Icon
-              component={DBIcon.component}
+              component={DBIcon?.component}
               style={{ filter: 'grayscale(1)' }}
               className={styles.activeStatus}
             />

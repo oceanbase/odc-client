@@ -23,7 +23,7 @@ import { CommonUserResource } from '@/component/Manage/UserResource';
 import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Descriptions, Divider, message, Space, Tooltip } from 'antd';
 import React, { useContext, useState } from 'react';
@@ -31,20 +31,29 @@ import { ResourceContext } from '../../../context';
 import styles from '../../index.less';
 import { permissionMap, resourceManagementTypeOptions } from '../ResourceSelector/const';
 import resourceActions from '../ResourceSelector/resourceActions';
+import {
+  ALL_I_HAVE_CREATED_VALUE,
+  ALL_SELECTED_VALUE,
+  AllIHaveCreatedOption,
+  AllOption,
+} from '@/component/Manage/ResourceSelector';
 const defaultSystemOperationPermission = [
   {
     label: formatMessage({
       id: 'odc.src.page.Auth.Role.component.DetailContent.Environment',
+      defaultMessage: '环境',
     }), //'环境'
     value: IManagerResourceType.environment,
   },
 ];
+
 const getColumns = (roles: IManagerRole[]) => {
   return [
     {
       dataIndex: 'name',
       title: formatMessage({
         id: 'odc.components.RolePage.component.Name',
+        defaultMessage: '姓名',
       }),
       // 姓名
       ellipsis: true,
@@ -52,32 +61,34 @@ const getColumns = (roles: IManagerRole[]) => {
       render: (name, record) => (
         <Tooltip
           placement="right"
-          color="var(--background-normal-color)"
           overlayClassName={styles.userName}
+          color="var(--background-secondry-color)"
           title={
-            <Space direction="vertical">
-              <span>
+            <Space direction="vertical" className={styles.description}>
+              <span className={styles.label}>
                 {
                   formatMessage(
                     {
                       id: 'odc.components.RolePage.component.NameName',
+                      defaultMessage: '姓名：{name}',
                     },
                     {
-                      name,
+                      name: <span className={styles.value}>{name}</span>,
                     },
                   )
 
                   /* 姓名：{name} */
                 }
               </span>
-              <span>
+              <span className={styles.label}>
                 {
                   formatMessage(
                     {
                       id: 'odc.components.RolePage.component.AccountRecordaccountname',
+                      defaultMessage: '账号：{recordAccountName}',
                     },
                     {
-                      recordAccountName: record.accountName,
+                      recordAccountName: <span className={styles.value}>{record.accountName}</span>,
                     },
                   )
 
@@ -101,6 +112,7 @@ const getColumns = (roles: IManagerRole[]) => {
       dataIndex: 'roleIds',
       title: formatMessage({
         id: 'odc.components.RolePage.component.Role',
+        defaultMessage: '角色',
       }),
       // 角色
       ellipsis: true,
@@ -123,6 +135,7 @@ const getColumns = (roles: IManagerRole[]) => {
       width: 110,
       title: formatMessage({
         id: 'odc.components.RolePage.component.State',
+        defaultMessage: '状态',
       }),
       // 状态
       ellipsis: true,
@@ -130,6 +143,7 @@ const getColumns = (roles: IManagerRole[]) => {
         {
           text: formatMessage({
             id: 'odc.components.RolePage.component.Enable',
+            defaultMessage: '启用',
           }),
           // 启用
           value: true,
@@ -137,11 +151,13 @@ const getColumns = (roles: IManagerRole[]) => {
         {
           text: formatMessage({
             id: 'odc.components.RolePage.component.Disable',
+            defaultMessage: '停用',
           }),
           // 停用
           value: false,
         },
       ],
+
       onFilter: (value, record) => value === record.enabled,
       render: (enabled) => <Status enabled={enabled} showIcon={false} />,
     },
@@ -157,6 +173,7 @@ const getResourceColumns = (
       dataIndex: 'resourceType',
       title: formatMessage({
         id: 'odc.components.RolePage.component.ObjectType',
+        defaultMessage: '对象类型',
       }),
       // 对象类型
       ellipsis: true,
@@ -174,6 +191,7 @@ const getResourceColumns = (
       dataIndex: 'resourceId',
       title: formatMessage({
         id: 'odc.components.RolePage.component.ObjectName',
+        defaultMessage: '对象名称',
       }),
       // 对象名称
       ellipsis: true,
@@ -186,10 +204,11 @@ const getResourceColumns = (
       dataIndex: 'actions',
       title: formatMessage({
         id: 'odc.components.RolePage.component.Permissions',
+        defaultMessage: '权限',
       }),
       // 权限
       ellipsis: true,
-      width: 108,
+      width: 158,
       filters: actionOptions?.map(({ label, value }) => ({
         text: label,
         value,
@@ -210,6 +229,7 @@ const getSystemResourceColumns = (type: IManagerRolePermissionType) => {
     {
       text: formatMessage({
         id: 'odc.components.RolePage.component.Operational',
+        defaultMessage: '可操作',
       }),
       //可操作
       value: 'update',
@@ -217,16 +237,19 @@ const getSystemResourceColumns = (type: IManagerRolePermissionType) => {
     {
       text: formatMessage({
         id: 'odc.components.RolePage.component.ViewOnly',
+        defaultMessage: '仅查看',
       }),
       //仅查看
       value: 'action_read',
     },
   ];
+
   return [
     {
       dataIndex: 'resourceType',
       title: formatMessage({
         id: 'odc.components.RolePage.component.ObjectType',
+        defaultMessage: '对象类型',
       }),
       // 对象类型
       ellipsis: true,
@@ -243,6 +266,7 @@ const getSystemResourceColumns = (type: IManagerRolePermissionType) => {
       dataIndex: 'actions',
       title: formatMessage({
         id: 'odc.components.RolePage.component.Permissions',
+        defaultMessage: '权限',
       }),
       // 权限
       ellipsis: true,
@@ -256,16 +280,14 @@ const getSystemResourceColumns = (type: IManagerRolePermissionType) => {
   ];
 };
 export const getPermissionsTypes = (value: Partial<IManagerRole>) => {
-  const {
-    connectionAccessPermissions,
-    resourceManagementPermissions,
-    systemOperationPermissions,
-  } = value;
+  const { connectionAccessPermissions, resourceManagementPermissions, systemOperationPermissions } =
+    value;
   const types = [];
   if (connectionAccessPermissions?.length) {
     types.push({
       title: formatMessage({
         id: 'odc.components.RolePage.component.ConnectionAccess',
+        defaultMessage: '连接访问权限',
       }),
       //连接访问权限
       value: IManagerRolePermissionType.connectionAccessPermissions,
@@ -275,6 +297,7 @@ export const getPermissionsTypes = (value: Partial<IManagerRole>) => {
     types.push({
       title: formatMessage({
         id: 'odc.components.RolePage.component.ResourceManagementPermissions',
+        defaultMessage: '资源管理权限',
       }),
       //资源管理权限
       value: IManagerRolePermissionType.resourceManagementPermissions,
@@ -284,6 +307,7 @@ export const getPermissionsTypes = (value: Partial<IManagerRole>) => {
     types.push({
       title: formatMessage({
         id: 'odc.components.RolePage.component.SystemOperatingPermissions',
+        defaultMessage: '系统操作权限',
       }),
       //系统操作权限
       value: IManagerRolePermissionType.systemOperationPermissions,
@@ -350,6 +374,7 @@ const UserDetail: React.FC<{
       message.success(
         formatMessage({
           id: 'odc.components.RolePage.component.Deleted',
+          defaultMessage: '删除成功',
         }), // 删除成功
       );
 
@@ -359,6 +384,7 @@ const UserDetail: React.FC<{
       message.error(
         formatMessage({
           id: 'odc.components.RolePage.component.UnableToDelete',
+          defaultMessage: '删除失败',
         }),
 
         // 删除失败
@@ -366,21 +392,21 @@ const UserDetail: React.FC<{
     }
   };
 
-  const getResourceName = (type: IManagerResourceType, resourceId: number) => {
+  const getResourceLabel = (info, resourceId: string | number) => {
+    // 后端实现：resourceId为*，表示对所有资源都有权限, resourceId为CREATOR，表示对我创建的有权限
+    if (resourceId === ALL_I_HAVE_CREATED_VALUE) return AllIHaveCreatedOption.name;
+    if (resourceId === ALL_SELECTED_VALUE()) return AllOption.name;
+    return info?.name;
+  };
+
+  const getResourceName = (type: IManagerResourceType, resourceId: number | string) => {
     const resourceMap = {
       [IManagerResourceType.resource]: resource,
       [IManagerResourceType.role]: roles,
       [IManagerResourceType.user]: users,
     };
-    const info = resourceMap[type]?.find((item) => item.id === resourceId);
-    // 后端实现：resourceId为null，表示对所有资源都有权限
-    return resourceId
-      ? info?.name
-      : formatMessage({
-          id: 'odc.components.RolePage.component.AllPublicResources',
-        });
-
-    // 所有公共资源
+    const info = resourceMap[type]?.find((item) => item.id?.toString?.() === resourceId);
+    return getResourceLabel(info, resourceId);
   };
 
   return (
@@ -392,6 +418,7 @@ const UserDetail: React.FC<{
           }}
           label={formatMessage({
             id: 'odc.components.RolePage.component.RoleName',
+            defaultMessage: '角色名称',
           })}
 
           /* 角色名称 */
@@ -401,6 +428,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.RolePage.component.PermissionType',
+            defaultMessage: '权限类型',
           })}
 
           /* 权限类型 */
@@ -410,6 +438,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.RolePage.component.Note',
+            defaultMessage: '备注',
           })}
 
           /* 备注 */
@@ -424,12 +453,14 @@ const UserDetail: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.RolePage.component.ResourceManagementPermissions',
+                defaultMessage: '资源管理权限',
               }) /*资源管理权限*/
             }
           </Descriptions.Item>
           <Descriptions.Item
             label={formatMessage({
               id: 'odc.components.RolePage.component.ObjectsThatCanBeCreated',
+              defaultMessage: '可新建的对象',
             })}
             /*可新建的对象*/ span={2}
           >
@@ -446,7 +477,7 @@ const UserDetail: React.FC<{
               showSizeChanger={false}
               showQuickJumper={false}
               pageSize={10}
-              scroll={null}
+              scroll={{ x: 688 }}
             />
           </Descriptions.Item>
         </Descriptions>
@@ -458,6 +489,7 @@ const UserDetail: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.RolePage.component.SystemOperatingPermissions',
+                defaultMessage: '系统操作权限',
               }) /*系统操作权限*/
             }
           </Descriptions.Item>
@@ -469,7 +501,7 @@ const UserDetail: React.FC<{
               )}
               dataSource={_systemOperationPermissions || []}
               disablePagination
-              scroll={null}
+              scroll={{ x: 688 }}
             />
           </Descriptions.Item>
         </Descriptions>
@@ -485,6 +517,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.RolePage.component.Founder',
+            defaultMessage: '创建人',
           })}
 
           /* 创建人 */
@@ -494,6 +527,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.RolePage.component.Created',
+            defaultMessage: '创建时间',
           })}
 
           /* 创建时间 */
@@ -503,6 +537,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.RolePage.component.UpdateTime',
+            defaultMessage: '更新时间',
           })}
 
           /* 更新时间 */
@@ -516,6 +551,7 @@ const UserDetail: React.FC<{
           {
             formatMessage({
               id: 'odc.components.RolePage.component.AfterARoleIsDeleted',
+              defaultMessage: '删除角色后，赋予该角色的用户将失去相关权限/公共资源',
             })
 
             /* 删除角色后，赋予该角色的用户将失去相关权限/公共资源 */
@@ -531,6 +567,7 @@ const UserDetail: React.FC<{
           {
             formatMessage({
               id: 'odc.components.RolePage.component.DeleteARole',
+              defaultMessage: '删除角色',
             })
 
             /* 删除角色 */
@@ -540,9 +577,11 @@ const UserDetail: React.FC<{
       <CommonDeleteModal
         type={formatMessage({
           id: 'odc.components.RolePage.component.Role',
+          defaultMessage: '角色',
         })}
         /* 角色 */ description={formatMessage({
           id: 'odc.components.RolePage.component.AfterARoleIsDeleted',
+          defaultMessage: '删除角色后，赋予该角色的用户将失去相关权限/公共资源',
         })}
         /* 删除角色后，赋予该角色的用户将失去相关权限/公共资源 */ name={name}
         visible={visible}

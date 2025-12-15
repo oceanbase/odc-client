@@ -16,13 +16,13 @@
 
 import { DbObjectType, TriggerState } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
+import { openTriggerViewPage } from '@/store/helper/page';
 import SessionStore from '@/store/sessionManager/session';
 import { ReactComponent as TriggerSvg } from '@/svgr/menuTrigger.svg';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { ResourceNodeType, TreeDataNode } from '../type';
-import { openTriggerViewPage } from '@/store/helper/page';
 
 enum THEME {
   TRIGGER_ENABLE = 'var(--icon-color-3)',
@@ -33,7 +33,10 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
   const dbName = database.name;
   const triggers = dbSession?.database?.triggers;
   const treeData: TreeDataNode = {
-    title: formatMessage({ id: 'odc.ResourceTree.Nodes.trigger.Trigger' }), //触发器
+    title: formatMessage({
+      id: 'odc.ResourceTree.Nodes.trigger.Trigger',
+      defaultMessage: '触发器',
+    }), //触发器
     key: `${database.id}-${dbName}-trigger`,
     type: ResourceNodeType.TriggerRoot,
     data: database,
@@ -44,8 +47,14 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
     treeData.children = triggers.map((trigger) => {
       const title =
         trigger.enableState === TriggerState.enabled
-          ? formatMessage({ id: 'odc.ResourceTree.config.procedure.Enable' }) // 启用
-          : formatMessage({ id: 'odc.ResourceTree.config.procedure.Disable' }); // 禁用
+          ? formatMessage({
+              id: 'odc.ResourceTree.config.procedure.Enable',
+              defaultMessage: '启用',
+            }) // 启用
+          : formatMessage({
+              id: 'odc.ResourceTree.config.procedure.Disable',
+              defaultMessage: '禁用',
+            }); // 禁用
       const icon = (
         <Tooltip placement="right" title={title}>
           <Icon
@@ -60,11 +69,11 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
         </Tooltip>
       );
 
-      const key = `${database.id}-${dbSession?.database?.triggerVersion}-${dbName}-trigger-${trigger.triggerName}`;
+      const key = `${database.id}-${dbName}-trigger-${trigger.triggerName}`;
       return {
         title: trigger.triggerName,
         key,
-        doubleClick(session, node, databaseFrom) {
+        doubleClick(session, node) {
           openTriggerViewPage(
             trigger.triggerName,
             undefined,

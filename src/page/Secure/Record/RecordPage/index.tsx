@@ -20,19 +20,20 @@ import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/
 import { IOperationOptionType } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Manage/DetailModal';
 import { TimeOptions } from '@/component/TimeSelect';
+import { AuditEventMetaMap, getEventFilterAndOptions } from '@/constant/record';
 import type { IAudit } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getPreTime } from '@/util/utils';
+import { getPreTime } from '@/util/data/dateTime';
 import { ExportOutlined } from '@ant-design/icons';
 import { Button, DatePicker } from 'antd';
-import type { Moment } from 'moment';
-import moment from 'moment';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import FormRecordExportModal from '../../components/FormRecordExportModal';
 import { SecureContext } from '../../context';
 import { getPageColumns } from './column';
 import { RecordContent } from './component';
-import { AuditEventMetaMap, getEventFilterAndOptions } from '@/constant/record';
+import DateSelect from '@/component/DateSelect';
 
 const { RangePicker } = DatePicker;
 
@@ -44,9 +45,10 @@ const RecordPage: React.FC<any> = () => {
   const [detailId, setDetailId] = useState(null);
   const [auditList, setAuditList] = useState(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
-  const [executeDate, setExecuteDate] = useState<[Moment, Moment]>([, moment()]);
+  const [executeDate, setExecuteDate] = useState<[Dayjs, Dayjs]>([, dayjs()]);
   const [recordExportVisible, setRecordExportVisible] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
+  const [timeRange, setTimeRange] = useState<number | string>(7);
   const userMap = users?.contents?.reduce((total, { name, accountName }) => {
     total[name] = {
       name,
@@ -72,14 +74,13 @@ const RecordPage: React.FC<any> = () => {
     setEventMeta(eventMeta);
   };
 
-  const loadData = async (args: ITableLoadOptions) => {
+  const loadData = async (args: ITableLoadOptions, timeRange?: string | number) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
     if (!pageSize) {
       return;
     }
     const {
       typeName: type,
-      executeTime = 7,
       actionName: action,
       connectionName,
       clientIpAddress,
@@ -104,11 +105,14 @@ const RecordPage: React.FC<any> = () => {
       size: pageSize,
     };
 
-    if (executeTime !== 'custom' && typeof executeTime === 'number') {
-      data.startTime = getPreTime(executeTime);
+    if (timeRange !== 'custom' && typeof timeRange === 'number') {
+      data.startTime = getPreTime(timeRange);
       data.endTime = getPreTime(0);
     }
-
+    if (timeRange === 'ALL') {
+      data.startTime = undefined;
+      data.endTime = undefined;
+    }
     // sorter
     data.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
     const startIndex = pageSize * (current - 1);
@@ -123,12 +127,12 @@ const RecordPage: React.FC<any> = () => {
     tableRef.current.reload();
   };
 
-  const handleExecuteDateChange = (value: [Moment, Moment]) => {
+  const handleExecuteDateChange = (value: [Dayjs, Dayjs]) => {
     setExecuteDate(value);
   };
 
   const handleTableChange = (args: ITableLoadOptions) => {
-    loadData(args);
+    loadData(args, timeRange);
   };
 
   const handleRecordExportVisible = (visible: boolean = false) => {
@@ -153,32 +157,19 @@ const RecordPage: React.FC<any> = () => {
           enabledSearch: false,
           filters: [
             {
-              name: 'executeTime',
-              title: formatMessage({
-                id: 'odc.components.RecordPage.ExecutionTime.1',
-              }),
-
-              //执行时间：
-              defaultValue: 7,
-              dropdownWidth: 160,
-              options: TimeOptions,
-            },
-
-            {
               render: (props: ITableLoadOptions) => {
-                const content = props?.filters?.executeTime === 'custom' && (
-                  <RangePicker
-                    defaultValue={executeDate}
-                    bordered={false}
-                    showTime={{ format: 'HH:mm:ss' }}
-                    format="YYYY-MM-DD HH:mm:ss"
+                return (
+                  <DateSelect
+                    timeRange={timeRange}
+                    executeDate={executeDate}
+                    active={timeRange !== 7}
                     onChange={(value) => {
-                      handleExecuteDateChange(value);
+                      setTimeRange(value);
+                      loadData(props, value);
                     }}
+                    onDateChange={handleExecuteDateChange}
                   />
                 );
-
-                return content;
               },
             },
           ],
@@ -190,11 +181,13 @@ const RecordPage: React.FC<any> = () => {
               icon: <ExportOutlined />,
               content: formatMessage({
                 id: 'odc.components.RecordPage.Export',
+                defaultMessage: '导出',
               }),
 
               //导出
               tooltip: formatMessage({
                 id: 'odc.components.RecordPage.ExportOperationRecords',
+                defaultMessage: '导出操作记录',
               }),
 
               //导出操作记录
@@ -204,7 +197,7 @@ const RecordPage: React.FC<any> = () => {
             },
           ],
         }}
-        onLoad={loadData}
+        onLoad={(args) => loadData(args, timeRange)}
         onChange={handleTableChange}
         tableProps={{
           columns: getPageColumns({
@@ -229,12 +222,18 @@ const RecordPage: React.FC<any> = () => {
         visible={detailModalVisible}
         title={formatMessage({
           id: 'odc.components.RecordPage.RecordDetails',
+          defaultMessage: '记录详情',
         })}
         /*记录详情*/
         detailId={detailId}
         footer={
           <Button onClick={handleCloseDetailModal}>
-            {formatMessage({ id: 'odc.components.RecordPage.Close' }) /*关闭*/}
+            {
+              formatMessage({
+                id: 'odc.components.RecordPage.Close',
+                defaultMessage: '关闭',
+              }) /*关闭*/
+            }
           </Button>
         }
         onClose={handleCloseDetailModal}

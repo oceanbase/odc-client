@@ -19,12 +19,12 @@ import { inject, observer } from 'mobx-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import ResourceTreeContext from '../../context/ResourceTreeContext';
 import tracert from '@/util/tracert';
-import SelectPanel from './SelectPanel';
 import { Spin } from 'antd';
 import DatabaseTree from './DatabaseTree';
 import TreeStateStore, { ITreeStateCache } from './TreeStateStore';
-import { useParams } from '@umijs/max';
 import { ModalStore } from '@/store/modal';
+import { useParams, useSearchParams } from '@umijs/max';
+import { openNewSQLPage } from '@/store/helper/page';
 
 export default inject(
   'userStore',
@@ -37,45 +37,43 @@ export default inject(
     userStore: UserStore;
     modalStore: ModalStore;
   }) {
-    const { tabKey, datasourceId } = useParams<{ tabKey: string; datasourceId: string }>();
-    const [selectPanelOpen, setSelectPanelOpen] = useState<boolean>(!tabKey);
     const resourcetreeContext = useContext(ResourceTreeContext);
-    const { selectProjectId, selectDatasourceId, currentDatabaseId } = resourcetreeContext;
-
+    const { pollingDatabase } = resourcetreeContext;
     const cacheRef = useRef<ITreeStateCache>({});
+
+    const { datasourceId: tempDatasourceId } = useParams<{
+      tabKey: string;
+      datasourceId: string;
+    }>();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [loading, setLoading] = useState(true);
 
     async function initData() {
-      await resourcetreeContext.reloadDatasourceList();
-      await resourcetreeContext.reloadProjectList();
+      await resourcetreeContext.reloadDatabaseList();
+      resourcetreeContext.reloadDatasourceList();
+      resourcetreeContext.reloadProjectList();
       setLoading(false);
+      pollingDatabase();
+      resolveParams();
     }
 
-    const setSelectPanel = (open) => {
-      setSelectPanelOpen(open);
-      modalStore.changeDatabaseSearchModalVisible(false);
-      modalStore.changeDatabaseSearchModalData(!open);
+    const resolveParams = async () => {
+      const databaseId = searchParams.get('databaseId');
+      const projectId = searchParams.get('projectId');
+      if (databaseId && !projectId) {
+        // 打开sql窗口
+        openNewSQLPage(parseInt(databaseId));
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete('databaseId');
+        setSearchParams(newSearchParams, { replace: true });
+      }
     };
 
     useEffect(() => {
       initData();
       tracert.expo('a3112.b41896.c330988');
     }, []);
-
-    useEffect(() => {
-      if (!selectDatasourceId && !selectProjectId) {
-        setSelectPanel(true);
-      } else {
-        setSelectPanel(false);
-      }
-    }, [selectProjectId, selectDatasourceId]);
-
-    useEffect(() => {
-      if (currentDatabaseId) {
-        setSelectPanel(false);
-      }
-    }, [currentDatabaseId]);
 
     if (loading) {
       return (
@@ -90,11 +88,7 @@ export default inject(
           cache: cacheRef?.current,
         }}
       >
-        {selectPanelOpen ? (
-          <SelectPanel onClose={() => setSelectPanel(false)} />
-        ) : (
-          <DatabaseTree openSelectPanel={() => setSelectPanel(true)} />
-        )}
+        <DatabaseTree />
       </TreeStateStore.Provider>
     );
   }),

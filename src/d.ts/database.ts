@@ -17,7 +17,7 @@
 import { IDatasource } from './datasource';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
-import { DbObjectType } from '@/d.ts';
+import { ConnectType, DbObjectType, ConnectionMode } from '@/d.ts';
 
 export enum DatabaseSyncStatus {
   FAILED = 'FAILED',
@@ -66,13 +66,23 @@ export enum DBObjectSyncStatus {
   FAILED = 'FAILED',
 }
 
+export enum DBType {
+  LOGICAL = 'LOGICAL',
+  PHYSICAL = 'PHYSICAL',
+}
+
+export enum BooleanOptionType {
+  TRUE = 'true',
+  FALSE = 'false',
+}
+
 export interface IDatabase {
   id: number;
   databaseId?: string;
   name: string;
   project: IProject;
   lockDatabaseUserRequired: boolean;
-  dataSource: IDatasource;
+  dataSource?: IDatasource;
   syncStatus: DatabaseSyncStatus;
   lastSyncTime: number;
   organizationId: number;
@@ -81,6 +91,7 @@ export interface IDatabase {
   tableCount: number;
   environment: IEnvironment;
   existed: boolean;
+  dialectType?: ConnectionMode;
   authorizedPermissionTypes?: DatabasePermissionType[];
   /**
    * 数据库管理员
@@ -89,6 +100,10 @@ export interface IDatabase {
   ownerIds: number[];
   objectSyncStatus: DBObjectSyncStatus;
   objectLastSyncTime: number;
+  type: DBType;
+  connectType?: ConnectType;
+  alias?: string;
+  remark?: string;
 }
 
 /**
@@ -110,4 +125,36 @@ export interface IUnauthorizedDatabase {
   dataSource: IDatasource;
   environment: IEnvironment;
   applicable: boolean;
+}
+
+export enum PreviewLogicalTableTopologiesErrorEnum {
+  LogicalTableBadExpressionSyntax = 'LogicalTableBadExpressionSyntax',
+  LogicalTableExpressionNotEvenlyDivided = 'LogicalTableExpressionNotEvenlyDivided',
+  LogicalTableExpressionNotPositiveStep = 'LogicalTableExpressionNotPositiveStep',
+  LogicalTableExpressionRangeStartGreaterThanEnd = 'LogicalTableExpressionRangeStartGreaterThanEnd',
+  LogicalTableExpressionNotValidIntegerRange = 'LogicalTableExpressionNotValidIntegerRange',
+}
+
+export enum DatabaseGroup {
+  /** 不分组 */
+  none = 'NONE',
+  /** 项目 */
+  project = 'PROJECT',
+  /** 按类型 */
+  connectType = 'CONNECTTYPE',
+  /** 按环境 */
+  environment = 'ENVIRONMENT',
+  /** 按数据源 */
+  dataSource = 'DATASOURCE',
+  /** 按集群 */
+  cluster = 'CLUSTER',
+  /** 按租户 */
+  tenant = 'Tenant',
+}
+
+export enum DatabaseSearchType {
+  SCHEMA_NAME = 'SCHEMA_NAME',
+  DATASOURCE_NAME = 'DATASOURCE_NAME',
+  CLUSTER_NAME = 'CLUSTER_NAME',
+  TENANT_NAME = 'TENANT_NAME',
 }

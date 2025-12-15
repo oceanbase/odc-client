@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import setting from '@/store/setting';
 import { formatMessage, getLocalImg } from '@/util/intl';
-import { Modal, Space } from 'antd';
-import moment from 'moment';
-import { PureComponent } from 'react';
 import { GithubFilled } from '@ant-design/icons';
+import { Modal, Space } from 'antd';
+import dayjs from 'dayjs';
+import { PureComponent } from 'react';
 import pkg from '../../../../../package.json';
 import styles from './index.less';
-import setting from '@/store/setting';
 export default class ModalHelp extends PureComponent<{
   showModal: boolean;
   onCancel: () => void;
@@ -45,13 +45,14 @@ export default class ModalHelp extends PureComponent<{
             {formatMessage(
               {
                 id: 'odc.components.ModalHelpAbout.VersionNumberPkgversion',
+                defaultMessage: '版本号：{pkgVersion}',
               },
               { pkgVersion: ODC_VERSION },
             )}
           </p>
           <span>Server: {setting?.serverSystemInfo?.version}</span>
           <br />
-          <span>Release Date: {RELEASE_DATE ? moment(RELEASE_DATE).format('y-MM-DD') : ''}</span>
+          <span>Release Date: {RELEASE_DATE ? dayjs(RELEASE_DATE).format('YYYY-MM-DD') : ''}</span>
         </div>
         <div className={styles.copyright}>
           <div>

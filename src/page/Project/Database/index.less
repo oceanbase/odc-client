@@ -6,12 +6,26 @@
     color: var(--mask-color);
   }
 }
-.roleForm {
-  :global {
-    .ant-form-item-label {
-      .ant-form-item-optional {
-        display: none;
+
+.groupColumn {
+  .databaseName {
+    :global {
+      .ant-table-cell-content {
+        display: inline !important;
+      }
+    }
+    .groupColumnCell {
+      white-space: nowrap;
+      font-weight: 600;
+      .tip {
+        color: var(--text-color-hint);
+        margin-left: 6px;
+        font-weight: normal;
       }
     }
   }
+}
+
+.mr6 {
+  margin-right: 6px;
 }

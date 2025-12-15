@@ -21,8 +21,8 @@ import * as monaco from 'monaco-editor';
 import odc from '@/plugins/odc';
 import SessionStore from '@/store/sessionManager/session';
 import setting, { SettingStore } from '@/store/setting';
-import editorUtils from '@/util/editor';
-import { getUnWrapedSnippetBody } from '@/util/snippet';
+import editorUtils from '@/util/ui/editor';
+import { getUnWrapedSnippetBody } from '@/util/business/snippet';
 import { inject, observer } from 'mobx-react';
 import styles from './index.less';
 import * as groovy from './plugins/languageSupport/groovy';
@@ -31,6 +31,8 @@ import { getModelService } from './plugins/ob-language/service';
 import logger from '@/util/logger';
 import { getFontSize } from './config';
 import { apply as themeApply } from './plugins/theme';
+import PlaceholderContentWidget from './PlaceholderContentWidget';
+import { ACTION_GROUPS } from '@/component/EditorToolBar/config';
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
   doFormat: () => void;
   getSelectionContent: () => string;
@@ -61,8 +63,15 @@ export interface IProps {
 
   readOnly?: boolean;
 
+  /** @description 工具栏配置key，用于判断是否启用AI自动补全 */
+  actionGroupKey?: string;
+
   onEditorCreated?: (editor: IEditor) => void;
+
+  placeholder?: string;
 }
+
+export type IFullEditor = monaco.editor.IStandaloneDiffEditor;
 
 const MonacoEditor: React.FC<IProps> = function (props) {
   const {
@@ -76,7 +85,15 @@ const MonacoEditor: React.FC<IProps> = function (props) {
     sessionStore,
     onValueChange,
     onEditorCreated,
+    placeholder,
+    actionGroupKey,
   } = props;
+
+  // 根据 actionGroupKey 判断是否启用 AI 自动补全
+  const enableAICompletion = actionGroupKey
+    ? ACTION_GROUPS[actionGroupKey]?.left?.some((group: any[]) => group?.includes('AIComplete')) ||
+      false
+    : false;
   const [innerValue, _setInnerValue] = useState<string>(defaultValue);
   const settingTheme =
     settingStore.theme.editorTheme?.[settingStore.configurations['odc.editor.style.theme']];
@@ -152,6 +169,8 @@ const MonacoEditor: React.FC<IProps> = function (props) {
           delimiter() {
             return sessionRef.current?.params?.delimiter;
           },
+          editor: editorRef.current,
+          enableAICompletion,
         },
         () => sessionRef.current,
       ),
@@ -177,6 +196,12 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       },
       readOnly: readOnly,
     });
+
+    /* 初始化 PlaceholderContentWidget */
+    if (placeholder) {
+      new PlaceholderContentWidget(placeholder, editorRef.current);
+    }
+
     await initPlugin();
     editorRef.current.updateOptions({
       readOnly,

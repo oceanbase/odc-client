@@ -19,15 +19,14 @@ import SearchFilter from '@/component/SearchFilter';
 import TooltipContent from '@/component/TooltipContent';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IRule } from '@/d.ts/rule';
+import { LintLabel } from '@/page/Workspace/components/SQLResultSet/columns';
 import { formatMessage } from '@/util/intl';
 import { QuestionCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Space, Switch, Tooltip } from 'antd';
 import { useState } from 'react';
-import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
+import { RiskLevelEnum } from '../../interface';
 import { SqlInterceptorKey } from './EditRuleDrawer';
-import { RenderLevel } from './InnerEnvironment';
 import styles from './index.less';
-import { LintLabel } from '@/page/Workspace/components/SQLResultSet/columns';
 
 function getConfig(
   rule: IRule,
@@ -37,7 +36,7 @@ function getConfig(
 ): string {
   const { metadata, properties } = rule;
   const { propertyMetadatas } = metadata;
-  const keys = Object.keys(properties) || [];
+  const keys = properties ? Object.keys(properties) || [] : [];
   let content = '';
   if (keys?.[0] === SqlInterceptorKey) {
     return integrationsIdMap?.[properties?.[keys?.[0]]] || '-';
@@ -87,7 +86,10 @@ export const getColumns = ({
 }) => {
   return [
     {
-      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.RuleName' }), //规则名称
+      title: formatMessage({
+        id: 'odc.Env.components.InnerEnvironment.RuleName',
+        defaultMessage: '规则名称',
+      }), //规则名称
       width: 218,
       dataIndex: 'name',
       key: 'name',
@@ -99,7 +101,10 @@ export const getColumns = ({
           <SearchFilter
             {...props}
             selectedKeys={null}
-            placeholder={formatMessage({ id: 'odc.Env.components.InnerEnvironment.RuleName' })} //规则名称
+            placeholder={formatMessage({
+              id: 'odc.Env.components.InnerEnvironment.RuleName',
+              defaultMessage: '规则名称',
+            })} //规则名称
           />
         );
       },
@@ -111,6 +116,7 @@ export const getColumns = ({
           }}
         />
       ),
+
       render: (text, record, index) => (
         <div
           style={{
@@ -121,13 +127,18 @@ export const getColumns = ({
         >
           <TooltipContent content={record?.metadata?.name} maxWdith={180} />
           <Tooltip title={record?.metadata?.description}>
-            <QuestionCircleOutlined style={{ marginLeft: '8px' }} />
+            <QuestionCircleOutlined
+              style={{ marginLeft: '8px', color: 'var(--text-color-hint)' }}
+            />
           </Tooltip>
         </div>
       ),
     },
     {
-      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.RuleType' }), //规则类型
+      title: formatMessage({
+        id: 'odc.Env.components.InnerEnvironment.RuleType',
+        defaultMessage: '规则类型',
+      }), //规则类型
       dataIndex: 'subTypes',
       key: 'subTypes',
       filters: subTypeFilters,
@@ -135,7 +146,10 @@ export const getColumns = ({
       render: (text, record) => <TooltipContent content={record?.metadata?.subTypes?.join(',')} />,
     },
     {
-      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.SupportsDataSources' }), //支持数据源
+      title: formatMessage({
+        id: 'odc.Env.components.InnerEnvironment.SupportsDataSources',
+        defaultMessage: '支持数据源',
+      }), //支持数据源
       dataIndex: 'supportedDialectTypes',
       key: 'supportedDialectTypes',
       filters: supportedDialectTypeFilters,
@@ -143,7 +157,10 @@ export const getColumns = ({
       render: (text, record) => <TooltipContent content={record?.appliedDialectTypes?.join(',')} />,
     },
     {
-      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.ConfigurationValue' }), //配置值
+      title: formatMessage({
+        id: 'odc.Env.components.InnerEnvironment.ConfigurationValue',
+        defaultMessage: '配置值',
+      }), //配置值
       dataIndex: 'metadata',
       key: 'metadata',
       ellipsis: true,
@@ -153,7 +170,10 @@ export const getColumns = ({
       },
     },
     {
-      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.ImprovementLevel' }), //改进等级
+      title: formatMessage({
+        id: 'odc.Env.components.InnerEnvironment.ImprovementLevel',
+        defaultMessage: '改进等级',
+      }), //改进等级
       dataIndex: 'level',
       key: 'level',
       filters: [
@@ -170,10 +190,14 @@ export const getColumns = ({
           value: RiskLevelEnum.MUST,
         },
       ],
+
       render: (_, record) => <LintLabel level={record.level} needLevelMap noPadding />,
     },
     {
-      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.WhetherToEnable' }), //是否启用
+      title: formatMessage({
+        id: 'odc.Env.components.InnerEnvironment.WhetherToEnable',
+        defaultMessage: '是否启用',
+      }), //是否启用
       dataIndex: 'status',
       key: 'status',
       render: (_, record, index) => {
@@ -192,7 +216,10 @@ export const getColumns = ({
       },
     },
     {
-      title: formatMessage({ id: 'odc.Env.components.InnerEnvironment.Operation' }), //操作
+      title: formatMessage({
+        id: 'odc.Env.components.InnerEnvironment.Operation',
+        defaultMessage: '操作',
+      }), //操作
       width: 80,
       key: 'action',
       render: (_, record, index) => (
@@ -207,7 +234,12 @@ export const getColumns = ({
                 className={styles.linkBtnDisabled}
                 onClick={() => handleOpenEditModal(record)}
               >
-                {formatMessage({ id: 'odc.Env.components.InnerEnvironment.Edit' }) /*编辑*/}
+                {
+                  formatMessage({
+                    id: 'odc.Env.components.InnerEnvironment.Edit',
+                    defaultMessage: '编辑',
+                  }) /*编辑*/
+                }
               </Button>
             </Acess>
           </Space>

@@ -50,9 +50,11 @@ const ScriptEditorModal: React.FC<IProps> = function ({
       Modal.confirm({
         content: formatMessage({
           id: 'odc.ScriptManageModal.ScriptEditorModal.TheCurrentOperationIsNot',
+          defaultMessage: '当前的操作未保存，是否确定关闭窗口？',
         }), //当前的操作未保存，确定要关闭窗口吗?
         title: formatMessage({
           id: 'odc.ScriptManageModal.ScriptEditorModal.CloseWindow',
+          defaultMessage: '关闭窗口',
         }), //关闭窗口
         onOk: () => {
           propOnClose();
@@ -128,9 +130,10 @@ const ScriptEditorModal: React.FC<IProps> = function ({
         formatMessage(
           {
             id: 'odc.ScriptManageModal.ScriptEditorModal.EditScriptScriptname',
+            defaultMessage: '编辑脚本({scriptName})',
           },
 
-          { scriptName: scriptName },
+          { scriptName },
         )
         //`编辑脚本(${scriptName})`
       }
@@ -141,6 +144,7 @@ const ScriptEditorModal: React.FC<IProps> = function ({
             {
               formatMessage({
                 id: 'odc.ScriptManageModal.ScriptEditorModal.Cancel',
+                defaultMessage: '取消',
               })
 
               /*取消*/
@@ -150,6 +154,7 @@ const ScriptEditorModal: React.FC<IProps> = function ({
             {
               formatMessage({
                 id: 'odc.ScriptManageModal.ScriptEditorModal.Save',
+                defaultMessage: '保存',
               })
 
               /*保存*/
@@ -171,6 +176,7 @@ const ScriptEditorModal: React.FC<IProps> = function ({
             name="scriptName"
             label={formatMessage({
               id: 'odc.ScriptManageModal.ScriptEditorModal.ScriptName',
+              defaultMessage: '脚本名称',
             })}
 
             /*脚本名称*/
@@ -180,6 +186,7 @@ const ScriptEditorModal: React.FC<IProps> = function ({
           <Form.Item
             label={formatMessage({
               id: 'odc.ScriptManageModal.ScriptEditorModal.ScriptContent',
+              defaultMessage: '脚本内容',
             })}
             style={{ height: 500 }}
             className={styles.sqlContent}

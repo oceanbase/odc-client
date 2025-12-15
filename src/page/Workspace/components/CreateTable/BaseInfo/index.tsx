@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { CaseInput } from '@/component/Input/Case';
+import { columnGroupsText } from '@/constant/label';
+import { ColumnStoreType, DBDefaultStoreType } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
 import { Col, Form, Input, Row, Select } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
@@ -22,28 +25,27 @@ import { useDataSourceConfig, useTableConfig } from '../config';
 import { getDefaultCollation } from '../helper';
 import TableContext from '../TableContext';
 import styles from './index.less';
-import { CaseInput } from '@/component/Input/Case';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { ColumnStoreType, DBDefaultStoreType } from '@/d.ts/table';
-import { columnGroupsText } from '@/constant/label';
+import { DBType } from '@/d.ts/database';
+import LogicTableBaseInfo from './LogicTableBaseInfo';
 
 interface IProps {
   isEdit?: boolean;
   formRef?: React.Ref<FormInstance<any>>;
+  dbType?: DBType;
 }
 
 const { Option } = Select;
 
 const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
-  const { isEdit, formRef } = props;
-
+  const { isEdit, formRef, dbType } = props;
   const [form] = Form.useForm();
   const tableContext = useContext(TableContext);
   const model = tableContext.info;
   const session = tableContext.session;
+  const setIsLogicalTableValid = tableContext.setIsLogicalTableValid;
   const { collations, charsets } = session;
   const config = useTableConfig(session.connection?.dialectType);
-  const datasourceConfig = useDataSourceConfig(session.connection.type);
+  const datasourceConfig = useDataSourceConfig(session?.connection?.type);
   const layout = session?.supportFeature?.enableColumnStore
     ? [8, 5, 6, 5].reverse()
     : [11, 6, 7].reverse();
@@ -83,7 +85,17 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
     },
     [form],
   );
-  return (
+  return dbType === DBType.LOGICAL ? (
+    <LogicTableBaseInfo
+      form={form}
+      session={session}
+      tableContext={tableContext}
+      datasourceConfig={datasourceConfig}
+      config={config}
+      isEdit={isEdit}
+      setIsLogicalTableValid={setIsLogicalTableValid}
+    />
+  ) : (
     <Form
       className={styles.form}
       form={form}
@@ -104,12 +116,14 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
             name="tableName"
             label={formatMessage({
               id: 'workspace.window.createTable.baseInfo.tableName',
+              defaultMessage: '表名称',
             })}
             rules={[
               {
                 required: true,
                 message: formatMessage({
                   id: 'workspace.window.createTable.baseInfo.tableName.validation',
+                  defaultMessage: '请填写表名称',
                 }),
               },
             ]}
@@ -120,6 +134,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
               autoFocus
               placeholder={formatMessage({
                 id: 'workspace.window.createTable.baseInfo.tableName.placeholder',
+                defaultMessage: '请填写表名称',
               })}
             />
           </Form.Item>
@@ -131,6 +146,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
                 name="character"
                 label={formatMessage({
                   id: 'workspace.window.createTable.baseInfo.character',
+                  defaultMessage: '默认字符集',
                 })}
                 rules={[
                   {
@@ -163,12 +179,14 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
                       name="collation"
                       label={formatMessage({
                         id: 'workspace.window.createTable.baseInfo.collation',
+                        defaultMessage: '默认排序规则',
                       })}
                       rules={[
                         {
                           required: true,
                           message: formatMessage({
                             id: 'workspace.window.createTable.baseInfo.tableName.validation',
+                            defaultMessage: '请填写表名称',
                           }),
                         },
                       ]}
@@ -224,15 +242,17 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
           name="comment"
           label={formatMessage({
             id: 'workspace.window.createTable.baseInfo.comment',
+            defaultMessage: '描述',
           })}
           style={{ width: '100%' }}
-          requiredMark={'optional'}
+          required={false}
         >
           <Input.TextArea
             style={{ width: '100%' }}
             autoSize={{ maxRows: 3, minRows: 3 }}
             placeholder={formatMessage({
               id: 'workspace.window.createTable.baseInfo.comment.placeholder',
+              defaultMessage: '请填写描述',
             })}
           />
         </Form.Item>

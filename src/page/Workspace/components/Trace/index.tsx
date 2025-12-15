@@ -15,18 +15,16 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Button, Col, Descriptions, Drawer, Input, Radio, Row, Tooltip, message } from 'antd';
-import React, { useEffect } from 'react';
-import { CopyOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { useState } from 'react';
-import styles from './index.less';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import TraceList from './TraceList';
-import TraceTreeTable from './TraceTreeTable';
-import { getFullLinkTrace, getFullLinkTraceDownloadUrl } from '@/common/network/sql';
-import { downloadFile, formatTimeTemplatMicroSeconds } from '@/util/utils';
+import { getFullLinkTraceDownloadUrl } from '@/common/network/sql';
 import { TraceSpan } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
+import { downloadFile } from '@/util/data/file';
+import { formatTimeTemplatMicroSeconds } from '@/util/data/dateTime';
+import { CopyOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Col, Descriptions, Drawer, Input, message, Radio, Row, Tooltip } from 'antd';
+import React, { useState } from 'react';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import styles from './index.less';
 import TraceComp from './TraceComponent';
 export const InfoRender = ({ infos }) => {
   return (
@@ -136,6 +134,7 @@ const Trace: React.FC<{
       title={
         formatMessage({
           id: 'odc.src.page.Workspace.components.Trace.FullLinkTraceDetails',
+          defaultMessage: '全链路 Trace 详情',
         }) //'全链路 Trace 详情'
       }
       destroyOnClose={true}
@@ -162,6 +161,7 @@ const Trace: React.FC<{
                 message.success(
                   formatMessage({
                     id: 'odc.src.page.Workspace.components.Trace.Replication',
+                    defaultMessage: '复制成功',
                   }), //'复制成功'
                 );
               }}
@@ -174,6 +174,7 @@ const Trace: React.FC<{
               {
                 formatMessage({
                   id: 'odc.src.page.Workspace.components.Trace.StartingTime',
+                  defaultMessage: '开始时间: ',
                 }) /* 开始时间:  */
               }
             </span>
@@ -185,6 +186,7 @@ const Trace: React.FC<{
               {
                 formatMessage({
                   id: 'odc.src.page.Workspace.components.Trace.Duration',
+                  defaultMessage: '持续时间: ',
                 }) /* 持续时间:  */
               }
             </span>
@@ -200,6 +202,7 @@ const Trace: React.FC<{
             {
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.TraceView',
+                defaultMessage: 'Trace 视图',
               }) /* Trace 视图 */
             }
           </Radio.Button>
@@ -207,6 +210,7 @@ const Trace: React.FC<{
             {
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.ListView',
+                defaultMessage: '列表视图',
               }) /* 列表视图 */
             }
           </Radio.Button>
@@ -219,17 +223,20 @@ const Trace: React.FC<{
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.SearchForTheKeyword',
+                defaultMessage: '搜索关键字',
               }) /* 搜索关键字 */
             }
             onSearch={onSearch}
           />
+
           <Button loading={downloadLoading} disabled={downloadLoading} onClick={handleJsonDownload}>
             {
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.ExportJson',
+                defaultMessage: '\n            导出 Json\n          ',
               }) /* 
             导出 Json
-           */
+            */
             }
           </Button>
           <Tooltip
@@ -237,6 +244,7 @@ const Trace: React.FC<{
             title={
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.ExportTheJSONFileThat',
+                defaultMessage: '导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看',
               }) //'导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看'
             }
           >

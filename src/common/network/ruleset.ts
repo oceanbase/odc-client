@@ -45,7 +45,7 @@ export async function getRule(rulesetId: number, ruleId: number): Promise<IRule>
 export async function statsRules(rulesetId: number, type: RuleType) {
   const rawData = await request.get(`/api/v2/regulation/rulesets/${rulesetId}/rules/stats`, {
     params: {
-      type: [type],
+      type,
     },
   });
   return rawData?.data;

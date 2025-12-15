@@ -17,22 +17,24 @@
 import { formatMessage } from '@/util/intl';
 import { EditOutlined } from '@ant-design/icons';
 import type { EditorProps } from '@oceanbase-odc/ob-react-data-grid';
-import { Input, Modal } from 'antd';
+import { Modal } from 'antd';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { CaseTextArea } from '@/component/Input/Case';
 import type { TextAreaRef } from 'antd/lib/input/TextArea';
 import AntdEditorWrap from './AntdEditorWrap';
-import { CaseTextArea } from '@/component/Input/Case';
 
 interface CaseOptions {
   caseSensitive: boolean;
   escapes: string;
+  valueFilter?: (value: string) => string;
 }
 
 export function CaseTextEditor<T>({
   row,
   onRowChange,
+  valueFilter,
   column,
   width,
   caseSensitive,
@@ -43,18 +45,6 @@ export function CaseTextEditor<T>({
   const editorRef = useRef<TextAreaRef>(null);
   const [modalTextValue, setModalTextValue] = useState(null);
   const [isShowTextModal, setIsShowTextModal] = useState(false);
-
-  useEffect(() => {
-    if (editorRef.current) {
-      setTimeout(() => {
-        editorRef.current?.focus();
-        editorRef.current?.resizableTextArea.textArea.setSelectionRange(
-          Number.MAX_SAFE_INTEGER,
-          Number.MAX_SAFE_INTEGER,
-        );
-      }, 100);
-    }
-  }, [editorRef]);
 
   const innerOnChange = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -67,6 +57,15 @@ export function CaseTextEditor<T>({
     <AntdEditorWrap>
       <div>
         <CaseTextArea
+          autoFocus
+          onFocus={() => {
+            setTimeout(() => {
+              editorRef.current?.resizableTextArea.textArea.setSelectionRange(
+                Number.MAX_SAFE_INTEGER,
+                Number.MAX_SAFE_INTEGER,
+              );
+            }, 100);
+          }}
           ref={editorRef}
           caseSensitive={caseSensitive}
           escapes={escapes}
@@ -78,6 +77,7 @@ export function CaseTextEditor<T>({
           }}
           style={{ width: Math.max(width, 200), height: 68 }}
           value={value}
+          valueFilter={valueFilter}
           onChange={innerOnChange}
           autoSize={false}
         />
@@ -99,6 +99,7 @@ export function CaseTextEditor<T>({
           zIndex={1031}
           okText={formatMessage({
             id: 'odc.EditableTable.Editors.TextEditor.Submitted',
+            defaultMessage: '提交',
           })} /* 提交 */
           onCancel={() => {
             setIsShowTextModal(false);
@@ -111,6 +112,7 @@ export function CaseTextEditor<T>({
           <CaseTextArea
             caseSensitive={caseSensitive}
             escapes={escapes}
+            valueFilter={valueFilter}
             autoSize={{ minRows: 15, maxRows: 15 }}
             value={modalTextValue}
             onKeyDown={(e) => {

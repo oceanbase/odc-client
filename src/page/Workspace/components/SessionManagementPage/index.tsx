@@ -18,11 +18,13 @@ import Toolbar from '@/component/Toolbar';
 import { IDatabaseSession } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { sortNumber, sortString } from '@/util/utils';
-import { SyncOutlined } from '@ant-design/icons';
-import { Input, Layout, message, Space, Spin, Tooltip } from 'antd';
+import { groupBySessionId } from '@/util/data/array';
+import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
+import { Input, Layout, message, Space, Spin, Tooltip, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 // @ts-ignore
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getDatabaseSessionList, killSessions } from '@/common/network/sessionParams';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import MiniTable from '@/component/Table/MiniTable';
@@ -33,12 +35,55 @@ import SessionContextWrap from '../SessionContextWrap';
 import SessionContext from '../SessionContextWrap/context';
 import SessionSelect from '../SessionContextWrap/SessionSelect';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
+import FilterIcon from '@/component/Button/FIlterIcon';
+import InputSelect from '@/component/InputSelect';
 
 const ToolbarButton = Toolbar.Button;
 
-const { Search } = Input;
-const { Content } = Layout;
+enum SessionListSearchType {
+  all = 'all',
+  sessionId = 'sessionId',
+  dbUser = 'dbUser',
+  database = 'database',
+  command = 'command',
+  srcIp = 'srcIp',
+  status = 'status',
+  obproxyIp = 'obproxyIp',
+  sql = 'sql',
+}
+
+const SessionListSearchTypeTextMap = {
+  [SessionListSearchType.all]: formatMessage({
+    id: 'src.page.Workspace.components.SessionManagementPage.4CB01ED8',
+    defaultMessage: '全部',
+  }),
+  [SessionListSearchType.sessionId]: formatMessage({
+    id: 'workspace.window.session.management.column.sessionId',
+    defaultMessage: '会话 ID',
+  }),
+  [SessionListSearchType.dbUser]: formatMessage({
+    id: 'workspace.window.session.management.column.dbUser',
+    defaultMessage: '用户',
+  }),
+  [SessionListSearchType.database]: formatMessage({
+    id: 'workspace.window.session.management.column.database',
+    defaultMessage: '数据库名',
+  }),
+  [SessionListSearchType.command]: formatMessage({
+    id: 'workspace.window.session.management.column.command',
+    defaultMessage: '命令',
+  }),
+  [SessionListSearchType.srcIp]: formatMessage({
+    id: 'workspace.window.session.management.column.srcIp',
+    defaultMessage: '来源',
+  }),
+  [SessionListSearchType.status]: formatMessage({
+    id: 'workspace.window.session.management.column.status',
+    defaultMessage: '状态',
+  }),
+  [SessionListSearchType.obproxyIp]: 'OB Proxy',
+  [SessionListSearchType.sql]: 'SQL',
+};
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -49,14 +94,18 @@ interface IProps {
 
 function SessionManagementPage(props: IProps) {
   const [searchKey, setSearchKey] = useState('');
+  const [searchType, setSearchType] = useState(undefined);
+  const selectTypeOptions = Object.keys(SessionListSearchType).map((item) => ({
+    value: item,
+    label: SessionListSearchTypeTextMap[item],
+  }));
   const [selectedRows, setSelectedRows] = useState<IDatabaseSession[]>([]);
   const [listLoading, setListLoading] = useState(false);
   const [sessionList, setSessionList] = useState<IDatabaseSession[]>([]);
   const context = useContext(SessionContext);
   const session = context?.session;
   const config = getDataSourceModeConfig(session?.connection?.type);
-
-  async function fetchDatabaseSessionList() {
+  async function fetchDatabaseSessionList(killSession?: string[]) {
     if (!session?.sessionId) {
       return;
     }
@@ -66,26 +115,47 @@ function SessionManagementPage(props: IProps) {
     // 获取连接参数列表
     const data = await getDatabaseSessionList(session?.sessionId);
     setListLoading(false);
-    setSessionList(data);
+    // 关闭会话后马上请求会话列表，关闭的会话还是会返回（有延迟），所以需要过滤掉
+    setSessionList(data?.filter((item) => !killSession?.includes(item.sessionId)));
   }
 
   useEffect(() => {
     fetchDatabaseSessionList();
   }, [session?.sessionId]);
 
-  // 过滤搜索关键词
-  const filteredRows = sessionList?.filter((session) =>
-    [
-      `${session.sessionId}`,
-      session.dbUser,
-      session.database,
-      session.command,
-      session.srcIp,
-      session.status,
-      session.obproxyIp,
-      session.sql,
-    ].some((s) => s && s.toLowerCase().indexOf(searchKey.toLowerCase()) > -1),
-  );
+  const filteredRows = sessionList?.filter((session) => {
+    switch (searchType) {
+      case SessionListSearchType.all:
+        return [
+          `${session.sessionId}`,
+          session.dbUser,
+          session.database,
+          session.command,
+          session.srcIp,
+          session.status,
+          session.obproxyIp,
+          session.sql,
+        ].some((s) => s && s.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1);
+      case SessionListSearchType.sessionId:
+        return session.sessionId.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.dbUser:
+        return session.dbUser.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.database:
+        return session.database.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.command:
+        return session.command.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.srcIp:
+        return session.srcIp.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.status:
+        return session.status.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.obproxyIp:
+        return session.obproxyIp.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.sql:
+        return session.sql.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      default:
+        return true;
+    }
+  });
 
   const statusFilter = [...new Set(filteredRows?.map((item) => item.status) ?? [])]?.map(
     (item) => ({
@@ -98,17 +168,23 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.sessionId',
+        defaultMessage: '会话 ID',
       }),
 
       dataIndex: 'sessionId',
       width: 105,
-      sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortNumber(a.sessionId, b.sessionId),
+      sorter: (a: IDatabaseSession, b: IDatabaseSession) =>
+        sortNumber(Number(a.sessionId), Number(b.sessionId)),
       sortDirections: ['descend', 'ascend'],
+      render: (value) => {
+        return <Tooltip title={value}>{value}</Tooltip>;
+      },
     },
 
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.dbUser',
+        defaultMessage: '用户',
       }),
 
       dataIndex: 'dbUser',
@@ -121,6 +197,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.srcIp',
+        defaultMessage: '来源',
       }),
 
       dataIndex: 'srcIp',
@@ -133,17 +210,22 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.database',
+        defaultMessage: '数据库名',
       }),
 
       dataIndex: 'database',
       width: 120,
       sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.database, b.database),
       sortDirections: ['descend', 'ascend'],
+      render: (value) => {
+        return <Tooltip title={value}>{value}</Tooltip>;
+      },
     },
 
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.status',
+        defaultMessage: '状态',
       }),
 
       dataIndex: 'status',
@@ -157,6 +239,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.command',
+        defaultMessage: '命令',
       }),
 
       dataIndex: 'command',
@@ -168,6 +251,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.executeTime',
+        defaultMessage: '执行时间(s)',
       }),
 
       dataIndex: 'executeTime',
@@ -180,6 +264,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.sql',
+        defaultMessage: 'SQL',
       }),
 
       dataIndex: 'sql',
@@ -204,10 +289,12 @@ function SessionManagementPage(props: IProps) {
       },
     },
   ];
+
   if (config?.features?.supportOBProxy) {
     columns.push({
       title: formatMessage({
         id: 'workspace.window.session.management.column.obproxyIp',
+        defaultMessage: 'OB Proxy',
       }),
 
       dataIndex: 'obproxyIp',
@@ -227,9 +314,12 @@ function SessionManagementPage(props: IProps) {
       type,
     );
     if (data && !data?.find((item) => !item.killed)) {
-      await fetchDatabaseSessionList();
+      await fetchDatabaseSessionList(data?.map((item) => item.sessionId));
       message.success(
-        formatMessage({ id: 'odc.components.SessionManagementPage.ClosedSuccessfully' }), //关闭成功
+        formatMessage({
+          id: 'odc.components.SessionManagementPage.ClosedSuccessfully',
+          defaultMessage: '关闭成功',
+        }), //关闭成功
       );
       setSelectedRows([]);
     } else {
@@ -242,9 +332,17 @@ function SessionManagementPage(props: IProps) {
     }
   };
 
-  const handleSearch = (searchKey: string) => {
-    setSearchKey(searchKey);
+  const handleSearch = ({
+    searchValue,
+    searchType,
+  }: {
+    searchValue: string;
+    searchType: SessionListSearchType;
+  }) => {
+    setSearchType(searchType);
+    setSearchKey(searchValue);
   };
+
   const handleRefresh = () => {
     fetchDatabaseSessionList();
   };
@@ -263,10 +361,14 @@ function SessionManagementPage(props: IProps) {
                   <ToolbarButton
                     type="BUTTON"
                     disabled={!selectedRows.length}
-                    text={formatMessage({ id: 'workspace.window.session.button.closeSession' })}
+                    text={formatMessage({
+                      id: 'workspace.window.session.button.closeSession',
+                      defaultMessage: '关闭会话',
+                    })}
                     confirmConfig={{
                       title: formatMessage({
                         id: 'odc.components.SessionManagementPage.ConfirmToCloseTheSession',
+                        defaultMessage: '确认关闭会话',
                       }), //确认关闭会话
                       onConfirm() {
                         kill('session');
@@ -282,11 +384,13 @@ function SessionManagementPage(props: IProps) {
                     text={
                       formatMessage({
                         id: 'odc.components.SessionManagementPage.CloseQuery',
+                        defaultMessage: '关闭查询',
                       }) //关闭查询
                     }
                     confirmConfig={{
                       title: formatMessage({
                         id: 'odc.components.SessionManagementPage.ConfirmToCloseTheQuery',
+                        defaultMessage: '确认关闭查询',
                       }), //确认关闭查询
                       onConfirm() {
                         kill('query');
@@ -296,23 +400,17 @@ function SessionManagementPage(props: IProps) {
                 )}
               </Space>
             </div>
-            <div className="tools-right">
-              <Search
-                allowClear={true}
-                placeholder={formatMessage({
-                  id: 'workspace.window.session.button.search',
-                })}
-                onSearch={handleSearch}
-                // onChange={(e) => handleSearch(e.target.value)}
-                size="small"
-                className={styles.search}
+            <div className="tools-right" style={{ gap: 8 }}>
+              <InputSelect
+                searchValue={searchKey}
+                searchType={searchType}
+                selectTypeOptions={selectTypeOptions}
+                onSelect={handleSearch}
               />
 
-              <ToolbarButton
-                text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
-                icon={<SyncOutlined />}
-                onClick={handleRefresh}
-              />
+              <FilterIcon border isActive={false}>
+                <SyncOutlined spin={listLoading} onClick={handleRefresh} />
+              </FilterIcon>
             </div>
           </Toolbar>
         </div>
@@ -323,14 +421,18 @@ function SessionManagementPage(props: IProps) {
         ) : null}
         <div className={styles.table}>
           <MiniTable
-            rowKey={'sessionId'}
+            rowKey={(record) => `${record.sessionId}_${record.svrIp}`}
             bordered={true}
             loading={listLoading}
             columns={columns}
-            dataSource={filteredRows}
+            indentSize={0}
+            dataSource={groupBySessionId(filteredRows)}
             loadData={(page) => {}}
             rowSelection={{
-              selectedRowKeys: selectedRows.map((r: IDatabaseSession) => r.sessionId),
+              checkStrictly: false,
+              selectedRowKeys: selectedRows.map(
+                (r: IDatabaseSession) => `${r.sessionId}_${r.svrIp}`,
+              ),
               onChange: (selectedRowKeys: string[], rows: IDatabaseSession[]) => {
                 setSelectedRows(rows);
               },

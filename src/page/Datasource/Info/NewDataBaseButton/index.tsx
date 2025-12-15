@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { createDataBase } from '@/common/network/database';
 import { getProject, listProjects } from '@/common/network/project';
+import { CaseInput } from '@/component/Input/Case';
 import { ConnectionMode } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Button, Form, Input, message, Modal, Space, Tooltip } from 'antd';
+import { Button, Form, Input, message, Modal, Space } from 'antd';
 import { toInteger } from 'lodash';
 import { useEffect, useState } from 'react';
 import ProjectSelect from '../ChangeProjectModal/ProjectSelect';
-import { CaseInput } from '@/component/Input/Case';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
-import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect.tsx';
+import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect';
 import { IProject } from '@/d.ts/project';
 
 interface IProps {
@@ -52,7 +52,7 @@ export default function NewDataBaseButton({
       ownerIds?: number[];
     }
   >();
-  const { run, loading } = useRequest(createDataBase, {
+  const { run, loading: createDatabaseLoading } = useRequest(createDataBase, {
     manual: true,
   });
   const haveCharset = ![ConnectionMode.OB_ORACLE, ConnectionMode.ORACLE].includes(mode);
@@ -101,6 +101,13 @@ export default function NewDataBaseButton({
         });
         return;
       }
+      case ConnectionMode.PG: {
+        form.setFieldsValue({
+          collationName: 'C',
+          charsetName: 'UTF8',
+        });
+        return;
+      }
     }
   }, [mode, open]);
 
@@ -125,6 +132,7 @@ export default function NewDataBaseButton({
       message.success(
         formatMessage({
           id: 'odc.Info.NewDataBaseButton.New',
+          defaultMessage: '新建成功',
         }), //新建成功
       );
       setOpen(false);
@@ -140,6 +148,7 @@ export default function NewDataBaseButton({
         {
           formatMessage({
             id: 'odc.Info.NewDataBaseButton.CreateADatabase',
+            defaultMessage: '新建数据库',
           }) /*新建数据库*/
         }
       </Button>
@@ -147,10 +156,25 @@ export default function NewDataBaseButton({
         open={open}
         title={formatMessage({
           id: 'odc.Info.NewDataBaseButton.CreateADatabase',
+          defaultMessage: '新建数据库',
         })}
         /*新建数据库*/ onOk={submit}
         onCancel={close}
-        destroyOnClose
+        footer={[
+          <Button onClick={close}>
+            {formatMessage({
+              id: 'src.page.Datasource.Info.NewDataBaseButton.F20F3628',
+              defaultMessage: '取消',
+            })}
+          </Button>,
+          <Button type="primary" onClick={submit} loading={createDatabaseLoading}>
+            {formatMessage({
+              id: 'src.page.Datasource.Info.NewDataBaseButton.D09B358D',
+              defaultMessage: '确定',
+            })}
+          </Button>,
+        ]}
+        destroyOnHidden
       >
         <Form
           form={form}
@@ -171,7 +195,25 @@ export default function NewDataBaseButton({
             name={'name'}
             label={formatMessage({
               id: 'odc.Info.NewDataBaseButton.DatabaseName',
+              defaultMessage: '数据库名称',
             })} /*数据库名称*/
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value || value.trim() === '') {
+                    return Promise.reject(
+                      new Error(
+                        formatMessage({
+                          id: 'src.page.Datasource.Info.NewDataBaseButton.2306C6C0',
+                          defaultMessage: '请输入数据库名称',
+                        }),
+                      ),
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
             <CaseInput
               caseSensitive={sqlConfig?.caseSensitivity}
@@ -181,6 +223,7 @@ export default function NewDataBaseButton({
               }}
               placeholder={formatMessage({
                 id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                defaultMessage: '请输入',
               })} /*请输入*/
             />
           </Form.Item>
@@ -190,6 +233,7 @@ export default function NewDataBaseButton({
                 name={'charsetName'}
                 label={formatMessage({
                   id: 'odc.Info.NewDataBaseButton.CharacterEncoding',
+                  defaultMessage: '字符编码',
                 })} /*字符编码*/
               >
                 <Input
@@ -198,6 +242,7 @@ export default function NewDataBaseButton({
                   }}
                   placeholder={formatMessage({
                     id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                    defaultMessage: '请输入',
                   })} /*请输入*/
                   disabled={mode === ConnectionMode.DORIS}
                 />
@@ -206,6 +251,7 @@ export default function NewDataBaseButton({
                 name={'collationName'}
                 label={formatMessage({
                   id: 'odc.Info.NewDataBaseButton.SortingRules',
+                  defaultMessage: '排序规则',
                 })} /*排序规则*/
               >
                 <Input
@@ -214,17 +260,20 @@ export default function NewDataBaseButton({
                   }}
                   placeholder={formatMessage({
                     id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                    defaultMessage: '请输入',
                   })} /*请输入*/
                   disabled={mode === ConnectionMode.DORIS}
                 />
               </Form.Item>
             </Space>
           )}
+
           <Form.Item
             name={'projectId'}
             label={
               formatMessage({
                 id: 'odc.src.page.Datasource.Info.NewDataBaseButton.Project',
+                defaultMessage: '项目',
               }) //'项目'
             }
           >
@@ -238,10 +287,10 @@ export default function NewDataBaseButton({
                 formatMessage(
                   {
                     id: 'odc.src.page.Datasource.Info.NewDataBaseButton.CurrentDataSourceProject',
+                    defaultMessage:
+                      '当前数据源所属项目【{projectName}】, 无法修改，可通过编辑数据源修改所属项目',
                   },
-                  {
-                    projectName: projectName,
-                  },
+                  { projectName },
                 ) //`当前数据源所属项目【${projectName}】, 无法修改，可通过编辑数据源修改所属项目`
               }
               projects={project?.contents}

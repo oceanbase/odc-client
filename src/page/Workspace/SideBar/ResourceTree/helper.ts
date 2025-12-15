@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -19,28 +20,53 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import { EventDataNode } from 'antd/lib/tree';
 import { ITableModel } from '../../components/CreateTable/interface';
 import { ResourceNodeType, TreeDataNode } from './type';
+import { isLogicalDatabase } from '@/util/database/database';
+import { IDatabase, DatabaseGroup } from '@/d.ts/database';
+import { ConnectType, IConnection, IMaterializedView } from '@/d.ts';
+import { ConnectTypeText } from '@/constant/label';
 
 export async function loadNode(
   sessionManagerStore: SessionManagerStore,
   treeNode: EventDataNode<TreeDataNode>,
 ) {
   const { type, data, sessionId, packageName } = treeNode;
+  // 是否为外表
+  const isExternalTable = [
+    ResourceNodeType.ExternalTableRoot,
+    ResourceNodeType.ExternalTable,
+    ResourceNodeType.ExternalTableColumnRoot,
+  ].includes(type);
   switch (type) {
-    case ResourceNodeType.TableRoot: {
+    case ResourceNodeType.GroupNodeProject:
+    case ResourceNodeType.GroupNodeCluster:
+    case ResourceNodeType.GroupNodeConnectType:
+    case ResourceNodeType.GroupNodeEnviponment:
+    case ResourceNodeType.GroupNodeTenant:
+    case ResourceNodeType.GroupNodeDataSource:
+    case ResourceNodeType.SecondGroupNodeDataSource: {
+      break;
+    }
+    case ResourceNodeType.TableRoot:
+    case ResourceNodeType.ExternalTableRoot: {
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);
       if (!dbSession) {
         break;
       }
-      await dbSession.database.getTableList();
+      if (isLogicalDatabase(dbSession?.odcDatabase)) {
+        await dbSession.database.getLogicTableList();
+        break;
+      }
+      await dbSession.database.getTableList(isExternalTable);
       break;
     }
-    case ResourceNodeType.Table: {
+    case ResourceNodeType.Table:
+    case ResourceNodeType.ExternalTable: {
       const tableInfo = (data as ITableModel).info;
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);
       if (!dbSession) {
         break;
       }
-      await dbSession.database.loadTable(tableInfo);
+      await dbSession.database.loadTable(tableInfo, isExternalTable);
       break;
     }
     case ResourceNodeType.ViewRoot: {
@@ -177,5 +203,184 @@ export async function loadNode(
       await dbSession.database.loadType(typeName);
       break;
     }
+    case ResourceNodeType.MaterializedViewRoot: {
+      const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+      if (!dbSession) {
+        break;
+      }
+      await dbSession.database.getMaterializedViewList();
+      break;
+    }
+    case ResourceNodeType.ExternalResourceRoot: {
+      const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+      if (!dbSession) {
+        break;
+      }
+      await dbSession.database.getExternalResourceList();
+      break;
+    }
+    case ResourceNodeType.ExternalResource: {
+      const externalResource = data;
+      const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+      if (!dbSession) {
+        break;
+      }
+      await dbSession.database.loadExternalResource(externalResource);
+      break;
+    }
+    case ResourceNodeType.MaterializedView: {
+      const materializedViewInfo = (data as IMaterializedView)?.info;
+      const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+      if (!dbSession) {
+        break;
+      }
+      await dbSession.database.loadMaterializedView(materializedViewInfo);
+      break;
+    }
   }
 }
+
+export type GroupResult = {
+  [DatabaseGroup.project]: { mapId: number; groupName: string; tip?: string };
+  [DatabaseGroup.environment]: { mapId: number; groupName: string; tip?: string };
+  [DatabaseGroup.dataSource]: { mapId: number; groupName: string; tip?: string };
+  [DatabaseGroup.connectType]: { mapId: ConnectType; groupName: string; tip?: string };
+  [DatabaseGroup.cluster]: { mapId: string; groupName: string; tip?: string };
+  [DatabaseGroup.tenant]: { mapId: string; groupName: string; tip?: string };
+  [DatabaseGroup.none]: undefined;
+};
+export type secondGroupType = Map<number, GroupWithDatabases[DatabaseGroup.dataSource]>;
+
+export type GroupWithDatabases = {
+  [K in keyof GroupResult as K extends DatabaseGroup.none ? never : K]: GroupResult[K] & {
+    databases: IDatabase[];
+    dataSource?: IConnection;
+  };
+};
+
+export type GroupWithSecondGroup = {
+  [K in keyof GroupResult as K extends DatabaseGroup.none ? never : K]: GroupResult[K] & {
+    secondGroup: secondGroupType;
+  };
+};
+
+/** 获取 db 分组信息 */
+export const getMapIdByDB = <T extends DatabaseGroup>(db: IDatabase, type: T): GroupResult[T] => {
+  if (!db || !type) return;
+  const { environment, dataSource, connectType, project } = db;
+  const { clusterName, tenantName } = dataSource || {};
+  let mapId, groupName, tip;
+  switch (type) {
+    case DatabaseGroup.project: {
+      mapId = project?.id;
+      groupName = project?.name;
+      break;
+    }
+    case DatabaseGroup.environment: {
+      mapId = environment?.id;
+      groupName = environment?.name;
+      break;
+    }
+    case DatabaseGroup.dataSource: {
+      mapId = dataSource?.id;
+      groupName = dataSource?.name;
+      if (db.type === 'LOGICAL') {
+        // 逻辑库特殊处理
+        mapId = 0;
+        groupName = formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.9E33C6EC',
+          defaultMessage: '逻辑库',
+        });
+      }
+      break;
+    }
+    case DatabaseGroup.connectType: {
+      mapId = connectType;
+      groupName = ConnectTypeText(connectType);
+      break;
+    }
+    case DatabaseGroup.cluster: {
+      mapId =
+        clusterName ||
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.F79830BF',
+          defaultMessage: '无集群',
+        });
+      groupName =
+        clusterName ||
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.E04CDD3A',
+          defaultMessage: '无集群',
+        });
+      break;
+    }
+    case DatabaseGroup.tenant: {
+      mapId = !tenantName
+        ? formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.D70F1953',
+            defaultMessage: '无租户',
+          })
+        : clusterName
+        ? `${tenantName}@${clusterName}`
+        : tenantName;
+      groupName = tenantName
+        ? tenantName
+        : formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.F827EE1E',
+            defaultMessage: '无租户',
+          });
+      tip = clusterName;
+      break;
+    }
+  }
+  return {
+    mapId,
+    groupName,
+    tip,
+  } as GroupResult[T];
+};
+
+export const getMapIdByDataSource = <T extends DatabaseGroup>(
+  dataSource: IConnection,
+  groupType: T,
+): GroupResult[T] => {
+  const { id, name, environmentId, environmentName, type, clusterName, tenantName } = dataSource;
+  let mapId, groupName, tip;
+  switch (groupType) {
+    case DatabaseGroup.dataSource: {
+      mapId = id;
+      groupName = name;
+      break;
+    }
+    case DatabaseGroup.environment: {
+      mapId = environmentId;
+      groupName = environmentName;
+      break;
+    }
+    case DatabaseGroup.connectType: {
+      mapId = type;
+      groupName = ConnectTypeText(type);
+      break;
+    }
+    case DatabaseGroup.cluster: {
+      mapId =
+        clusterName ||
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.8C3BC0E3',
+          defaultMessage: '无集群',
+        });
+      groupName =
+        clusterName ||
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.F8428567',
+          defaultMessage: '无集群',
+        });
+      break;
+    }
+  }
+  return {
+    mapId,
+    groupName,
+    tip,
+  } as GroupResult[T];
+};

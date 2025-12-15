@@ -3,3 +3,27 @@
   align-items: center;
   line-height: 22px;
 }
+
+.new-datasource-dropdown {
+  background: #fff;
+  padding: 4px;
+  box-shadow: 0 3px 6px -4px rgb(0 0 0 / 12%), 0 6px 16px 0 rgb(0 0 0 / 8%),
+    0 9px 28px 8px rgb(0 0 0 / 5%);
+
+  :global {
+    .ant-dropdown-menu {
+      color: red;
+      box-shadow: none;
+      display: flex;
+      > li {
+        min-width: 200px;
+      }
+      .ant-dropdown-menu-item-group-title {
+        color: var(--text-color-hint);
+      }
+      .ant-dropdown-menu-item-group-list {
+        margin: 0;
+      }
+    }
+  }
+}

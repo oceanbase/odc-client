@@ -29,8 +29,8 @@ import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
 import { openNewDefaultPLPage, openNewSQLPage } from '@/store/helper/page';
 import setting, { EThemeConfigKey } from '@/store/setting';
 import { ReactComponent as ConsolePLSvg } from '@/svgr/Console-PL.svg';
-import { useContext, useEffect } from 'react';
 import tracert from '@/util/tracert';
+import { useContext, useEffect } from 'react';
 
 export default function DefaultPage() {
   useEffect(() => {
@@ -50,11 +50,16 @@ export default function DefaultPage() {
       }}
     >
       <Typography.Title level={4}>
-        {formatMessage({ id: 'odc.component.WindowManager.DefaultPage.QuickStart' }) /*快速开始*/}
+        {
+          formatMessage({
+            id: 'odc.component.WindowManager.DefaultPage.QuickStart',
+            defaultMessage: '快速开始',
+          }) /*快速开始*/
+        }
       </Typography.Title>
       <div
         onClick={() => {
-          openNewSQLPage(null, 'datasource');
+          openNewSQLPage(null);
           tracert.click('a3112.b41896.c330987.d367617');
         }}
         className={styles.item}
@@ -66,6 +71,7 @@ export default function DefaultPage() {
           {
             formatMessage({
               id: 'odc.component.WindowManager.DefaultPage.OpenTheSqlWindow',
+              defaultMessage: '打开 SQL 窗口',
             }) /*打开 SQL 窗口*/
           }
         </div>
@@ -73,7 +79,7 @@ export default function DefaultPage() {
       <div
         onClick={() => {
           tracert.click('a3112.b41896.c330987.d367618');
-          openNewDefaultPLPage(null, null, null, 'datasource');
+          openNewDefaultPLPage(null, null, null);
         }}
         className={styles.item}
       >
@@ -84,6 +90,7 @@ export default function DefaultPage() {
           {
             formatMessage({
               id: 'odc.component.WindowManager.DefaultPage.OpenTheAnonymousBlockWindow',
+              defaultMessage: '打开匿名块窗口',
             }) /*打开匿名块窗口*/
           }
         </div>
@@ -102,6 +109,7 @@ export default function DefaultPage() {
           {
             formatMessage({
               id: 'odc.component.WindowManager.DefaultPage.ViewTickets',
+              defaultMessage: '查看工单',
             }) /*查看工单*/
           }
         </div>
@@ -109,11 +117,15 @@ export default function DefaultPage() {
       <div
         onClick={() => {
           tracert.click('a3112.b41896.c330987.d367620');
-          setting.setTheme(
+          const value =
             setting.theme?.key === EThemeConfigKey.ODC_WHITE
               ? EThemeConfigKey.ODC_DARK
-              : EThemeConfigKey.ODC_WHITE,
-          );
+              : EThemeConfigKey.ODC_WHITE;
+          setting.setTheme(value);
+          setting.updateOneUserConfig({
+            key: 'odc.appearance.scheme',
+            value,
+          });
         }}
         className={styles.item}
       >
@@ -124,6 +136,7 @@ export default function DefaultPage() {
           {
             formatMessage({
               id: 'odc.component.WindowManager.DefaultPage.SwitchTopics',
+              defaultMessage: '切换主题',
             }) /*切换主题*/
           }
         </div>

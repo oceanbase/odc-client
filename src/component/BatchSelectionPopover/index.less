@@ -1,0 +1,86 @@
+.batchIncreasePopoverMask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 1029;
+}
+
+.batchIncreasePopover {
+  .p12 {
+    padding: 12px;
+  }
+  .pb0 {
+    padding-bottom: 0px;
+  }
+  .line {
+    width: 100%;
+    position: relative;
+  }
+  .line::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--odc-border-color);
+  }
+  .flexBetween {
+    display: flex;
+    justify-content: space-between;
+  }
+  .checkboxGroup {
+    width: 100%;
+    max-height: 290px;
+    overflow: auto;
+    margin-top: 6px;
+    flex: 1;
+  }
+  .w100 {
+    width: 100%;
+  }
+  .center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .content {
+    width: 300px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+  }
+  .groupContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .checkboxItem {
+    width: 100%;
+    padding: 4px 12px;
+    .flexCenter {
+      display: flex;
+      align-items: center;
+      .tableIcon {
+        color: #3fa3ff;
+        margin-right: 6px;
+      }
+    }
+  }
+  .checkboxItem:hover {
+    background-color: var(--hover-color);
+  }
+  :global {
+    .ant-popover-content {
+      padding: 0px;
+      .ant-popover-inner-content {
+        padding: 0 !important;
+      }
+    }
+  }
+}

@@ -15,14 +15,14 @@
  */
 
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
-import { dataTypesIns } from '@/util/dataType';
+import { dataTypesIns } from '@/util/database/dataType';
 
 export function getTypeByColumnName(columnName: string, dialectType) {
   if (!columnName) {
     return null;
   }
-  const config = getDataSourceModeConfigByConnectionMode(dialectType)?.schema?.table
-    ?.type2ColumnType;
+  const config =
+    getDataSourceModeConfigByConnectionMode(dialectType)?.schema?.table?.type2ColumnType;
   const matchArr = [
     {
       type: config?.['id'],

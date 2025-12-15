@@ -18,10 +18,14 @@ import executeSQL from '@/common/network/sql/executeSQL';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { EStatus } from '@/d.ts';
+import { DatabasePermissionType } from '@/d.ts/database';
 import modal from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
-import notification from '@/util/notification';
+import { isLogicalDatabase } from '@/util/database/database';
+import { formatMessage } from '@/util/intl';
+import notification from '@/util/ui/notification';
+import { message } from 'antd';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 
 export default forwardRef<any, { session: SessionStore; callbackRef: React.MutableRefObject<any> }>(
@@ -87,6 +91,29 @@ export default forwardRef<any, { session: SessionStore; callbackRef: React.Mutab
           callbackRef?.current?.();
         }}
         onSave={async () => {
+          if (isLogicalDatabase(session?.odcDatabase)) {
+            setVisible(false);
+            if (
+              !session?.odcDatabase?.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.CHANGE,
+              )
+            ) {
+              message.warning(
+                formatMessage({
+                  id: 'src.page.Project.Database.8AFF2CDE',
+                  defaultMessage: '暂无变更权限，请先申请数据库权限',
+                }),
+              );
+              return;
+            }
+            // 关闭弹窗, 将sql带到工单
+            modal.changeLogicialDatabaseModal(true, {
+              ddl: sql,
+              projectId: session?.odcDatabase?.project?.id,
+              databaseId: session?.odcDatabase?.id,
+            });
+            return;
+          }
           const results = await executeSQL(
             sql,
             session?.sessionId,
@@ -95,6 +122,9 @@ export default forwardRef<any, { session: SessionStore; callbackRef: React.Mutab
           );
           if (!results) {
             return;
+          }
+          if (results?.unauthorizedDBResources?.length) {
+            return { unauthorizedDBResources: results?.unauthorizedDBResources };
           }
           if (!hasExecuted) {
             /**

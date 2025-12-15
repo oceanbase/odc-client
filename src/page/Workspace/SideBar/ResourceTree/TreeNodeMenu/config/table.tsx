@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { dropObject } from '@/common/network/database';
 import { getTableInfo } from '@/common/network/table';
 import { actionTypes } from '@/component/Acess';
@@ -26,15 +27,22 @@ import modalStore from '@/store/modal';
 import pageStore from '@/store/page';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
-import { message, Modal } from 'antd';
-import { hasTableExportPermission, hasTableChangePermission } from '../index';
-import { ResourceNodeType } from '../../type';
-import { IMenuItemConfig } from '../type';
-import { getDataSourceModeConfig } from '@/common/datasource';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import tracert from '@/util/tracert';
+import {
+  PlusOutlined,
+  QuestionCircleFilled,
+  ReloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
+import { message, Modal } from 'antd';
+import { ResourceNodeType } from '../../type';
+import { hasTableChangePermission, hasTableExportPermission } from '../index';
+import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
+import { isLogicalDatabase } from '@/util/database/database';
+import { DatabasePermissionType } from '@/d.ts/database';
+import { openGlobalSearch } from '../../const';
 export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TableRoot]: [
     {
@@ -43,14 +51,39 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.New',
+          defaultMessage: '新建',
         }),
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.Table',
+          defaultMessage: '表',
         }),
       ],
+
       actionType: actionTypes.create,
       async run(session, node) {
         openCreateTablePage(session?.odcDatabase?.id);
+      },
+      isHide(session, node) {
+        if (isLogicalDatabase(node.data)) {
+          return !session?.odcDatabase?.authorizedPermissionTypes?.includes(
+            DatabasePermissionType.CHANGE,
+          );
+        }
+        return false;
+      },
+    },
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
       },
     },
     {
@@ -58,16 +91,22 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.ResourceTree.actions.Refresh',
+          defaultMessage: '刷新',
         }), //刷新
       ],
 
       icon: ReloadOutlined,
       actionType: actionTypes.read,
       async run(session, node) {
+        if (isLogicalDatabase(session?.odcDatabase)) {
+          await session.database.getLogicTableList();
+          return;
+        }
         await session.database.getTableList();
       },
     },
   ],
+
   [ResourceNodeType.Table]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_SCHEMA,
@@ -75,15 +114,32 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.ViewTableStructure',
+          defaultMessage: '查看表结构',
         }),
       ],
+
       run(session, node) {
         openTableViewPage(
           (node.data as ITableModel)?.info?.tableName,
           TopTab.PROPS,
           PropsTab.DDL,
           session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
         );
+      },
+    },
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
       },
     },
     {
@@ -91,10 +147,15 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.ViewTableData',
+          defaultMessage: '查看表数据',
         }),
       ],
+
       ellipsis: true,
       hasDivider: true,
+      isHide: (session) => {
+        return isLogicalDatabase(session?.odcDatabase);
+      },
       run(session, node) {
         const tableName = (node.data as ITableModel)?.info?.tableName;
         const exsitPage = pageStore.pages.find((page) => {
@@ -111,13 +172,20 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
             propsTab = oldPropsTab;
           }
         }
-        openTableViewPage(tableName, TopTab.DATA, propsTab, session?.odcDatabase?.id);
+        openTableViewPage(
+          tableName,
+          TopTab.DATA,
+          propsTab,
+          session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
+        );
       },
     },
     {
       key: ResourceTreeNodeMenuKeys.IMPORT_TABLE,
       text: formatMessage({
         id: 'odc.TreeNodeMenu.config.table.Import',
+        defaultMessage: '导入',
       }) /*导入*/,
       actionType: actionTypes.update,
       ellipsis: true,
@@ -129,7 +197,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           !setting.enableDBImport ||
           !getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
             TaskType.IMPORT,
-          )
+          ) ||
+          isLogicalDatabase(session?.odcDatabase)
         );
       },
       run(session, node) {
@@ -143,6 +212,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.Export',
+          defaultMessage: '导出',
         }), //导出
       ],
 
@@ -151,7 +221,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
         return !hasTableExportPermission(session, node);
       },
       isHide: (session) => {
-        return !isSupportExport(session);
+        return !isSupportExport(session) || isLogicalDatabase(session?.odcDatabase);
       },
       run(session, node) {
         const table = node.data as ITableModel;
@@ -166,9 +236,13 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       key: ResourceTreeNodeMenuKeys.DOWNLOAD,
       text: formatMessage({
         id: 'odc.TreeNodeMenu.config.table.Download',
+        defaultMessage: '下载',
       }),
       //下载
       ellipsis: true,
+      isHide: (session) => {
+        return isLogicalDatabase(session?.odcDatabase);
+      },
       async run(session, node) {
         const tableName = (node.data as ITableModel)?.info?.tableName;
         const table = await getTableInfo(tableName, session.database.dbName, session.sessionId);
@@ -182,12 +256,13 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.AnalogData',
+          defaultMessage: '模拟数据',
         }), // 模拟数据
       ],
 
       ellipsis: true,
       disabled: (session, node) => {
-        return !hasTableChangePermission(session, node);
+        return !hasTableChangePermission(session, node) || isLogicalDatabase(session?.odcDatabase);
       },
       isHide: (session) => {
         return (
@@ -213,8 +288,12 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.OpenTheSQLWindow',
+          defaultMessage: '打开 SQL 窗口',
         }), //'打开 SQL 窗口'
       ],
+      isHide: (session) => {
+        return isLogicalDatabase(session?.odcDatabase);
+      },
       run(session, node) {
         tracert.click('a3112.b41896.c330992.d367627');
         openNewSQLPage(session?.database?.databaseId);
@@ -226,15 +305,16 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.Copy',
+          defaultMessage: '复制',
         }), //复制
       ],
-
       children: [
         {
           key: ResourceTreeNodeMenuKeys.COPY_NAME,
           text: [
             formatMessage({
               id: 'odc.TreeNodeMenu.config.table.ObjectName',
+              defaultMessage: '对象名',
             }), //对象名
           ],
 
@@ -253,11 +333,14 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           text: [
             formatMessage({
               id: 'odc.TreeNodeMenu.config.table.SelectStatement',
+              defaultMessage: 'Select 语句',
             }),
 
             //SELECT 语句
           ],
-
+          isHide: (session) => {
+            return isLogicalDatabase(session?.odcDatabase);
+          },
           run(session, node) {
             const table = node.data as ITableModel;
             copyObj(
@@ -273,11 +356,14 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           text: [
             formatMessage({
               id: 'odc.TreeNodeMenu.config.table.InsertStatement',
+              defaultMessage: 'Insert 语句',
             }),
 
             //INSERT 语句
           ],
-
+          isHide: (session) => {
+            return isLogicalDatabase(session?.odcDatabase);
+          },
           run(session, node) {
             const table = node.data as ITableModel;
             copyObj(
@@ -293,11 +379,14 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           text: [
             formatMessage({
               id: 'odc.TreeNodeMenu.config.table.UpdateStatement',
+              defaultMessage: 'Update 语句',
             }),
 
             //UPDATE 语句
           ],
-
+          isHide: (session) => {
+            return isLogicalDatabase(session?.odcDatabase);
+          },
           run(session, node) {
             const table = node.data as ITableModel;
             copyObj(
@@ -313,11 +402,14 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           text: [
             formatMessage({
               id: 'odc.TreeNodeMenu.config.table.DeleteStatement',
+              defaultMessage: 'Delete 语句',
             }),
 
             //DELETE 语句
           ],
-
+          isHide: (session) => {
+            return isLogicalDatabase(session?.odcDatabase);
+          },
           run(session, node) {
             const table = node.data as ITableModel;
             copyObj(
@@ -329,6 +421,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           },
         },
       ],
+
       hasDivider: true,
     },
     {
@@ -336,6 +429,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.Delete',
+          defaultMessage: '删除',
         }),
       ],
       actionType: actionTypes.delete,
@@ -350,6 +444,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           title: formatMessage(
             {
               id: 'workspace.window.createTable.modal.delete',
+              defaultMessage: '是否确定删除 {name} ？',
             },
             {
               name: tableName,
@@ -357,9 +452,11 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           ),
           okText: formatMessage({
             id: 'app.button.ok',
+            defaultMessage: '确定',
           }),
           cancelText: formatMessage({
             id: 'app.button.cancel',
+            defaultMessage: '取消',
           }),
           icon: <QuestionCircleFilled />,
           centered: true,
@@ -370,6 +467,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
               message.success(
                 formatMessage({
                   id: 'workspace.window.createTable.modal.delete.success',
+                  defaultMessage: '删除表成功',
                 }),
               );
               const openedPage = pageStore!.pages.find((p) => p.params.tableName === tableName);
@@ -386,6 +484,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.Refresh',
+          defaultMessage: '刷新',
         }),
       ],
       ellipsis: true,
@@ -395,19 +494,28 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       },
     },
   ],
+
   [ResourceNodeType.TableColumnRoot]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_COLUMNS,
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.ViewColumns',
+          defaultMessage: '查看列',
         }),
       ],
+
       ellipsis: true,
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.COLUMN, session?.odcDatabase?.id);
+        openTableViewPage(
+          tableName,
+          TopTab.PROPS,
+          PropsTab.COLUMN,
+          session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
+        );
       },
     },
     {
@@ -415,8 +523,10 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.Refresh',
+          defaultMessage: '刷新',
         }),
       ],
+
       ellipsis: true,
       async run(session, node) {
         const table = node.data as ITableModel;
@@ -424,19 +534,28 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       },
     },
   ],
+
   [ResourceNodeType.TableIndexRoot]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_INDEXES,
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.ViewIndexes',
+          defaultMessage: '查看索引',
         }),
       ],
+
       ellipsis: true,
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.INDEX, session?.odcDatabase?.id);
+        openTableViewPage(
+          tableName,
+          TopTab.PROPS,
+          PropsTab.INDEX,
+          session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
+        );
       },
     },
     {
@@ -444,8 +563,10 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.Refresh',
+          defaultMessage: '刷新',
         }),
       ],
+
       ellipsis: true,
       async run(session, node) {
         const table = node.data as ITableModel;
@@ -453,19 +574,28 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       },
     },
   ],
+
   [ResourceNodeType.TablePartitionRoot]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_PARTITIONS,
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.ViewPartitions',
+          defaultMessage: '查看分区',
         }),
       ],
+
       ellipsis: true,
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.PARTITION, session?.odcDatabase?.id);
+        openTableViewPage(
+          tableName,
+          TopTab.PROPS,
+          PropsTab.PARTITION,
+          session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
+        );
       },
     },
     {
@@ -473,8 +603,10 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.Refresh',
+          defaultMessage: '刷新',
         }),
       ],
+
       ellipsis: true,
       async run(session, node) {
         const table = node.data as ITableModel;
@@ -482,19 +614,28 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       },
     },
   ],
+
   [ResourceNodeType.TableConstraintRoot]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_CONSTRAINTS,
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.ViewConstraints',
+          defaultMessage: '查看约束',
         }),
       ],
+
       ellipsis: true,
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.CONSTRAINT, session?.odcDatabase?.id);
+        openTableViewPage(
+          tableName,
+          TopTab.PROPS,
+          PropsTab.CONSTRAINT,
+          session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
+        );
       },
     },
     {
@@ -502,8 +643,10 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.table.Refresh',
+          defaultMessage: '刷新',
         }),
       ],
+
       ellipsis: true,
       async run(session, node) {
         const table = node.data as ITableModel;

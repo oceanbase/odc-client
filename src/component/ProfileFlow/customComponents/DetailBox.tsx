@@ -1,12 +1,28 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
-import { Divider, Progress, Tooltip, Select, Radio } from 'antd';
-import styles from './index.less';
+import { formatTimeTemplate } from '@/util/data/dateTime';
+import { Divider, Progress, Radio, Select, Tooltip } from 'antd';
+import BigNumber from 'bignumber.js';
 import classnames from 'classnames';
 import { useEffect, useState } from 'react';
-import { formatTimeTemplate } from '@/util/utils';
-import BigNumber from 'bignumber.js';
 import type { Node } from 'reactflow';
-import { subNodeSortType, SUM, subNodesSortMap, CPU_TIME, IO_WAIT_TIME } from '../constant';
+import { CPU_TIME, IO_WAIT_TIME, subNodeSortType, subNodesSortMap, SUM } from '../constant';
+import styles from './index.less';
 
 const { Option } = Select;
 
@@ -228,7 +244,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
     return formatMessage(
       {
         id: 'src.component.ProfileFlow.customComponents.7812E9AE',
-        defaultMessage: '${node?.name}的汇总',
+        defaultMessage: '{nodeName}的汇总',
       },
       { nodeName: node?.name },
     );
@@ -243,7 +259,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
       label: formatMessage(
         {
           id: 'src.component.ProfileFlow.customComponents.C22AD2CB',
-          defaultMessage: '${data?.name}的汇总',
+          defaultMessage: '{dataName}的汇总',
         },
         { dataName: data?.name },
       ),

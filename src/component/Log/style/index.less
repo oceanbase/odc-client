@@ -1,4 +1,4 @@
-@import (reference) '~antd/lib/style/themes/default';
+/* @import (reference) '~antd/lib/style/themes/default'; */
 
 @tech-prefix: tech;
 @tech-log-prefix-cls: ~'@{tech-prefix}-log';
@@ -10,7 +10,7 @@
 @content-bg: #f7f9fb;
 @gray-bg: #f0f2f5;
 @toolbar-bg: #ebeef2;
-@default-text-color: fade(@black, 65%);
+@default-text-color: var(--text-color-primary);
 
 .@{tech-log-prefix-cls} {
   &-search-wrap {
@@ -55,9 +55,19 @@
   &-toolbar {
     color: @default-text-color;
     cursor: pointer;
+    :global {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+    }
 
     &-text {
       color: @default-text-color;
+    }
+    &-icon {
+      &-target {
+        color: var(--icon-color-normal);
+      }
     }
   }
 
@@ -131,7 +141,7 @@
 
   &-line-content {
     flex: 1;
-    padding-right: @padding-md;
+    padding-right: 12px;
     word-wrap: anywhere;
     word-break: break-all;
   }

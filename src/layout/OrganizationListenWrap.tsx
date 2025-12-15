@@ -34,6 +34,7 @@ const OrganizationListenWrap: React.FC<IProps> = function ({ children, userStore
       loadingContext?.setTask({
         tip: formatMessage({
           id: 'odc.src.layout.SwitchSpace',
+          defaultMessage: '正在切换空间',
         }), //'正在切换空间'
         showError: false,
       });

@@ -7,3 +7,15 @@
   margin-bottom: 8px;
   line-height: 20px;
 }
+.content {
+  background: var(--background-tertraiy-color);
+  padding: 16px;
+  margin: 0px 0px 16px 0px;
+  :global {
+    .ant-form-item {
+      &:last-child {
+        margin: 0px;
+      }
+    }
+  }
+}

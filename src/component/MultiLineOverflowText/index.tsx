@@ -72,6 +72,7 @@ const MultiLineOverflowText: React.FC<IProps> = ({
           </div>
         </Tooltip>
       )}
+
       {isShowMore && overflow && (
         <Button
           type="link"
@@ -84,9 +85,11 @@ const MultiLineOverflowText: React.FC<IProps> = ({
             openStatus
               ? formatMessage({
                   id: 'odc.component.MultiLineOverflowText.Fold',
+                  defaultMessage: '收起',
                 }) //收起
               : formatMessage({
                   id: 'odc.component.MultiLineOverflowText.More',
+                  defaultMessage: '更多',
                 }) //更多
           }
         </Button>

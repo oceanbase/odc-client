@@ -23,10 +23,10 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getExpireTimeLabel } from '@/component/Task/ApplyTablePermission';
 import type { IResponseData } from '@/d.ts';
 import { ITablePermission, TablePermissionStatus } from '@/d.ts/project';
 import { SearchOutlined } from '@ant-design/icons';
+import { ColumnType } from 'antd/es/table';
 import React from 'react';
 import {
   tablePermissionStatusFilters,
@@ -34,7 +34,7 @@ import {
   tablePermissionTypeMap,
 } from '../';
 import StatusLabel from '../Status';
-import { ColumnType } from 'antd/es/table';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 
 const getColumns = (params: {
   paramOptions: ITableLoadOptions;
@@ -45,8 +45,8 @@ const getColumns = (params: {
     {
       dataIndex: 'tableName',
       title: formatMessage({
-        id: 'src.page.Project.User.ManageModal.Table.UserAuthList.012DC13E',
-        defaultMessage: '表',
+        id: 'src.page.Project.User.ManageModal.Table.UserAuthList.F4C863B4',
+        defaultMessage: '表/视图',
       }),
       ellipsis: true,
       width: 140,
@@ -134,6 +134,9 @@ const getColumns = (params: {
 
       filteredValue: filters?.dataSourceName || null,
       filters: [],
+      render(_) {
+        return _ || '-';
+      },
     },
     {
       dataIndex: 'type',
@@ -209,6 +212,7 @@ interface IProps {
   dataSource: IResponseData<ITablePermission>;
   params: ITableLoadOptions;
   isOwner: boolean;
+  isDBA: boolean;
   tableRef: React.RefObject<ITableInstance>;
   onReclaim: (ids: number[]) => void;
   onLoad: (args: ITableLoadOptions) => Promise<any>;
@@ -216,7 +220,7 @@ interface IProps {
 }
 
 const UserAuthList: React.FC<IProps> = (props) => {
-  const { isOwner, dataSource, params, tableRef, onReclaim, onLoad, onChange } = props;
+  const { isOwner, dataSource, params, tableRef, onReclaim, onLoad, onChange, isDBA } = props;
   const columns = getColumns({
     paramOptions: params,
     onReclaim: onReclaim,
@@ -234,8 +238,12 @@ const UserAuthList: React.FC<IProps> = (props) => {
         }}
         titleContent={null}
         rowSelecter={
-          isOwner
+          isOwner || isDBA
             ? {
+                selectAllText: formatMessage({
+                  id: 'src.page.Project.User.ManageModal.Table.UserAuthList.496C6069',
+                  defaultMessage: '全选当前页',
+                }),
                 options: [
                   {
                     okText: formatMessage({
@@ -257,7 +265,9 @@ const UserAuthList: React.FC<IProps> = (props) => {
         onLoad={onLoad}
         onChange={onChange}
         tableProps={{
-          columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
+          columns: columns?.filter((item) =>
+            isOwner || isDBA ? true : item?.dataIndex !== 'action',
+          ),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
           scroll: {

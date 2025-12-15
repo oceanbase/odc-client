@@ -1,4 +1,3 @@
-import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -15,18 +14,20 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Empty, Space } from 'antd';
-import styles from './index.less';
-import { Expression, ExpressionMap, OperatorMap } from '../interface';
-import { BooleanOperatorMap, EBooleanOperator, EConditionType } from './InnerRiskLevel';
-import classNames from 'classnames';
+import ScanRuleEmpty from '@/component/Empty/ScanRuleEmpty';
+import { Input, Space } from 'antd';
 import { useState } from 'react';
+import { Expression, ExpressionMap, OperatorMap } from '../interface';
+import styles from './index.less';
+import { BooleanOperatorMap, EConditionType } from './InnerRiskLevel';
 const RootNodeContent = ({
   empty,
   rootNode,
   environmentMap,
   taskTypeIdMap,
+  scheduleTypeIdMap,
   sqlCheckResultIdMap,
+  showActionButton,
 }) => {
   const [isHover, setIsHover] = useState<boolean>(false);
   const getValueMapByExpression = (expression: Expression): { [key in string]: string } => {
@@ -52,6 +53,10 @@ const RootNodeContent = ({
         valueMap = {};
         break;
       }
+      case Expression.SCHEDULE_TYPE: {
+        valueMap = scheduleTypeIdMap;
+        break;
+      }
       default: {
         valueMap = {};
         break;
@@ -69,11 +74,16 @@ const RootNodeContent = ({
         <div className={styles.treeInputBorder} key={2}>
           {OperatorMap?.[node?.operator]}
         </div>
-        <div className={styles.treeInputBorder} key={3}>
-          {Array.isArray(node?.value)
-            ? node?.value?.map((v) => valueMap?.[v] || v)?.join(', ')
-            : valueMap?.[node?.value] || node?.value}
-        </div>
+        <Input
+          style={{ width: 250 }}
+          key={3}
+          disabled
+          value={
+            Array.isArray(node?.value)
+              ? node?.value?.map((v) => valueMap?.[v] || v)?.join(', ')
+              : valueMap?.[node?.value] || node?.value
+          }
+        />
       </Space>
     );
   };
@@ -105,15 +115,7 @@ const RootNodeContent = ({
   return (
     <div className={empty ? styles.rootNodeContentEmpty : styles.rootNodeContent}>
       {empty ? (
-        <Empty
-          description={
-            formatMessage({ id: 'odc.src.page.Secure.RiskLevel.components.NoRule' }) /* 暂无规则 */
-          }
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          style={{
-            flexGrow: 1,
-          }}
-        />
+        <ScanRuleEmpty showActionButton={showActionButton} />
       ) : (
         <>{renderRootNodeTree(rootNode)}</>
       )}

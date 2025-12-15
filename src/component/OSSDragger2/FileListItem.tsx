@@ -17,7 +17,7 @@
 import Dragable, { IDragable } from '@/component/Dragable';
 import { ReactComponent as DragSvg } from '@/svgr/DragItem.svg';
 import { formatMessage } from '@/util/intl';
-import { encodeRegexpStr } from '@/util/utils';
+import { encodeRegexpStr } from '@/util/data/string';
 import Icon, { DeleteOutlined, LoadingOutlined, PaperClipOutlined } from '@ant-design/icons';
 import { Popconfirm, Progress, Space, Tooltip } from 'antd';
 import type { UploadFile } from 'antd/lib/upload/interface';
@@ -75,6 +75,7 @@ export const FileItem: React.FC<IFileItemProps> = (props) => {
               file?.response?.errMsg ??
               formatMessage({
                 id: 'odc.component.OSSDragger2.FileListItem.UploadFailed',
+                defaultMessage: '上传失败',
               }) //上传失败
             }
           >
@@ -83,6 +84,7 @@ export const FileItem: React.FC<IFileItemProps> = (props) => {
         ) : (
           <span className={styles.text}>{nameContent}</span>
         )}
+
         {status === 'error' ? (
           <span className={styles.action} onClick={handleDelete}>
             <DeleteOutlined />
@@ -92,13 +94,16 @@ export const FileItem: React.FC<IFileItemProps> = (props) => {
             placement="topLeft"
             title={formatMessage({
               id: 'odc.component.OSSDragger2.FileListItem.AreYouSureYouWant',
+              defaultMessage: '是否确定移除文件？',
             })} /*确定要移除文件吗？*/
             onConfirm={handleDelete}
             okText={formatMessage({
               id: 'odc.component.OSSDragger2.FileListItem.Ok',
+              defaultMessage: '确定',
             })} /*确定*/
             cancelText={formatMessage({
               id: 'odc.component.OSSDragger2.FileListItem.Cancel',
+              defaultMessage: '取消',
             })} /*取消*/
           >
             <span className={styles.action}>

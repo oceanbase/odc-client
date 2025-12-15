@@ -18,8 +18,8 @@ import { formatMessage } from '@/util/intl';
 import { useControllableValue } from 'ahooks';
 import { Alert, Spin, Table } from 'antd';
 import classNames from 'classnames';
-import { throttle } from 'lodash';
-import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { debounce, throttle } from 'lodash';
+import React, { useEffect, useImperativeHandle, useRef, useState, useMemo } from 'react';
 import { ResizeTitle } from './component/ResizeTitle';
 import {
   DEFAULT_BIG_ROW_HEIGHT,
@@ -48,6 +48,8 @@ import type {
 import { CommonTableMode } from './interface';
 import { TableInfo } from './TableInfo';
 import { Toolbar } from './Toolbar';
+import { TaskStatus } from '@/d.ts';
+import useURLParams from '@/util/hooks/useUrlParams';
 
 interface IProps<RecordType> {
   // 表格支持的2种模式
@@ -75,6 +77,8 @@ interface IProps<RecordType> {
   isSplit?: boolean;
   // 行选择 相关配置 (初使用时容易与antd的rowSelection混淆重复导致bug)
   rowSelecter?: IRowSelecter<RecordType>;
+  // 手动设置是否展示已选择的信息
+  showSelectedInfoBar?: boolean;
   // 行选择状态回调
   rowSelectedCallback?: (selectedRowKeys: any[]) => void;
   // 是否启用 列宽可拖拽
@@ -84,7 +88,11 @@ interface IProps<RecordType> {
   // 取数回调（列表初始化以后，会自动调用一次 & 刷新也会调用）
   onLoad: (args: ITableLoadOptions) => Promise<any>;
   // 其他: antd table 支持的 props
-  tableProps: TableProps<RecordType>;
+  tableProps: TableProps<any>;
+  // 是否为斑马纹 table
+  stripe?: boolean;
+  // 是否在列宽拖拽时，重新计算 pageSize
+  computePageSizeByResize?: boolean;
 }
 
 const CommonTable: <RecordType extends object = any>(
@@ -104,6 +112,7 @@ const CommonTable: <RecordType extends object = any>(
     cascaderContent,
     isSplit = false,
     rowSelecter,
+    showSelectedInfoBar = true,
     rowSelectedCallback = (selectedRowKeys: any[]) => {},
     rowHeight = mode === CommonTableMode.BIG ? DEFAULT_BIG_ROW_HEIGHT : DEFAULT_SMALL_ROW_HEIGHT,
     tableProps = {
@@ -112,6 +121,8 @@ const CommonTable: <RecordType extends object = any>(
     enableResize = false,
     onLoad,
     onChange,
+    stripe = true,
+    computePageSizeByResize = false,
   } = props;
   const { columns, dataSource, scroll, ...rest } = tableProps;
   const [wrapperHeight, setWrapperHeight] = useState(0);
@@ -128,10 +139,11 @@ const CommonTable: <RecordType extends object = any>(
   const [loading, setLoading] = useControllableValue(tableProps, {
     valuePropName: 'loading',
   });
+  const { getParam, deleteParam } = useURLParams();
+  const urlStatusValue = getParam('status');
   const [pageSize, setPageSize] = useState(0);
   const [columnWidthMap, setColumnWidthMap] = useState(null);
-  const tableColumns = getFilteredColumns();
-  const showInfoBar = rowSelecter && !!selectedRowKeys?.length;
+  const showInfoBar = rowSelecter && !!selectedRowKeys?.length && showSelectedInfoBar;
   const TOOLBAR_HEIGHT = showToolbar ? TABLE_TOOLBAR_HEIGHT : 0;
   const INFO_BAR_HEIGHT = showInfoBar ? TABLE_INFO_BAR_HEIGHT : 0;
   const ALERT_INFO_HEIGHT = alertInfoVisible ? TABLE_ALERT_INFO_HEIGHT : 0;
@@ -150,8 +162,9 @@ const CommonTable: <RecordType extends object = any>(
     ? null
     : computeTableScrollHeight();
 
-  const resizeHeight = throttle(() => {
+  const resizeHeight = debounce(() => {
     setWrapperHeight(tableRef?.current?.offsetHeight);
+    computePageSizeByResize && computePageSize();
   }, 500);
 
   useEffect(() => {
@@ -172,6 +185,9 @@ const CommonTable: <RecordType extends object = any>(
     },
     resetSelectedRows: () => {
       setSelectedRowKeys([]);
+    },
+    setSelectedRowKeys: (keys: number[]) => {
+      setSelectedRowKeys(keys);
     },
   }));
 
@@ -262,6 +278,11 @@ const CommonTable: <RecordType extends object = any>(
       ...filters,
       ...filter,
     };
+    const statusesToCheck = [TaskStatus.ENABLED, TaskStatus.EXECUTION_SUCCEEDED];
+
+    if (urlStatusValue && statusesToCheck.some((status) => !_filter?.status?.includes(status))) {
+      deleteParam('status');
+    }
     setFilters(_filter);
     setSorter(_sorter);
     setPagination(paginationValue);
@@ -309,8 +330,23 @@ const CommonTable: <RecordType extends object = any>(
       pageSize,
     },
   ) {
+    const finalFilters =
+      args.filters ||
+      filters ||
+      columns.reduce((acc, column) => {
+        if (column.defaultFilteredValue) {
+          acc[column.key || (column as any).dataIndex] = column.defaultFilteredValue;
+        }
+        return acc;
+      }, {});
+
+    const loadArgs = {
+      ...args,
+      filters: finalFilters,
+    };
+
     setLoading(true);
-    await onLoad?.(args);
+    await onLoad?.(loadArgs);
     setLoading(false);
   }
 
@@ -327,14 +363,21 @@ const CommonTable: <RecordType extends object = any>(
     });
   }
 
-  function getFilteredColumns() {
-    return columns.map((item) => {
-      if (item?.filteredValue) {
-        item.filteredValue = filters[(item as any).dataIndex];
-      }
-      return item;
-    });
-  }
+  const tableColumns = useMemo(() => {
+    return enableResize
+      ? columns?.map((oriColumn) => {
+          return {
+            ...oriColumn,
+            width: columnWidthMap?.[oriColumn?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+            onHeaderCell: (column) =>
+              ({
+                width: columnWidthMap?.[column?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+                onResize: handleResize(oriColumn),
+              } as React.HTMLAttributes<HTMLElement>),
+          };
+        })
+      : columns;
+  }, [enableResize, columns, columnWidthMap]);
 
   function handleCloseAlert() {
     setAlertInfoVisible(false);
@@ -351,6 +394,24 @@ const CommonTable: <RecordType extends object = any>(
       });
     };
   }
+
+  useEffect(() => {
+    const defaultFilters = columns.reduce((acc, column) => {
+      if (column.defaultFilteredValue) {
+        acc[column.key || (column as any).dataIndex] = column.defaultFilteredValue;
+      }
+      return acc;
+    }, {});
+
+    handleReload({
+      filters: defaultFilters,
+      searchValue: '',
+      cascaderValue: [],
+      sorter: null,
+      pagination: null,
+      pageSize,
+    });
+  }, []);
 
   return (
     <div
@@ -397,6 +458,7 @@ const CommonTable: <RecordType extends object = any>(
           onOperationClick={handleOperationClick}
         />
       )}
+
       {alertInfoVisible && (
         <Alert
           className={styles.alertInfo}
@@ -407,6 +469,7 @@ const CommonTable: <RecordType extends object = any>(
           onClose={handleCloseAlert}
         />
       )}
+
       {showInfoBar && (
         <TableInfo
           {...rowSelecter}
@@ -415,6 +478,7 @@ const CommonTable: <RecordType extends object = any>(
           onSelectAllRows={handleSelectAllRows}
         />
       )}
+
       {
         <Spin key="wrapTableSpin" spinning={loading}>
           <Table
@@ -426,29 +490,14 @@ const CommonTable: <RecordType extends object = any>(
                 [styles.scrollAble]: !!scrollHeight,
               },
             )}
-            rowClassName={(record, i) =>
-              `${tableProps?.rowClassName} ${i % 2 === 0 ? styles.even : styles.odd}`
-            }
+            rowClassName={(record, i) => {
+              if (stripe) {
+                return `${tableProps?.rowClassName} ${i % 2 === 0 ? styles.even : styles.odd}`;
+              }
+              return `${tableProps?.rowClassName} `;
+            }}
             dataSource={dataSource}
-            columns={
-              enableResize
-                ? columns?.map((oriColumn) => {
-                    return {
-                      ...oriColumn,
-                      width:
-                        columnWidthMap?.[oriColumn?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
-                      onHeaderCell: (column) =>
-                        ({
-                          width:
-                            columnWidthMap?.[column?.key] ||
-                            oriColumn.width ||
-                            DEFAULT_COLUMN_WIDTH,
-                          onResize: handleResize(oriColumn),
-                        } as React.HTMLAttributes<HTMLElement>),
-                    };
-                  })
-                : tableColumns
-            }
+            columns={tableColumns}
             components={
               enableResize
                 ? {
@@ -479,6 +528,7 @@ const CommonTable: <RecordType extends object = any>(
                 return formatMessage(
                   {
                     id: 'odc.components.CommonTable.TotalTotals',
+                    defaultMessage: '共 {totals} 条',
                   },
                   { totals },
                 ); // `共 ${totals} 条`

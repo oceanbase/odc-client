@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import FilterIcon from '@/component/Button/FIlterIcon';
-import { formatMessage } from '@/util/intl';
-import { Popover, Space, Typography } from 'antd';
-import Icon, { FilterOutlined } from '@ant-design/icons';
-import React from 'react';
-import CheckboxTag from '@/component/CheckboxTag';
-import { ConnectType } from '@/d.ts';
 import { getAllConnectTypes } from '@/common/datasource';
-import { ConnectTypeText } from '@/constant/label';
-import { useRequest } from 'ahooks';
 import { listEnvironments } from '@/common/network/env';
+import FilterIcon from '@/component/Button/FIlterIcon';
+import CheckboxTag from '@/component/CheckboxTag';
+import { ConnectTypeText } from '@/constant/label';
+import { ConnectType } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
+import Icon, { FilterOutlined } from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import { Popover, Space, Typography } from 'antd';
+import React from 'react';
 interface IProps {
   onClear: () => void;
   types: ConnectType[];
@@ -65,6 +65,7 @@ const DatasourceFilter: React.FC<IProps> = function ({
             {
               formatMessage({
                 id: 'odc.Header.Filter.FilterDataSources',
+                defaultMessage: '筛选数据源',
               }) /*筛选数据源*/
             }
           </Typography.Text>
@@ -72,6 +73,7 @@ const DatasourceFilter: React.FC<IProps> = function ({
             {
               formatMessage({
                 id: 'odc.Header.Filter.Clear',
+                defaultMessage: '清空',
               }) /*清空*/
             }
           </a>
@@ -85,13 +87,14 @@ const DatasourceFilter: React.FC<IProps> = function ({
                 {
                   formatMessage({
                     id: 'odc.Header.Filter.Type',
+                    defaultMessage: '类型',
                   }) /*类型*/
                 }
               </Typography.Text>
               <CheckboxTag
                 value={types}
                 options={[].concat(getAllConnectTypes()).map((v) => ({
-                  label: ConnectTypeText[v],
+                  label: ConnectTypeText(v),
                   value: v,
                 }))}
                 onChange={(v) => {
@@ -104,6 +107,7 @@ const DatasourceFilter: React.FC<IProps> = function ({
                 {
                   formatMessage({
                     id: 'odc.src.page.Workspace.SideBar.ResourceTree.DatasourceFilter.Environment',
+                    defaultMessage: '环境',
                   }) /* 环境 */
                 }
               </Typography.Text>

@@ -21,6 +21,7 @@ import {
   getConnectionExists,
   updateConnection,
 } from '@/common/network/connection';
+import { ConnectType, IConnection } from '@/d.ts';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
@@ -28,7 +29,7 @@ import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
 import copy from 'copy-to-clipboard';
 import { useEffect, useMemo, useRef } from 'react';
 import DatasourceForm, { IFormRef } from './Form';
-import { ConnectType, IConnection } from '@/d.ts';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 
 interface IProps {
   visible: boolean;
@@ -102,7 +103,10 @@ export default function NewDatasourceDrawer({
       });
       if (isSuccess) {
         message.success(
-          formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.ModifiedSuccessfully' }), //修改成功
+          formatMessage({
+            id: 'odc.Datasource.NewDatasourceDrawer.ModifiedSuccessfully',
+            defaultMessage: '修改成功',
+          }), //修改成功
         );
         onSuccess();
         close();
@@ -110,7 +114,10 @@ export default function NewDatasourceDrawer({
       return;
     }
     Modal.confirm({
-      title: formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.EnterADataSourceName' }), //请输入数据源名称
+      title: formatMessage({
+        id: 'odc.Datasource.NewDatasourceDrawer.EnterADataSourceName',
+        defaultMessage: '请输入数据源名称',
+      }), //请输入数据源名称
       content: <Input id="newCloudConnectionName" />,
       onOk: async (_close) => {
         const name = (document.querySelector('#newCloudConnectionName') as HTMLInputElement)?.value;
@@ -118,6 +125,7 @@ export default function NewDatasourceDrawer({
           message.warning(
             formatMessage({
               id: 'odc.component.AddConnectionForm.NameItems.EnterAConnectionName',
+              defaultMessage: '请输入连接名称',
             }),
           );
 
@@ -126,7 +134,10 @@ export default function NewDatasourceDrawer({
         }
         if (name?.length > 128) {
           message.warning(
-            formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.TheMaximumLengthOfThe' }), //名称最大长度为 128
+            formatMessage({
+              id: 'odc.Datasource.NewDatasourceDrawer.TheMaximumLengthOfThe',
+              defaultMessage: '名称最大长度为 128',
+            }), //名称最大长度为 128
           );
           throw new Error('');
         }
@@ -134,6 +145,7 @@ export default function NewDatasourceDrawer({
           message.warning(
             formatMessage({
               id: 'odc.AddConnectionDrawer.AddConnectionForm.TheConnectionNameCannotContain',
+              defaultMessage: '连接名称不能含有空格',
             }),
           );
 
@@ -144,14 +156,22 @@ export default function NewDatasourceDrawer({
         });
         if (isRepeat) {
           message.warning(
-            formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.TheNameAlreadyExists' }), //名称已存在
+            formatMessage({
+              id: 'odc.Datasource.NewDatasourceDrawer.TheNameAlreadyExists',
+              defaultMessage: '名称已存在',
+            }), //名称已存在
           );
           throw new Error();
         }
         return new Promise(async (resolve, reject) => {
           const res = await createConnection({ ...values, name });
           if (res) {
-            message.success(formatMessage({ id: 'portal.connection.form.save.success' }));
+            message.success(
+              formatMessage({
+                id: 'portal.connection.form.save.success',
+                defaultMessage: '保存成功',
+              }),
+            );
             resolve(true);
             onSuccess();
             close();
@@ -175,6 +195,7 @@ export default function NewDatasourceDrawer({
         message.success(
           formatMessage({
             id: 'odc.components.AddConnectionDrawer.TheConnectionInformationIsCopied',
+            defaultMessage: '连接信息复制成功',
           }),
         );
       }
@@ -186,27 +207,47 @@ export default function NewDatasourceDrawer({
       width={520}
       title={
         isEdit
-          ? formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.EditDataSource' }) //编辑数据源
-          : formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.CreateADataSource' }) //新建数据源
+          ? formatMessage({
+              id: 'odc.Datasource.NewDatasourceDrawer.EditDataSource',
+              defaultMessage: '编辑数据源',
+            }) //编辑数据源
+          : formatMessage({
+              id: 'odc.Datasource.NewDatasourceDrawer.CreateADataSource',
+              defaultMessage: '新建数据源',
+            }) //新建数据源
       }
       open={visible}
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>
-          {isEdit && !haveOCP() && connectType !== ConnectType.ORACLE ? (
+          {isEdit &&
+          !haveOCP() &&
+          connectType !== ConnectType.ORACLE &&
+          !isConnectTypeBeFileSystemGroup(originDatasource?.type) ? (
             <Button onClick={copyUri}>
               {
                 formatMessage({
                   id: 'odc.Datasource.NewDatasourceDrawer.CopyConnectionString',
+                  defaultMessage: '复制连接串',
                 }) /*复制连接串*/
               }
             </Button>
           ) : null}
           <Button onClick={close}>
-            {formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.Cancel' }) /*取消*/}
+            {
+              formatMessage({
+                id: 'odc.Datasource.NewDatasourceDrawer.Cancel',
+                defaultMessage: '取消',
+              }) /*取消*/
+            }
           </Button>
           <Button onClick={submit} type="primary">
-            {formatMessage({ id: 'odc.Datasource.NewDatasourceDrawer.Ok' }) /*确定*/}
+            {
+              formatMessage({
+                id: 'odc.Datasource.NewDatasourceDrawer.Ok',
+                defaultMessage: '确定',
+              }) /*确定*/
+            }
           </Button>
         </Space>
       }

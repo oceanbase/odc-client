@@ -17,14 +17,18 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { IPageType } from '@/d.ts/_index';
 import { formatMessage } from '@/util/intl';
-import React from 'react';
 import { history, useParams } from '@umijs/max';
+import React from 'react';
 import SqlInterceptor from './SqlInterceptor';
 import SSO from './SSO';
+import LargeModel from './LargeModel';
 
 interface IProps {}
 
 const Pages = {
+  [IPageType.Large_Model]: {
+    component: LargeModel,
+  },
   [IPageType.ExternalIntegration_Approval]: {
     component: SqlInterceptor,
   },
@@ -38,15 +42,28 @@ const Pages = {
 
 const tabs = [
   {
-    tab: formatMessage({ id: 'odc.page.ExternalIntegration.ApprovalIntegration' }), //审批集成
+    tab: formatMessage({
+      id: 'src.page.ExternalIntegration.EC1D6164',
+      defaultMessage: '大模型集成',
+    }),
+    key: IPageType.Large_Model,
+  },
+  {
+    tab: formatMessage({
+      id: 'odc.page.ExternalIntegration.ApprovalIntegration',
+      defaultMessage: '审批集成',
+    }), //审批集成
     key: IPageType.ExternalIntegration_Approval,
   },
   {
-    tab: formatMessage({ id: 'odc.page.ExternalIntegration.SqlAuditIntegration' }), //SQL 审核集成
+    tab: formatMessage({
+      id: 'odc.page.ExternalIntegration.SqlAuditIntegration',
+      defaultMessage: 'SQL 审核集成',
+    }), //SQL 审核集成
     key: IPageType.ExternalIntegration_Sql,
   },
   {
-    tab: formatMessage({ id: 'src.page.ExternalIntegration.B29CC4F4' }), //'登录集成'
+    tab: formatMessage({ id: 'src.page.ExternalIntegration.B29CC4F4', defaultMessage: '登录集成' }), //'登录集成'
     key: IPageType.ExternalIntegration_SSO,
   },
 ];
@@ -64,13 +81,20 @@ const Index: React.FC<IProps> = function () {
     <PageContainer
       titleProps={{
         type: TitleType.TEXT,
-        title: formatMessage({ id: 'odc.page.ExternalIntegration.ExternalIntegration' }), //外部集成
+        title: formatMessage({
+          id: 'odc.page.ExternalIntegration.ExternalIntegration',
+          defaultMessage: '外部集成',
+        }), //外部集成
       }}
       tabList={tabs}
       tabActiveKey={page}
       onTabChange={handleChange}
     >
-      <Component id={id} pageKey={page} />
+      {page === IPageType.Large_Model ? (
+        <Component id={id} pageKey={page} />
+      ) : (
+        <Component id={id} pageKey={page} />
+      )}
     </PageContainer>
   );
 };

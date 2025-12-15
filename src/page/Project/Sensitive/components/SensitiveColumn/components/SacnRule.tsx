@@ -14,66 +14,46 @@
  * limitations under the License.
  */
 
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { getConnectionList } from '@/common/network/connection';
-import { listDatabases } from '@/common/network/database';
 import { listSensitiveRules } from '@/common/network/sensitiveRule';
+import ConnectionPopover from '@/component/ConnectionPopover';
+import { IConnection, IResponseData } from '@/d.ts';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import { formatMessage } from '@/util/intl';
-import { Button, Divider, Form, Select } from 'antd';
+import Icon from '@ant-design/icons';
+import { Button, Divider, Form, Popover, Select } from 'antd';
 import { useWatch } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
+import MultipleDatabaseSelect from '@/component/Task/component/MultipleDatabaseSelect/index';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const [dataSourceId, setDataSourceId] = useState<number>(-1);
-  const [databaseId, setDatabaseId] = useState<number>(0);
   const databaseIds = useWatch('databaseIds', formRef);
   const [selectOpen, setSelectOpen] = useState<boolean>(false);
   const [dataSourceOptions, setDataSourceOptions] = useState<SelectItemProps[]>([]);
-  const [databaseIdsOptions, setDatabaseIdsOptions] = useState<SelectItemProps[]>([]);
   const [sensitiveOptions, setSensitiveOptions] = useState<SelectItemProps[]>([]);
+  const [rawData, setRawData] = useState<IResponseData<IConnection>>();
   const initDataSources = async () => {
     const rawData = await getConnectionList({
       projectId: sensitiveContext.projectId,
     });
-    const resData = rawData?.contents?.map((content) => ({
-      label: content.name,
-      value: content.id,
-    }));
-    setDataSourceOptions(resData);
-  };
-  const initDatabases = async (
-    projectId: number = context.projectId,
-    id: number = dataSourceId,
-  ) => {
-    const rawData = await listDatabases(projectId, id, null, null, null, null, null, true);
-    const resData =
-      rawData?.contents?.map((content) => ({
+    setRawData(rawData);
+    const resData = rawData?.contents
+      ?.filter((item) => !isConnectTypeBeFileSystemGroup(item.type))
+      ?.map((content) => ({
         label: content.name,
         value: content.id,
-      })) || [];
-    setDatabaseIdsOptions(
-      resData?.length > 0
-        ? [
-            {
-              label: formatMessage({
-                id: 'odc.SensitiveColumn.components.SacnRule.All',
-              }),
-              //全部
-              value: -1,
-            },
-            ...resData,
-          ]
-        : [],
-    );
-    formRef.setFieldsValue({
-      databaseIds: [],
-      sensitiveRuleIds: [],
-    });
+        type: content.type,
+      }));
+    setDataSourceOptions(resData);
   };
+
   const initDetectRules = async (projectId: number = context.projectId) => {
     const rawData = await listSensitiveRules(projectId, {
       enabled: [true],
@@ -88,6 +68,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
             {
               label: formatMessage({
                 id: 'odc.SensitiveColumn.components.SacnRule.All',
+                defaultMessage: '全部',
               }),
               //全部
               value: -1,
@@ -100,24 +81,14 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const handleDataSourceIdChange = async (v: number) => {
     setDataSourceId(v);
     reset();
-    setDatabaseId(0);
   };
-  const handleDatabaseIdsSelect = async (value: number) => {
-    if (value === -1) {
-      await formRef.setFieldsValue({
-        databaseIds: [-1],
-      });
-    } else {
-      const databaseIds = (await formRef.getFieldValue('databaseIds')) || [];
-      if (databaseIds.includes(-1)) {
-        await formRef.setFieldsValue({
-          databaseIds: databaseIds.filter((v) => v != -1),
-        });
-      }
-    }
+  const handleSelect = async (Ids) => {
+    await formRef.setFieldsValue({
+      databaseIds: Ids,
+    });
     reset();
-    setDatabaseId(value);
   };
+
   const handleSensitiveRuleIdsSelect = async (value: number) => {
     if (value === -1) {
       await formRef.setFieldsValue({
@@ -139,9 +110,13 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   }, []);
   useEffect(() => {
     if (dataSourceId !== -1) {
-      initDatabases(context.projectId, dataSourceId);
+      formRef.setFieldsValue({
+        databaseIds: [],
+        sensitiveRuleIds: [],
+      });
     }
   }, [dataSourceId]);
+
   return (
     <div
       style={{
@@ -150,77 +125,87 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
       }}
     >
       <Form.Item
-        label={
-          formatMessage({
-            id: 'odc.SensitiveColumn.components.SacnRule.DataSource',
-          }) //数据源
-        }
+        label={formatMessage({
+          id: 'odc.SensitiveColumn.components.SacnRule.DataSource',
+          defaultMessage: '数据源',
+        })}
         name="connectionId"
         rules={[
           {
             required: true,
             message: formatMessage({
               id: 'odc.SensitiveColumn.components.SacnRule.SelectADataSource',
-            }), //请选择数据源
+              defaultMessage: '请选择数据源',
+            }),
           },
         ]}
       >
         <Select
-          options={dataSourceOptions}
+          showSearch
           onChange={handleDataSourceIdChange}
-          placeholder={
-            formatMessage({
-              id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect',
-            }) //请选择
-          }
+          placeholder={formatMessage({
+            id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect',
+            defaultMessage: '请选择',
+          })}
           maxTagCount="responsive"
-          style={{
-            width: '170px',
+          style={{ width: 170 }}
+          filterOption={(input, option) => {
+            return (
+              // @ts-ignore
+              option.children?.props?.children?.[1]?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            );
           }}
-        ></Select>
+        >
+          {dataSourceOptions.map((option, index) => {
+            const icon = getDataSourceStyleByConnectType(option.type);
+            const connection = rawData?.contents?.find((item) => item.id === option.value);
+            return (
+              <Select.Option key={index} value={option.value}>
+                <Popover
+                  overlayStyle={{ zIndex: 10000 }}
+                  placement="right"
+                  content={<ConnectionPopover connection={connection} showType={false} />}
+                >
+                  <Icon
+                    component={icon?.icon?.component}
+                    style={{
+                      color: icon?.icon?.color,
+                      fontSize: 16,
+                      marginRight: 4,
+                    }}
+                  />
+                  {option.label}
+                </Popover>
+              </Select.Option>
+            );
+          })}
+        </Select>
       </Form.Item>
-      <Form.Item
+      <MultipleDatabaseSelect
+        name="databaseIds"
         label={
           formatMessage({
             id: 'odc.SensitiveColumn.components.SacnRule.Database',
+            defaultMessage: '数据库',
           }) //数据库
         }
-        name="databaseIds"
-        rules={[
-          {
-            required: true,
-            message: formatMessage({
-              id: 'odc.SensitiveColumn.components.SacnRule.SelectADatabase',
-            }), //请选择数据库
-          },
-        ]}
-      >
-        <Select
-          mode="multiple"
-          options={databaseIdsOptions}
-          // onChange={handleDatabaseIdsChange}
-          onSelect={handleDatabaseIdsSelect}
-          placeholder={
-            formatMessage({
-              id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect',
-            }) //请选择
-          }
-          maxTagCount="responsive"
-          disabled={databaseIdsOptions?.length === 1 || dataSourceId === -1}
-          style={{
-            width: '262px',
-          }}
-        />
-      </Form.Item>
+        dataSourceId={dataSourceId === -1 ? undefined : dataSourceId}
+        projectId={context.projectId}
+        onSelect={handleSelect}
+        disabled={dataSourceId === -1}
+        isAdaptiveWidth
+      />
       <Form.Item
         label={
           formatMessage({
             id: 'odc.SensitiveColumn.components.SacnRule.IdentificationRules',
+            defaultMessage: '识别规则',
           }) //识别规则
         }
         tooltip={
           formatMessage({
             id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.YouCanUseThePath',
+            defaultMessage: '可通过路径、正则或 Groovy 任意一种识别方式，进行脚本批量选择列',
           }) //'可通过路径、正则或Groovy任意一种识别方式，进行脚本批量选择列'
         }
         name="sensitiveRuleIds"
@@ -229,6 +214,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
             required: true,
             message: formatMessage({
               id: 'odc.SensitiveColumn.components.SacnRule.SelectAnIdentificationRule',
+              defaultMessage: '请选择识别规则',
             }), //请选择识别规则
           },
         ]}
@@ -238,16 +224,13 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
           options={sensitiveOptions}
           onSelect={handleSensitiveRuleIdsSelect}
           disabled={
-            dataSourceId === -1 ||
-            databaseIdsOptions?.length === 1 ||
-            databaseIds?.length === 0 ||
-            databaseId === 0 ||
-            sensitiveOptions?.length === 1
+            dataSourceId === -1 || databaseIds?.length === 0 || sensitiveOptions?.length === 1
           }
           maxTagCount="responsive"
           placeholder={
             formatMessage({
               id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect',
+              defaultMessage: '请选择',
             }) //请选择
           }
           style={{
@@ -266,6 +249,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
                   margin: '0px 0',
                 }}
               />
+
               <Button
                 type="link"
                 block
@@ -280,9 +264,10 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
                 {
                   formatMessage({
                     id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManagementRecognitionRules.1',
+                    defaultMessage: '\n                管理识别规则\n              ',
                   }) /* 
-             管理识别规则
-             */
+              管理识别规则
+              */
                 }
               </Button>
             </>

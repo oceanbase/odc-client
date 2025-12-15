@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1em" height="1em" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Vllm-置灰</title>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="24" height="24" rx="4"></rect>
+    </defs>
+    <g id="大模型集成" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="1.1大模型集成-交互说明" transform="translate(-1404, -1812)">
+            <g id="Vllm-置灰" transform="translate(1404, 1812)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="蒙版" fill="#D8D8D8" xlink:href="#path-1"></use>
+                <image id="位图备份-3" mask="url(#mask-2)" x="0" y="0" width="24" height="24" xlink:href="data:image/png;base64,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"></image>
+            </g>
+        </g>
+    </g>
+</svg>

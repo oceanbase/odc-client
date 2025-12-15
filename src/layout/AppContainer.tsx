@@ -21,24 +21,24 @@ import { formatMessage } from '@/util/intl';
 import { checkQueueStatus } from '@/common/network/other';
 import AskeventTrackingPermissionModal from '@/component/AskEventTrackingModal';
 import ErrorBoundary from '@/component/ErrorBoundary';
-import PageLoading from '@/component/PageLoading';
 import authStore, { AuthStore, AuthStoreContext } from '@/store/auth';
 import { ClusterStore } from '@/store/cluster';
 import { UserStore } from '@/store/login';
 import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
 import { SQLStore } from '@/store/sql';
-import { haveLockPwd, initClientService, isLock } from '@/util/client';
+import { haveLockPwd, initClientService, isLock } from '@/util/business/client';
 import { isClient } from '@/util/env';
-import { useAppData, useLocation, useRouteData } from '@umijs/max';
+import { Helmet, history, Outlet, useAppData, useLocation, useRouteData } from '@umijs/max';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
 import { ContainerQuery } from 'react-container-query';
-import { Helmet, history, Outlet } from '@umijs/max';
 import Context from './MenuContext';
-import StoreProvider from './StoreProvider';
 import { PageLoadingContext } from './PageLoadingWrapper';
+import StoreProvider from './StoreProvider';
+import { ConfigProvider } from 'antd';
+import { theme } from './antdTheme';
 
 // // TODO：支持英文版
 // setLocale('zh-CN');
@@ -161,9 +161,11 @@ const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => 
         tip: isServerReady
           ? formatMessage({
               id: 'odc.src.layout.ObtainConfigurationInformation',
+              defaultMessage: '正在获取配置信息',
             }) //'正在获取配置信息'
           : formatMessage({
               id: 'odc.src.layout.InspectionServiceStatus',
+              defaultMessage: '正在检查服务状态',
             }), //'正在检查服务状态'
         showError: settingStore.settingLoadStatus === 'failed',
         queue:
@@ -181,6 +183,7 @@ const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => 
         // 只在客户端开启用户信息采集窗口
         isClient() && <AskeventTrackingPermissionModal />
       }
+
       <Helmet>
         <title>{getPageTitle(pathname)}</title>
       </Helmet>
@@ -214,11 +217,14 @@ const App = inject(
 export default (props: any) => (
   // <Media query="(max-width: 599px)">
   <ErrorBoundary>
-    <StoreProvider>
-      <AuthStoreContext.Provider value={authStore}>
-        <App {...props} />
-      </AuthStoreContext.Provider>
-    </StoreProvider>
+    <ConfigProvider theme={theme}>
+      <StoreProvider>
+        <AuthStoreContext.Provider value={authStore}>
+          <App {...props} />
+        </AuthStoreContext.Provider>
+      </StoreProvider>
+    </ConfigProvider>
   </ErrorBoundary>
 );
+
 // </Media>;

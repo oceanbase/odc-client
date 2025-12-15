@@ -52,7 +52,13 @@ import { ReactComponent as SetSvg } from '@/svgr/Set.svg'; // 集合类型 icon
 import { ReactComponent as timeSvg } from '@/svgr/Field-time.svg'; // 同步 OCP 等保三密码强度要求
 
 export const PASSWORD_REGEX =
-  /^(?=(.*[a-z]){2,})(?=(.*[A-Z]){2,})(?=(.*\d){2,})(?=(.*[ !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]){2,})[A-Za-z\d !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]{8,32}$/; // 工作区头部高度
+  /^(?:(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[0-9])(?=.*[a-z])(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9]))[A-Za-z0-9!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]{8,32}$/;
+
+export const PASSWORD_VALIDATE_MESSAGE = formatMessage({
+  id: 'src.constant.59F82FE0',
+  defaultMessage:
+    '密码为长度 8~32 位, 包含以下四种类型字符至少三种及以上：数字（0~9）、大写字母（A~Z）、小写字母(a~z)、特殊符号：全部的英文特殊字符',
+});
 
 export const SPACE_REGEX = /^[^\s]+$/;
 
@@ -97,14 +103,16 @@ export const localeList = [
     value: 'en-US',
   },
   {
-    label: formatMessage({ id: 'odc.src.constant.SimplifiedChinese' }), //简体中文
+    label: formatMessage({ id: 'odc.src.constant.SimplifiedChinese', defaultMessage: '简体中文' }), //简体中文
     value: 'zh-CN',
   },
   {
-    label: formatMessage({ id: 'odc.src.constant.TraditionalChinese' }), //繁体中文
+    label: formatMessage({ id: 'odc.src.constant.TraditionalChinese', defaultMessage: '繁体中文' }), //繁体中文
     value: 'zh-TW',
   },
-]; // 连接目前支持的颜色集
+];
+
+// 连接目前支持的颜色集
 
 // 管控台-角色管理-系统权限入口
 export const EnableRoleSystemPermission = true;
@@ -126,6 +134,8 @@ export const DbObjsIcon = {
   [DbObjectType.public_synonym]: SynonymSvg,
   [DbObjectType.file]: FileSvg,
   [DbObjectType.column]: FolderOpenFilled,
+  [DbObjectType.external_table]: TableOutlined,
+  [DbObjectType.materialized_view]: ViewSvg,
 };
 /**
  * lineBackground: src/page/Workspace/components/SessionContextWrap/SessionSelect/index.tsx 中使用的背景，使用场景较为特殊，单独区分出来。
@@ -202,5 +212,75 @@ export const EnvColorMap: Record<
     tipColor: 'var(--odc-color5-color)',
     lineBackground: 'var(--odc-color5-bgcolor)',
     borderColor: 'var(--odc-color5-color)',
+  },
+};
+
+export enum PartitionBound {
+  PARTITION_UPPER_BOUND = 'PARTITION_UPPER_BOUND',
+  PARTITION_LOWER_BOUND = 'PARTITION_LOWER_BOUND',
+}
+
+export const taskSuccessHintInfo = {
+  terminate: formatMessage({
+    id: 'odc.components.TaskManagePage.TerminatedSuccessfully',
+    defaultMessage: '终止成功',
+  }),
+  delete: formatMessage({
+    id: 'src.component.Task.component.ActionBar.9EDD0936',
+    defaultMessage: '删除成功',
+  }),
+  retry: formatMessage({
+    id: 'odc.TaskManagePage.component.TaskTools.InitiatedAgain',
+    defaultMessage: '再次发起成功',
+  }),
+  again: formatMessage({
+    id: 'src.component.Task.component.ActionBar.15961986',
+    defaultMessage: '发起重试成功',
+  }),
+  start: formatMessage({
+    id: 'src.component.Task.component.ActionBar.10A4FEFD',
+    defaultMessage: '开始执行',
+  }),
+};
+export const ObDocsUrlMap = {
+  'en-us': {
+    '100.sql-development-common-techniques.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418134',
+    '200.common-operations-in-odc-team-space.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418130',
+    '300.analysis-of-oceanbase-ap-real-time-sql-diagnostic-capabilities.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418132',
+    '400.history-database-optimization-management.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418131',
+    '500.automatic-detection-of-high-risk-changes.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418133',
+    '700.implement-management-and-changes-for-database.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418127',
+    '800.data-masking-control-practices.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418126',
+    '900.enterprise-level-governance-and-control-synergy.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418128',
+    releaseNote: 'https://www.oceanbase.com/product/oceanbase-developer-center-rn/releaseNote',
+    ask: 'https://ask.oceanbase.com/tags/c/advice-feedback/15/odc',
+  },
+  'zh-cn': {
+    '100.sql-development-common-techniques.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002859674',
+    '200.common-operations-in-odc-team-space.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002859675',
+    '300.analysis-of-oceanbase-ap-real-time-sql-diagnostic-capabilities.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687235',
+    '400.history-database-optimization-management.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687236',
+    '500.automatic-detection-of-high-risk-changes.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687237',
+    '700.implement-management-and-changes-for-database.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687240',
+    '800.data-masking-control-practices.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687241',
+    '900.enterprise-level-governance-and-control-synergy.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687239',
+    releaseNote: 'https://www.oceanbase.com/product/oceanbase-developer-center-rn/releaseNote',
+    ask: 'https://ask.oceanbase.com/tags/c/advice-feedback/15/odc',
   },
 };

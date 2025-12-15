@@ -20,7 +20,7 @@ import { formatMessage } from '@/util/intl';
 import { Form, Input, message, Modal, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
-import styles from '../../index.less';
+import styles from './index.less';
 
 const { TextArea } = Input;
 
@@ -31,11 +31,12 @@ interface IProps {
   approvalStatus: boolean;
   onCancel: () => void;
   onReload: () => void;
+  zIndex?: number;
 }
 
 const ApprovalModal: React.FC<IProps> = inject('taskStore')(
   observer((props) => {
-    const { taskStore, id, visible, approvalStatus, onCancel } = props;
+    const { taskStore, id, visible, approvalStatus, onCancel, zIndex = 1001 } = props;
     const [confirmLoading, setConfirmLoading] = useState(false);
     const formRef = useRef(null);
 
@@ -53,6 +54,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
         message.success(
           formatMessage({
             id: 'odc.TaskManagePage.component.ApprovalModal.Successful',
+            defaultMessage: '通过成功',
           }), //通过成功
         );
       }
@@ -66,6 +68,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
         message.success(
           formatMessage({
             id: 'odc.TaskManagePage.component.ApprovalModal.Rejected',
+            defaultMessage: '拒绝成功',
           }), //拒绝成功
         );
       }
@@ -98,13 +101,14 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
       <Modal
         title={formatMessage({
           id: 'odc.TaskManagePage.component.ApprovalModal.HandlingComments',
+          defaultMessage: '处理意见',
         })} /*处理意见*/
         wrapClassName={styles.approvalModal}
         open={visible}
         confirmLoading={confirmLoading}
         onOk={onSubmit}
         onCancel={handleCancel}
-        zIndex={1001}
+        zIndex={zIndex}
       >
         <Space direction="vertical" size={20} className={styles.block}>
           <Space>
@@ -112,6 +116,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
               {
                 formatMessage({
                   id: 'odc.TaskManagePage.component.ApprovalModal.ProcessingStatus',
+                  defaultMessage: '处理状态：',
                 }) /*处理状态:*/
               }
             </span>
@@ -120,9 +125,11 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
                 approvalStatus
                   ? formatMessage({
                       id: 'odc.TaskManagePage.component.ApprovalModal.Pass',
+                      defaultMessage: '通过',
                     }) //通过
                   : formatMessage({
                       id: 'odc.TaskManagePage.component.ApprovalModal.Reject',
+                      defaultMessage: '拒绝',
                     }) //拒绝
               }
             </span>
@@ -131,6 +138,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
             <Form.Item
               label={formatMessage({
                 id: 'odc.TaskManagePage.component.ApprovalModal.HandlingComments',
+                defaultMessage: '处理意见',
               })}
               /*处理意见*/ name="comment"
               rules={[
@@ -138,6 +146,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
                   required: true,
                   message: formatMessage({
                     id: 'odc.TaskManagePage.component.ApprovalModal.PleaseEnterAHandlingOpinion',
+                    defaultMessage: '请输入处理意见!',
                   }), //请输入处理意见!
                 },
               ]}
@@ -148,6 +157,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
                 rows={5}
                 placeholder={formatMessage({
                   id: 'odc.TaskManagePage.component.ApprovalModal.PleaseEnterHandlingCommentsWithin',
+                  defaultMessage: '请输入处理意见，200 字以内',
                 })} /*请输入处理意见，200字以内*/
               />
             </Form.Item>

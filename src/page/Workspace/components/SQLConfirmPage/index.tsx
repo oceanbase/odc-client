@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
 import { getSequence } from '@/common/network/sequence';
 import { executeSQL } from '@/common/network/sql';
@@ -53,7 +54,6 @@ import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
 import type { IProps, IState } from './type';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 @inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer
@@ -142,6 +142,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
               formatMessage(
                 {
                   id: 'odc.components.SQLConfirmPage.TheNameTriggerWasCreated',
+                  defaultMessage: '{name} 触发器创建成功',
                 },
 
                 { name },
@@ -157,6 +158,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
               name +
                 formatMessage({
                   id: 'odc.components.SQLConfirmPage.SynonymCreatedSuccessfully',
+                  defaultMessage: '同义词创建成功',
                 }), // 同义词创建成功
             );
             this.handleCheckName(name, PageType.SYNONYM, { synonymType });
@@ -167,6 +169,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
               formatMessage(
                 {
                   id: 'odc.components.SQLConfirmPage.NameTypeCreated',
+                  defaultMessage: '{name} 类型创建成功',
                 },
 
                 { name },
@@ -182,12 +185,14 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
               message.success(
                 formatMessage({
                   id: 'workspace.window.createPackageBody.success',
+                  defaultMessage: '新建程序包体成功',
                 }),
               );
             } else {
               message.success(
                 formatMessage({
                   id: 'workspace.window.createPackage.success',
+                  defaultMessage: '新建程序包成功',
                 }),
               );
             }
@@ -199,6 +204,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
               formatMessage(
                 {
                   id: 'odc.components.SQLConfirmPage.SequenceNameCreated',
+                  defaultMessage: '创建序列 {name} 成功',
                 },
                 { name },
               ), // `创建序列 ${name} 成功`
@@ -207,12 +213,22 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
             return;
           }
           case PageType.CREATE_FUNCTION: {
-            message.success(formatMessage({ id: 'workspace.window.createFunction.success' }));
+            message.success(
+              formatMessage({
+                id: 'workspace.window.createFunction.success',
+                defaultMessage: '创建函数成功',
+              }),
+            );
             this.handleCheckName(name, PageType.FUNCTION);
             return;
           }
           case PageType.CREATE_PROCEDURE: {
-            message.success(formatMessage({ id: 'workspace.window.createProcedure.success' }));
+            message.success(
+              formatMessage({
+                id: 'workspace.window.createProcedure.success',
+                defaultMessage: '创建存储过程成功',
+              }),
+            );
             this.handleCheckName(name, PageType.PROCEDURE);
             return;
           }
@@ -314,9 +330,11 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
         Modal.confirm({
           title: formatMessage({
             id: 'odc.components.SQLConfirmPage.AreYouSureYouWant',
+            defaultMessage: '是否确认返回上一步？',
           }), // 确认要返回上一步吗？
           content: formatMessage({
             id: 'odc.components.SQLConfirmPage.IfYouReturnToThe',
+            defaultMessage: '若返回上一步，当前编辑的代码将不会生效且不保存',
           }), // 若返回上一步，当前编辑的代码将不会生效且不保存
           centered: true,
           onOk: () => {
@@ -365,6 +383,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
             {
               formatMessage({
                 id: 'odc.components.SQLConfirmPage.ExecuteDdlError',
+                defaultMessage: '执行 DDL 出错',
               }) /* 执行DDL出错 */
             }
           </span>
@@ -390,6 +409,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
           initialSQL={sql}
           log={logEle}
           onSQLChange={this.handleSqlChange}
+          showLog={true}
           toolbarActions={
             <Space>
               {hasPre && (
@@ -397,14 +417,17 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
                   {
                     formatMessage({
                       id: 'odc.components.SQLConfirmPage.PreviousStep',
+                      defaultMessage: '上一步',
                     }) /* 上一步 */
                   }
                 </Button>
               )}
+
               <Button type="primary" onClick={this.handleSubmit} loading={loading}>
                 {
                   formatMessage({
                     id: 'odc.components.SQLConfirmPage.Create',
+                    defaultMessage: '创建',
                   }) /* 创建 */
                 }
               </Button>

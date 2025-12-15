@@ -1,0 +1,230 @@
+.card:global(.ant-card) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  :global {
+    .ant-card-head {
+      flex-grow: 0;
+      min-height: 40px;
+      margin-bottom: 0;
+      background: var(--background-secondry-color);
+      border-bottom-color: var(--divider-color);
+      > .ant-card-head-wrapper {
+        > .ant-card-head-title {
+          padding: 8px 0;
+        }
+        > .ant-card-extra {
+          padding: 8px 0;
+        }
+      }
+    }
+    .ant-card-body {
+      overflow: hidden;
+      flex-grow: 1;
+      padding: 0;
+    }
+  }
+}
+
+.createMaterializedViewBaseInfoForm:global(.ant-form) {
+  padding: 12px;
+  :global {
+    label {
+      font-size: 12px;
+    }
+  }
+
+  .divider {
+    margin-top: 0;
+    margin-bottom: 16px;
+  }
+
+  .submitButton {
+    font-size: 12px;
+  }
+  .interval {
+    border-radius: 2px 0px 0px 2px;
+  }
+  .unit {
+    :global {
+      .ant-select-selector {
+        border-radius: 0px 2px 2px 0px;
+        border-left: 0px;
+      }
+    }
+  }
+}
+
+.spin {
+  display: block;
+  margin: 0 auto;
+  margin-top: 40px;
+}
+
+.mv-tree-transfer {
+  :global {
+    .ant-transfer-list-header {
+      display: none;
+    }
+
+    .ant-tree-treenode {
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+
+    .ant-tree-switcher {
+      width: 14px;
+    }
+
+    .ant-transfer-list {
+      height: 480px;
+    }
+
+    .ant-transfer-list:first-child {
+      flex: 1 1 30%;
+      min-width: 200px;
+
+      .ant-transfer-list-body-customize-wrapper {
+        padding: 0;
+      }
+    }
+
+    .ant-transfer-list:last-child {
+      flex: 1 1 70%;
+      min-width: 200px;
+      .ant-transfer-list-body-search-wrapper {
+        display: none;
+      }
+
+      .ant-transfer-list-body {
+        padding: 16px 0 0 0;
+      }
+
+      .ant-transfer-list-body-customize-wrapper {
+        // padding: 0 0 0 12px;
+      }
+    }
+
+    .ant-tree-checkbox {
+      margin-right: 4px;
+      margin-left: 4px;
+    }
+
+    .ant-tree .ant-tree-node-content-wrapper {
+      padding-left: 0;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      .ant-tree-iconEle {
+        width: 20px;
+        height: 20px;
+        line-height: 22px;
+      }
+    }
+  }
+}
+
+.checkboxAll {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+}
+
+.header-tip {
+  color: var(--text-color-secondary);
+}
+
+.mv-tree-column-transfer {
+  :global {
+    .ant-tree-switcher {
+      width: 14px;
+    }
+
+    .ant-transfer-list {
+      height: 520px;
+    }
+
+    .ant-tree-treenode {
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+
+    .ant-tree-treenode-selected {
+      .ant-tree-switcher {
+        color: @odc-text-color-dark !important;
+      }
+      &::before {
+        background: transparent !important;
+      }
+
+      &:hover::before {
+        background: #f5f5f5;
+      }
+
+      .ant-tree-node-selected {
+        color: @odc-text-color-dark;
+      }
+    }
+
+    .ant-tree-checkbox {
+      margin-right: 4px;
+      margin-left: 4px;
+    }
+
+    .ant-transfer-list-body-customize-wrapper {
+      padding: 0;
+    }
+
+    .ant-tree .ant-tree-node-content-wrapper {
+      padding-left: 0;
+      white-space: nowrap;
+
+      .ant-tree-iconEle {
+        width: 20px;
+        height: 20px;
+        line-height: 22px;
+      }
+    }
+
+    .ant-transfer-list:first-child {
+      position: relative;
+      flex: 1 1 30%;
+      min-width: 200px;
+
+      .ant-transfer-list-body-customize-wrapper {
+        padding: 0;
+      }
+
+      .ant-transfer-list-header {
+        .ant-checkbox-wrapper,
+        .anticon-down,
+        .ant-transfer-list-header-selected {
+          display: none;
+        }
+      }
+    }
+    .ant-transfer-list:last-child {
+      flex: 1 1 70%;
+      min-width: 200px;
+      white-space: nowrap;
+      .ant-transfer-list-header-title {
+        display: flex;
+        justify-content: space-between;
+      }
+      .ant-dropdown-trigger {
+        display: none;
+      }
+      .ant-transfer-list-header-selected {
+        display: none;
+      }
+
+      .ant-transfer-list-body-search-wrapper {
+        display: none;
+      }
+
+      .ant-transfer-list-body {
+        padding: 16px 0 0 0;
+      }
+    }
+  }
+}

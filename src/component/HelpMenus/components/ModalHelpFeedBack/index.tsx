@@ -15,7 +15,9 @@
  */
 
 import { SettingStore } from '@/store/setting';
-import ipcInvoke from '@/util/client/service';
+import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
+import { ReactComponent as ODCColorSvg } from '@/svgr/odc_logo_color.svg';
+import ipcInvoke from '@/util/business/client/service';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { Image, Modal } from 'antd';
@@ -23,6 +25,7 @@ import { inject, observer } from 'mobx-react';
 import { PureComponent } from 'react';
 import styles from './index.less';
 
+import Icon from '@ant-design/icons';
 import pkg from '../../../../../package.json';
 
 @inject('settingStore')
@@ -45,15 +48,33 @@ export default class ModalHelp extends PureComponent<{
         onCancel={this.props.onCancel}
         footer={null}
       >
-        <h3>{formatMessage({ id: 'odc.components.ModalHelpFeedBack.Feedback' })}</h3>
+        <h3>
+          {formatMessage({
+            id: 'odc.components.ModalHelpFeedBack.Feedback',
+            defaultMessage: '意见反馈',
+          })}
+        </h3>
         {feekBackUrl ? <Image width={240} height={240} src={feekBackUrl} /> : null}
         <div className="email">
           <h4>
+            <Icon style={{ fontSize: 14, marginRight: 8 }} component={ODCColorSvg} />
             {formatMessage({
               id: 'odc.components.ModalHelpFeedBack.SupportedEmailAddresses',
+              defaultMessage: '支持邮箱',
             })}
           </h4>
           <p>{serverSystemInfo?.supportEmail || pkg.bugs.email}</p>
+          <h4>
+            <Icon style={{ fontSize: 14, marginRight: 8 }} component={GithubSvg} />
+            {'Github issues'}
+          </h4>
+          <a
+            href="https://github.com/oceanbase/odc/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            https://github.com/oceanbase/odc/issues
+          </a>
           {serverSystemInfo?.supportUrl ? <p>Help: {serverSystemInfo?.supportUrl}</p> : null}
         </div>
         {isClient() ? (

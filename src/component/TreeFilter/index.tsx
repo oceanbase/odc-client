@@ -50,10 +50,15 @@ const TreeFilter: React.FC<ITreeFilterProps> = (props) => {
       <Tree checkable checkedKeys={checkedKeys} treeData={treeData} onCheck={onCheck} />
       <div className={styles.footer}>
         <Button size="small" onClick={handleReset} type="link">
-          {formatMessage({ id: 'odc.components.TreeFilter.Reset' }) /*重置*/}
+          {
+            formatMessage({
+              id: 'odc.components.TreeFilter.Reset',
+              defaultMessage: '重置',
+            }) /*重置*/
+          }
         </Button>
         <Button type="primary" size="small" onClick={handleOk}>
-          {formatMessage({ id: 'odc.components.TreeFilter.Ok' }) /*确定*/}
+          {formatMessage({ id: 'odc.components.TreeFilter.Ok', defaultMessage: '确定' }) /*确定*/}
         </Button>
       </div>
     </div>

@@ -15,23 +15,30 @@
  */
 
 import { createRole, getRoleDetail, updateRole } from '@/common/network/manager';
-import { ALL_SELECTED_ID, isSelectedAll } from '@/component/Manage/ResourceSelector';
+import {
+  ALL_I_HAVE_CREATED_ID,
+  ALL_I_HAVE_CREATED_VALUE,
+  ALL_SELECTED_ID,
+  ALL_SELECTED_VALUE,
+  isSelectedAll,
+  isSelectedAllThatIHaveCreated,
+} from '@/component/Manage/ResourceSelector';
 import { EnableRoleSystemPermission } from '@/constant';
 import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
+import odc from '@/plugins/odc';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { Button, Drawer, message, Modal, Radio, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import { isNull, set } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import odc from '@/plugins/odc';
 import { ResourceContext } from '../../../context';
 import { resourceManagementActionMap } from '../../../utils';
 import { SystemAction, systemActionMap } from '../ResourceSelector/const';
 import resourceActions from '../ResourceSelector/resourceActions';
 import { FormContent, RoleResource } from './component';
 import styles from './index.less';
-import tracert from '@/util/tracert';
 
 interface IProps {
   visible: boolean;
@@ -92,12 +99,14 @@ const defaultData = {
       actions: SystemAction.action_update_read,
     },
   ],
+
   createAbleResource: [
     IManagerResourceType.resource,
     IManagerResourceType.project,
     IManagerResourceType.role,
     IManagerResourceType.user,
   ],
+
   permissionType: [
     IManagerRolePermissionType.resourceManagementPermissions,
     IManagerRolePermissionType.systemOperationPermissions,
@@ -132,7 +141,7 @@ const FormModal: React.FC<IProps> = (props) => {
   ) => {
     return values?.map(({ actions, resourceId, ...rest }) => ({
       ...rest,
-      resourceId: isNull(resourceId) ? ALL_SELECTED_ID : resourceId,
+      resourceId: getResourceIdByResponseKey(resourceId),
       actions: resourceActions.getActionStringValue(actions, permissionType),
     }));
   };
@@ -153,6 +162,7 @@ const FormModal: React.FC<IProps> = (props) => {
         ? formatMessage(
             {
               id: 'odc.components.FormRoleModal.NameCopy',
+              defaultMessage: '{name}_复制',
             },
             { name },
           ) // `${name}_复制`
@@ -222,7 +232,10 @@ const FormModal: React.FC<IProps> = (props) => {
     const res = await createRole(values);
     if (res) {
       message.success(
-        formatMessage({ id: 'odc.components.FormRoleModal.RoleCreated' }), // 角色创建成功
+        formatMessage({
+          id: 'odc.components.FormRoleModal.RoleCreated',
+          defaultMessage: '角色创建成功',
+        }), // 角色创建成功
       );
       loadRoles();
       handleCloseModal();
@@ -230,6 +243,7 @@ const FormModal: React.FC<IProps> = (props) => {
       message.error(
         formatMessage({
           id: 'odc.components.FormRoleModal.UnableToCreateTheRole',
+          defaultMessage: '角色创建失败',
         }),
         // 角色创建失败
       );
@@ -240,7 +254,10 @@ const FormModal: React.FC<IProps> = (props) => {
     const res = await updateRole(values);
     if (res) {
       message.success(
-        formatMessage({ id: 'odc.components.FormRoleModal.RoleSaved' }), // 角色保存成功
+        formatMessage({
+          id: 'odc.components.FormRoleModal.RoleSaved',
+          defaultMessage: '角色保存成功',
+        }), // 角色保存成功
       );
       loadRoles();
       handleCloseModal();
@@ -248,6 +265,7 @@ const FormModal: React.FC<IProps> = (props) => {
       message.error(
         formatMessage({
           id: 'odc.components.FormRoleModal.UnableToSaveTheRole',
+          defaultMessage: '角色保存失败',
         }),
         // 角色保存失败
       );
@@ -261,6 +279,21 @@ const FormModal: React.FC<IProps> = (props) => {
     });
   };
 
+  function getResourceIdByResponseKey(responseKey) {
+    if (isNull(responseKey) || responseKey === ALL_SELECTED_VALUE()) return ALL_SELECTED_ID;
+    if (responseKey === ALL_I_HAVE_CREATED_VALUE) return ALL_I_HAVE_CREATED_ID;
+    return responseKey;
+  }
+
+  function getResourceIdById(type, resourceId) {
+    if (type === 'systemOperationPermissions') {
+      return ALL_SELECTED_VALUE();
+    }
+    if (isSelectedAllThatIHaveCreated(resourceId)) return ALL_I_HAVE_CREATED_VALUE;
+    if (isSelectedAll(resourceId)) return ALL_SELECTED_VALUE();
+    return resourceId;
+  }
+
   const handleUnifyData = (
     data: {
       resourceType: string;
@@ -268,6 +301,7 @@ const FormModal: React.FC<IProps> = (props) => {
       actions?: string;
     }[],
     actionMap: any,
+    type: 'systemOperationPermissions' | 'resourceManagementPermissions',
   ) => {
     const values = data?.filter((item) =>
       Object.values(item)?.every((item) => item || isNull(item)),
@@ -275,7 +309,7 @@ const FormModal: React.FC<IProps> = (props) => {
     return values?.map(({ resourceId, actions, ...reset }) => {
       return {
         ...reset,
-        resourceId: isSelectedAll(resourceId) ? null : resourceId,
+        resourceId: getResourceIdById(type, resourceId),
         actions: actionMap?.[actions],
       };
     });
@@ -315,6 +349,7 @@ const FormModal: React.FC<IProps> = (props) => {
               errors: [
                 formatMessage({
                   id: 'odc.components.FormRoleModal.SelectAPermissionType',
+                  defaultMessage: '请选择权限类型',
                 }), // 请选择权限类型
               ],
             },
@@ -325,10 +360,12 @@ const FormModal: React.FC<IProps> = (props) => {
         formData.resourceManagementPermissions = handleUnifyData(
           resourceManagementPermissions,
           resourceManagementActionMap,
+          'resourceManagementPermissions',
         );
         formData.systemOperationPermissions = handleUnifyData(
           systemOperationPermissions,
           systemActionMap,
+          'systemOperationPermissions',
         );
         if (createAbleResource?.length) {
           createAbleResource
@@ -338,7 +375,7 @@ const FormModal: React.FC<IProps> = (props) => {
             ?.forEach((type) => {
               formData.resourceManagementPermissions?.push({
                 resourceType: type,
-                resourceId: null,
+                resourceId: ALL_SELECTED_VALUE(),
                 actions: ['create'],
               });
             });
@@ -356,22 +393,30 @@ const FormModal: React.FC<IProps> = (props) => {
               errors: [
                 formatMessage({
                   id: 'odc.components.FormRoleModal.SelectANewObject',
+                  defaultMessage: '请选择可新建的对象',
                 }), //请选择可新建的对象
               ],
             },
           ]);
           throw new Error(null);
         }
-        tracert.click('a3112.b64007.c330919.d367468');
-        if (isEdit) {
-          handleEdit({
-            ...formData,
-            bindUserIds: users?.add,
-            unbindUserIds: users?.delete,
-            id: editId,
+        // 检查是否存在权限包含关系
+        const hasDuplicatePermissions = checkForDuplicatePermissions(
+          formData.resourceManagementPermissions,
+        );
+
+        if (hasDuplicatePermissions) {
+          Modal.confirm({
+            content: formatMessage({
+              id: 'src.page.Auth.Role.component.FormModal.3D1B7861',
+              defaultMessage: '当前授予的权限存在包含关系，仅保留权限范围大的记录。',
+            }),
+            onOk: () => {
+              submitRoleData(formData);
+            },
           });
         } else {
-          handleCreate(formData);
+          submitRoleData(formData);
         }
       })
       .catch((error) => {
@@ -395,17 +440,23 @@ const FormModal: React.FC<IProps> = (props) => {
         title: isEdit
           ? formatMessage({
               id: 'odc.components.FormRoleModal.AreYouSureYouWant',
+              defaultMessage: '是否确定取消编辑？取消后，编辑的内容将不生效',
             })
           : // 确定要取消编辑吗？取消保存后，所编辑的内容将不生效
             formatMessage({
               id: 'odc.components.FormRoleModal.AreYouSureYouWant.1',
+              defaultMessage: '是否确定取消新建?',
             }),
         // 确定要取消新建吗?
         cancelText: formatMessage({
           id: 'odc.components.FormRoleModal.Cancel',
+          defaultMessage: '取消',
         }),
         // 取消
-        okText: formatMessage({ id: 'odc.components.FormRoleModal.Determine' }), // 确定
+        okText: formatMessage({
+          id: 'odc.components.FormRoleModal.Determine',
+          defaultMessage: '确定',
+        }), // 确定
         centered: true,
         onOk: () => {
           setHasChange(false);
@@ -446,21 +497,74 @@ const FormModal: React.FC<IProps> = (props) => {
   const handlePermissionTypeChange = (key: string) => {
     setPermissionActiveKey(key);
   };
+
+  const checkForDuplicatePermissions = (permissions) => {
+    if (!permissions || !permissions.length) {
+      return false;
+    }
+
+    return permissions.some((item, index) => {
+      // 跳过纯create操作的权限
+      if (isCreateOnlyPermission(item)) {
+        return false;
+      }
+      return permissions.some((otherItem, otherIndex) => {
+        if (index === otherIndex) {
+          return false;
+        }
+        if (isCreateOnlyPermission(otherItem)) {
+          return false;
+        }
+        // actions数量不同（表明权限范围不同）
+        return (
+          item.resourceType === otherItem.resourceType &&
+          item.resourceId === otherItem.resourceId &&
+          item?.actions?.length !== otherItem?.actions?.length
+        );
+      });
+    });
+  };
+
+  const isCreateOnlyPermission = (permission) => {
+    return permission?.actions?.length === 1 && permission?.actions?.[0] === 'create';
+  };
+
+  const submitRoleData = (formData) => {
+    tracert.click('a3112.b64007.c330919.d367468');
+    if (isEdit) {
+      handleEdit({
+        ...formData,
+        bindUserIds: users?.add,
+        unbindUserIds: users?.delete,
+        id: editId,
+      });
+    } else {
+      handleCreate(formData);
+    }
+  };
+
   return (
     <Drawer
       width={720}
       title={
         isEdit
-          ? formatMessage({ id: 'odc.components.FormRoleModal.EditARole' }) // 编辑角色
-          : formatMessage({ id: 'odc.components.FormRoleModal.CreateARole' }) // 新建角色
+          ? formatMessage({
+              id: 'odc.components.FormRoleModal.EditARole',
+              defaultMessage: '编辑角色',
+            }) // 编辑角色
+          : formatMessage({
+              id: 'odc.components.FormRoleModal.CreateARole',
+              defaultMessage: '新建角色',
+            }) // 新建角色
       }
-      className={styles.userModal}
+      rootClassName={styles.userModal}
       footer={
         <Space>
           <Button onClick={handleCancel}>
             {
               formatMessage({
                 id: 'odc.components.FormRoleModal.Cancel',
+                defaultMessage: '取消',
               })
               /* 取消 */
             }
@@ -468,8 +572,8 @@ const FormModal: React.FC<IProps> = (props) => {
           <Button type="primary" onClick={handleSubmit}>
             {
               isEdit
-                ? formatMessage({ id: 'odc.components.FormRoleModal.Save' }) // 保存
-                : formatMessage({ id: 'odc.components.FormRoleModal.New' }) // 新建
+                ? formatMessage({ id: 'odc.components.FormRoleModal.Save', defaultMessage: '保存' }) // 保存
+                : formatMessage({ id: 'odc.components.FormRoleModal.New', defaultMessage: '新建' }) // 新建
             }
           </Button>
         </Space>
@@ -484,6 +588,7 @@ const FormModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.components.FormRoleModal.RoleDetails',
+                defaultMessage: '角色详情',
               })
               /* 角色详情 */
             }
@@ -492,13 +597,13 @@ const FormModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.components.FormRoleModal.RelatedUsers',
+                defaultMessage: '相关用户',
               })
               /* 相关用户 */
             }
           </Radio.Button>
         </Radio.Group>
       )}
-
       <FormContent
         initialValue={data}
         isEdit={isEdit}
@@ -511,7 +616,6 @@ const FormModal: React.FC<IProps> = (props) => {
         handleStatusChange={handleStatusChange}
         handlePermissionTypeChange={handlePermissionTypeChange}
       />
-
       {isEdit && (
         <RoleResource
           editId={editId}

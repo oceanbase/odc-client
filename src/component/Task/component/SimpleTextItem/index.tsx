@@ -29,8 +29,9 @@ export const SimpleTextItem: React.FC<{
   direction?: 'row' | 'column';
   className?: string;
   showSplit?: boolean;
+  style?: React.CSSProperties;
 }> = (props) => {
-  const { label, content, direction = 'row', className = '', showSplit = true } = props;
+  const { label, content, direction = 'row', className = '', showSplit = true, style } = props;
   return (
     <div
       className={className}
@@ -39,13 +40,14 @@ export const SimpleTextItem: React.FC<{
         fontSize: 12,
         lineHeight: '20px',
         flexDirection: direction,
+        ...style,
       }}
     >
       <div
         style={{
           flexGrow: 0,
           flexShrink: 0,
-          color: 'var(--text-color-primary)',
+          color: 'var(--text-color-hint)',
           marginBottom: direction === 'column' ? '8px' : 0,
         }}
       >
@@ -53,6 +55,7 @@ export const SimpleTextItem: React.FC<{
           ? formatMessage(
               {
                 id: 'odc.component.TaskDetailDrawer.TaskInfo.Label',
+                defaultMessage: '{label}：',
               },
 
               { label },
@@ -63,7 +66,7 @@ export const SimpleTextItem: React.FC<{
         style={{
           flexGrow: 1,
           wordBreak: 'break-all',
-          color: 'var(--text-color-secondary)',
+          color: 'var(--text-color-primary)',
         }}
       >
         {content}

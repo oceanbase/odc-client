@@ -15,9 +15,10 @@
  */
 
 import { ConnectType, TaskType } from '@/d.ts';
+import { haveOCP } from '@/util/env';
 import { IDataSourceModeConfig } from '../interface';
 import MySQLColumnExtra from '../oceanbase/MySQLColumnExtra';
-import { haveOCP } from '@/util/env';
+import { ScheduleType } from '@/d.ts/schedule';
 
 const tableConfig = {
   enableTableCharsetsAndCollations: true,
@@ -54,6 +55,18 @@ const procedureConfig: IDataSourceModeConfig['schema']['proc'] = {
   deterministic: true,
 };
 
+const scheduleConfig: IDataSourceModeConfig['features']['scheduleConfig'] = {
+  allowTargetConnectTypeByDataArchive: [
+    ConnectType.COS,
+    ConnectType.OBS,
+    ConnectType.S3A,
+    ConnectType.OSS,
+    ConnectType.OB_MYSQL,
+    ConnectType.CLOUD_OB_MYSQL,
+    ConnectType.MYSQL,
+  ],
+};
+
 const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
   [ConnectType.MYSQL]: {
     connection: {
@@ -70,19 +83,23 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
       task: [
         TaskType.ASYNC,
         TaskType.DATAMOCK,
-        TaskType.SQL_PLAN,
-        TaskType.DATA_ARCHIVE,
-        TaskType.DATA_DELETE,
         TaskType.IMPORT,
         TaskType.EXPORT,
         TaskType.EXPORT_RESULT_SET,
         TaskType.STRUCTURE_COMPARISON,
+        TaskType.MULTIPLE_ASYNC,
+        TaskType.LOGICAL_DATABASE_CHANGE,
       ],
+      schedule: [ScheduleType.SQL_PLAN, ScheduleType.DATA_ARCHIVE, ScheduleType.DATA_DELETE],
+      scheduleConfig,
       obclient: true,
       recycleBin: false,
       plRun: true,
       sessionManage: true,
       sqlExplain: true,
+      sessionParams: true,
+      groupResourceTree: true,
+      sqlconsole: true,
       export: {
         fileLimit: false,
         snapshot: false,

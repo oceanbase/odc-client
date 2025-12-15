@@ -20,8 +20,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { getSQLExplain } from '@/common/network/sql';
 import SessionStore from '@/store/sessionManager/session';
-import styles from './index.less';
 import SQLExplain from '../../SQLExplain';
+import styles from './index.less';
 
 interface IProps {
   session: SessionStore;
@@ -64,13 +64,14 @@ const ExecPlan: React.FC<IProps> = function (props) {
     <Drawer
       title={formatMessage({
         id: 'workspace.window.sql.explain.tab.summary.title',
+        defaultMessage: '计划详情',
       })}
       placement="right"
       closable
       onClose={onClose}
       open={visible}
       width={960}
-      className={styles.explainDrawer}
+      rootClassName={styles.explainDrawer}
       bodyStyle={{
         paddingBottom: 50,
       }}
@@ -95,6 +96,7 @@ const ExecPlan: React.FC<IProps> = function (props) {
           {
             formatMessage({
               id: 'odc.components.SQLPage.Closed',
+              defaultMessage: '关闭',
             })
             /* 关闭 */
           }
