@@ -7,7 +7,7 @@ import { ref, computed, watch, inject, nextTick } from 'vue';
 import type { ColumnType } from 'nocodb-sdk';
 import { useEditStore } from '../../stores/editStore';
 import { useGridStore } from '../../stores/gridStore';
-import { INJECTION_KEYS } from '../../types';
+import { INJECTION_KEYS, READONLY_COLUMN_TYPES } from '../../types';
 import type { Row } from '../../types';
 
 const props = defineProps<{
@@ -52,8 +52,7 @@ const isSelect = computed(() =>
 const isAttachment = computed(() => columnType.value === 'Attachment');
 const isReadOnlyField = computed(() =>
   props.column.pk || props.column.ai || props.column.system ||
-  ['Lookup', 'Rollup', 'Formula', 'Count', 'CreatedTime', 'LastModifiedTime',
-   'CreatedBy', 'LastModifiedBy', 'Links', 'AutoNumber', 'Button'].includes(columnType.value)
+  (READONLY_COLUMN_TYPES as readonly string[]).includes(columnType.value)
 );
 
 // Initialize local value when entering edit mode

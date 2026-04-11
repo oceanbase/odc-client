@@ -7,7 +7,7 @@ import { useGridStore } from '../../stores/gridStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useEditStore } from '../../stores/editStore';
 import { useRowComments } from '../../composables/useRowComments';
-import { INJECTION_KEYS } from '../../types';
+import { INJECTION_KEYS, READONLY_COLUMN_TYPES } from '../../types';
 import type { Row } from '../../types';
 
 const props = defineProps<{
@@ -198,7 +198,7 @@ onMounted(() => {
               />
               <!-- Read-only fields -->
               <div
-                v-else-if="col.pk || col.ai || col.system || ['Lookup', 'Rollup', 'Formula', 'Count', 'CreatedTime', 'LastModifiedTime', 'CreatedBy', 'LastModifiedBy', 'Links', 'AutoNumber'].includes(col.uidt || '')"
+                v-else-if="col.pk || col.ai || col.system || (READONLY_COLUMN_TYPES as readonly string[]).includes(col.uidt || '')"
                 class="nc-ef-readonly-value"
               >
                 {{ fieldValues[col.title || ''] ?? '—' }}

@@ -71,7 +71,7 @@ export type {
   TableType,
 } from './types';
 
-export { INJECTION_KEYS, ROW_HEIGHT_MAP } from './types';
+export { INJECTION_KEYS, ROW_HEIGHT_MAP, READONLY_COLUMN_TYPES, GROUPABLE_COLUMN_TYPES } from './types';
 
 // ── Sub-components (for advanced usage) ──
 export { default as GridTable } from './components/grid/Table.vue';

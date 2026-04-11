@@ -31,12 +31,26 @@ export interface NcGridProps {
 
 export type RowHeightType = 'short' | 'medium' | 'tall' | 'extra';
 
+/** Row height values in pixels for each size option */
 export const ROW_HEIGHT_MAP: Record<RowHeightType, number> = {
-  short: 32,
-  medium: 48,
-  tall: 64,
-  extra: 96,
+  short: 32,   // Single line of text
+  medium: 48,  // Two lines or fields with padding
+  tall: 64,    // Multi-line content preview
+  extra: 96,   // Full content preview with attachments
 };
+
+/** Column types that are always read-only (computed/system columns) */
+export const READONLY_COLUMN_TYPES = [
+  'Lookup', 'Rollup', 'Formula', 'Count', 'CreatedTime', 'LastModifiedTime',
+  'CreatedBy', 'LastModifiedBy', 'Links', 'AutoNumber', 'Button',
+] as const;
+
+/** Column types that support grouping */
+export const GROUPABLE_COLUMN_TYPES = [
+  'SingleLineText', 'SingleSelect', 'MultiSelect', 'Number', 'Date',
+  'DateTime', 'Checkbox', 'Email', 'URL', 'PhoneNumber', 'Rating',
+  'Year', 'Duration', 'Currency', 'Percent', 'Decimal',
+] as const;
 
 /** A single row record with metadata */
 export interface Row {
