@@ -1,0 +1,83 @@
+/**
+ * CSS custom properties for theming nc-grid-vue.
+ * Override these variables to customize the grid appearance.
+ */
+:root {
+  /* ── Colors ── */
+  --nc-grid-primary-color: #3b82f6;
+  --nc-grid-primary-hover: #2563eb;
+  --nc-grid-primary-bg: #eff6ff;
+  --nc-grid-text-color: #1f2937;
+  --nc-grid-text-secondary: #6b7280;
+  --nc-grid-bg-color: #ffffff;
+  --nc-grid-header-bg: #f9fafb;
+  --nc-grid-header-text: #374151;
+  --nc-grid-border-color: #e5e7eb;
+  --nc-grid-hover-bg: #f3f4f6;
+  --nc-grid-row-hover: #f9fafb;
+  --nc-grid-selection-bg: #dbeafe;
+  --nc-grid-new-row-bg: #f0fdf4;
+  --nc-grid-error-color: #dc2626;
+  --nc-grid-success-color: #16a34a;
+  --nc-grid-warning-color: #f59e0b;
+
+  /* ── Typography ── */
+  --nc-grid-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --nc-grid-font-size: 13px;
+  --nc-grid-header-font-size: 12px;
+
+  /* ── Layout ── */
+  --nc-grid-border-radius: 4px;
+  --nc-grid-row-height-short: 32px;
+  --nc-grid-row-height-medium: 48px;
+  --nc-grid-row-height-tall: 64px;
+  --nc-grid-row-height-extra: 96px;
+  --nc-grid-header-height: 36px;
+  --nc-grid-toolbar-height: 40px;
+  --nc-grid-pagination-height: 40px;
+  --nc-grid-min-column-width: 60px;
+  --nc-grid-default-column-width: 200px;
+  --nc-grid-max-column-width: 800px;
+}
+
+/* ── Dark Mode ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --nc-grid-primary-color: #60a5fa;
+    --nc-grid-primary-hover: #3b82f6;
+    --nc-grid-primary-bg: #1e3a5f;
+    --nc-grid-text-color: #f3f4f6;
+    --nc-grid-text-secondary: #9ca3af;
+    --nc-grid-bg-color: #1f2937;
+    --nc-grid-header-bg: #111827;
+    --nc-grid-header-text: #e5e7eb;
+    --nc-grid-border-color: #374151;
+    --nc-grid-hover-bg: #374151;
+    --nc-grid-row-hover: #283346;
+    --nc-grid-selection-bg: #1e3a5f;
+    --nc-grid-new-row-bg: #14362b;
+    --nc-grid-error-color: #f87171;
+    --nc-grid-success-color: #4ade80;
+    --nc-grid-warning-color: #fbbf24;
+  }
+}
+
+/* ── Manual dark mode class ── */
+.nc-grid-dark {
+  --nc-grid-primary-color: #60a5fa;
+  --nc-grid-primary-hover: #3b82f6;
+  --nc-grid-primary-bg: #1e3a5f;
+  --nc-grid-text-color: #f3f4f6;
+  --nc-grid-text-secondary: #9ca3af;
+  --nc-grid-bg-color: #1f2937;
+  --nc-grid-header-bg: #111827;
+  --nc-grid-header-text: #e5e7eb;
+  --nc-grid-border-color: #374151;
+  --nc-grid-hover-bg: #374151;
+  --nc-grid-row-hover: #283346;
+  --nc-grid-selection-bg: #1e3a5f;
+  --nc-grid-new-row-bg: #14362b;
+  --nc-grid-error-color: #f87171;
+  --nc-grid-success-color: #4ade80;
+  --nc-grid-warning-color: #fbbf24;
+}
