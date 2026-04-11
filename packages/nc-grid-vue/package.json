@@ -1,0 +1,51 @@
+{
+  "name": "nc-grid-vue",
+  "version": "0.1.0",
+  "description": "Standalone NocoDB-compatible grid/table view component for Vue 3",
+  "type": "module",
+  "main": "./dist/nc-grid-vue.umd.cjs",
+  "module": "./dist/nc-grid-vue.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/nc-grid-vue.js",
+      "require": "./dist/nc-grid-vue.umd.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "build:only": "vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "peerDependencies": {
+    "pinia": "^2.1.0",
+    "vue": "^3.3.0"
+  },
+  "dependencies": {
+    "nocodb-sdk": "^0.301.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "vite-plugin-dts": "^3.9.0",
+    "vue": "^3.4.0",
+    "vue-tsc": "^2.0.0",
+    "pinia": "^2.1.7"
+  },
+  "keywords": [
+    "nocodb",
+    "grid",
+    "table",
+    "vue3",
+    "spreadsheet"
+  ],
+  "license": "MIT"
+}
