@@ -77,7 +77,7 @@ export function useViewFilters() {
     const ops = getOperatorsForType(col.uidt);
     await viewStore.addFilter({
       fk_column_id: col.id,
-      comparison_op: ops[0] || 'eq',
+      comparison_op: (ops[0] || 'eq') as FilterType['comparison_op'],
       logical_op: viewStore.filters.length > 0 ? 'and' : undefined,
       value: '',
     });
@@ -98,7 +98,7 @@ export function useViewFilters() {
     const ops = getOperatorsForType(col?.uidt);
     await viewStore.updateFilter(filterId, {
       fk_column_id: columnId,
-      comparison_op: ops[0] || 'eq',
+      comparison_op: (ops[0] || 'eq') as FilterType['comparison_op'],
       value: '',
     });
   }
@@ -109,7 +109,7 @@ export function useViewFilters() {
   ): Promise<void> {
     const opDef = COMPARISON_OPS[op];
     await viewStore.updateFilter(filterId, {
-      comparison_op: op,
+      comparison_op: op as FilterType['comparison_op'],
       value: opDef?.requiresValue ? undefined : '',
     });
   }
