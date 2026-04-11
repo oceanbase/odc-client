@@ -17,6 +17,9 @@ export interface ResolvedIds {
   viewId?: string;
 }
 
+/** View type constants from NocoDB */
+const VIEW_TYPE_GRID = 3;
+
 export class NcApiClient {
   public api: Api<unknown>;
   private serverUrl: string;
@@ -72,7 +75,7 @@ export class NcApiClient {
     } else {
       // Default to first grid view
       view = (views.list || []).find(
-        (v: ViewType) => v.type === 3 /* Grid */
+        (v: ViewType) => v.type === VIEW_TYPE_GRID
       );
       if (!view) {
         view = (views.list || [])[0];

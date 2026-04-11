@@ -5,6 +5,7 @@ import { ref, computed, watch } from 'vue';
 import { useViewStore } from '../stores/viewStore';
 import { useGridStore } from '../stores/gridStore';
 import type { GroupData } from '../types';
+import { GROUPABLE_COLUMN_TYPES } from '../types';
 import type { ColumnType } from 'nocodb-sdk';
 
 export function useViewGroupBy() {
@@ -26,10 +27,7 @@ export function useViewGroupBy() {
         c.id &&
         !groupedIds.has(c.id) &&
         !c.system &&
-        // Only allow certain types for grouping
-        ['SingleLineText', 'SingleSelect', 'MultiSelect', 'Number', 'Date',
-         'DateTime', 'Checkbox', 'Email', 'URL', 'PhoneNumber', 'Rating',
-         'Year', 'Duration', 'Currency', 'Percent', 'Decimal'].includes(c.uidt || '')
+        (GROUPABLE_COLUMN_TYPES as readonly string[]).includes(c.uidt || '')
     );
   });
 
