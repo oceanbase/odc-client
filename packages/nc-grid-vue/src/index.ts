@@ -7,11 +7,9 @@ import { createPinia } from 'pinia';
 import NcGrid from './components/NcGrid.vue';
 import './styles/variables.css';
 
-// ── Default Export: NcGrid Component ──
-export default NcGrid;
-
 // ── Named Component Export ──
 export { NcGrid };
+export default NcGrid;
 
 // ── API Client ──
 export { NcApiClient, createNcApiClient } from './api/client';
