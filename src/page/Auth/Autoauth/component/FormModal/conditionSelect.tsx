@@ -17,7 +17,7 @@
 import { VariableExpression } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select, Space } from 'antd';
+import { Button, Form, Input, Select, Space, Typography } from 'antd';
 import React, { useState } from 'react';
 
 export const operationOptions = [
@@ -207,6 +207,12 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                     defaultMessage: '添加',
                   }) /*添加*/
                 }
+                <Typography.Text style={{ marginLeft: 8 }} type="secondary">
+                  {formatMessage({
+                    id: 'src.page.Auth.Autoauth.component.FormModal.CD9C93B9',
+                    defaultMessage: '多个匹配条件需同时满足',
+                  })}
+                </Typography.Text>
               </Button>
             </Form.Item>
           </>

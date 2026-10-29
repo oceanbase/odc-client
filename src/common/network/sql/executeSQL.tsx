@@ -17,54 +17,15 @@
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import type { ISqlExecuteResult, IExecutingInfo } from '@/d.ts';
 import { EStatus, ISqlExecuteResultStatus } from '@/d.ts';
-import { IUnauthorizedDBResources } from '@/d.ts/table';
-import { IRule } from '@/d.ts/rule';
 import request from '@/util/request';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
-import { executeSQLPreHandle } from './preHandle';
+import {
+  executeSQLPreHandle,
+  IExecuteSQLParams,
+  IExecuteTaskResult,
+  ISQLExecuteTask,
+} from './preHandle';
 
-export interface IExecuteSQLParams {
-  sql: string;
-  queryLimit?: number;
-  showTableColumnInfo?: boolean;
-  continueExecutionOnError?: boolean;
-  fullLinkTraceEnabled?: boolean;
-  tag?: string;
-  /**
-   * 是否拆分执行，传空的话像等于true
-   */
-  split?: boolean;
-  addROWID?: boolean;
-}
-export interface ISQLExecuteTaskSQL {
-  sqlTuple: {
-    sqlId: string;
-    originalSql: string;
-    executedSql: string;
-  };
-  violatedRules: IRule[];
-}
-export interface ISQLExecuteTask {
-  requestId: string;
-  sqls: ISQLExecuteTaskSQL[];
-  violatedRules: IRule[];
-  unauthorizedDBResources: IUnauthorizedDBResources[];
-}
-
-/**
- * 包含拦截信息和执行结果
- */
-export interface IExecuteTaskResult {
-  hasLintResults?: boolean;
-  invalid: boolean;
-  executeSuccess: boolean;
-  violatedRules: IRule[];
-  executeResult: ISqlExecuteResult[];
-  lintResultSet?: ISQLLintReuslt[];
-  status?: EStatus;
-  unauthorizedDBResources?: IUnauthorizedDBResources[];
-  unauthorizedSql?: string;
-}
 class Task {
   public result: ISqlExecuteResult[] = [];
   public isFinish: boolean;
@@ -218,32 +179,6 @@ export default async function executeSQL(
     data: serverParams,
   });
   const taskInfo: ISQLExecuteTask = res?.data;
-  const rootViolatedRules = taskInfo?.violatedRules?.reduce((pre, cur) => {
-    if (cur?.violation) {
-      return pre.concat({
-        sqlTuple: {
-          executedSql: cur?.violation?.text,
-          offset: cur?.violation?.offset,
-          originalSql: cur?.violation?.text,
-        },
-        violatedRules: [cur],
-      });
-    }
-    return pre;
-  }, []);
-  const unauthorizedResource = taskInfo?.unauthorizedDBResources;
-
-  if (unauthorizedResource?.length) {
-    // 无权限库
-    return {
-      invalid: true,
-      executeSuccess: false,
-      executeResult: [],
-      violatedRules: [],
-      unauthorizedDBResources: unauthorizedResource,
-      unauthorizedSql: (params as IExecuteSQLParams)?.sql || (params as string),
-    };
-  }
 
   const {
     pass,

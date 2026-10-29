@@ -64,6 +64,9 @@ const ExtraConfig: React.FC<IProps> = function () {
     forceRender: true,
     children: <JDBCParamsItem />,
   };
+  if (context?.dataSourceConfig?.disableExtraConfig) {
+    return null;
+  }
   return (
     <Collapse className={styles.main} ghost>
       <Collapse.Panel

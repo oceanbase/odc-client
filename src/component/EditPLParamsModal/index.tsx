@@ -36,7 +36,7 @@ interface IProps extends FormProps {
   onCancel: () => void;
 }
 
-function EditPLParamasModal({
+function EditPLParamsModal({
   visible,
   onCancel,
   onSave,
@@ -223,4 +223,4 @@ function EditPLParamasModal({
   );
 }
 
-export default EditPLParamasModal;
+export default EditPLParamsModal;

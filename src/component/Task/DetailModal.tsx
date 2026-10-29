@@ -21,6 +21,7 @@ import {
   getDataArchiveSubTask,
   getTaskDetail,
   getTaskList,
+  getOperationList,
   getTaskLog,
   getTaskResult,
   getDownloadUrl,
@@ -40,6 +41,7 @@ import type {
   IResponseData,
   ITaskResult,
   TaskDetail,
+  Operation,
   TaskRecord,
 } from '@/d.ts';
 import {
@@ -50,9 +52,6 @@ import {
   TaskStatus,
   TaskType,
 } from '@/d.ts';
-import { ProjectRole } from '@/d.ts/project';
-import userStore from '@/store/login';
-import { isNumber } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { getItems as getDDLAlterItems } from './AlterDdlTask';
 import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
@@ -110,7 +109,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     | CycleTaskDetail<IDataArchiveJobParameters | IDataClearJobParameters>
   >(null);
   const [subTasks, setSubTasks] = useState<IResponseData<ICycleSubTaskRecord>>(null);
-  const [opRecord, setOpRecord] = useState<TaskRecord<any>[]>(null);
+  const [opRecord, setOpRecord] = useState<Operation[]>(null);
   const [detailType, setDetailType] = useState<TaskDetailType>(TaskDetailType.INFO);
   const [log, setLog] = useState<ILog>(null);
   const [result, setResult] = useState<ITaskResult>(null);
@@ -119,7 +118,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const [disabledSubmit, setDisabledSubmit] = useState(true);
   const [approvalVisible, setApprovalVisible] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState(false);
-  const [isTaskProjectOwner, setIsTaskProjectOwner] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string>(undefined);
   const hasFlow =
     !!task?.nodeList?.find(
@@ -139,23 +137,13 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     TaskStatus.WAIT_FOR_CONFIRM,
     TaskStatus.CREATED,
     TaskStatus.APPROVED,
+    TaskStatus.ENABLED,
+    TaskStatus.PAUSE,
+    TaskStatus.CANCELLED,
   ].includes(task?.status);
   const clockRef = useRef(null);
   let taskContent = null;
   let getItems = null;
-
-  const getTaskProjectOwner = async () => {
-    const projectId = task?.projectId;
-    if (!isNumber(projectId) || projectId <= 0) {
-      setIsTaskProjectOwner(false);
-      return;
-    }
-
-    const res = await getProjectWithErrorCatch(projectId);
-    const userRoleList =
-      res?.members?.filter((i) => i.id === userStore?.user?.id)?.map((j) => j.role) || [];
-    setIsTaskProjectOwner(userRoleList.includes(ProjectRole.OWNER));
-  };
 
   const getTask = async function () {
     const data = await getTaskDetail(detailId);
@@ -257,12 +245,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   const getOperationRecord = async function () {
-    const data = await getTaskList({
-      createdByCurrentUser: false,
-      approveByCurrentUser: false,
-      parentInstanceId: task?.id,
-      taskType: TaskType.ALTER_SCHEDULE,
-    });
+    const data = await getOperationList(task?.id);
     setLoading(false);
     setOpRecord(data?.contents);
   };
@@ -353,9 +336,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   useEffect(() => {
     if (visible && detailId && !task) {
       setLoading(true);
-    }
-    if (task) {
-      getTaskProjectOwner();
     }
   }, [task, visible, detailId]);
 
@@ -500,7 +480,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         onApprovalVisible={handleApprovalVisible}
         onDetailVisible={props.onDetailVisible}
         onClose={onClose}
-        isTaskProjectOwner={isTaskProjectOwner}
       />
     ) : null,
   };

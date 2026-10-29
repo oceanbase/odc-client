@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { createTask } from '@/common/network/task';
+import { createTask, getTaskDetail } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import InputBigNumber from '@/component/InputBigNumber';
@@ -22,8 +22,11 @@ import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import {
   EXPORT_TYPE,
+  ExportFormData,
   IExportResultSetFileType,
   IMPORT_ENCODING,
+  IResultSetExportTaskParams,
+  TaskDetail,
   TaskExecStrategy,
   TaskPageScope,
   TaskPageType,
@@ -51,6 +54,7 @@ interface IProps {
 }
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId, theme } = props;
+
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -59,6 +63,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const connection = database?.dataSource;
   const { resultSetExportData } = modalStore;
   const initSql = resultSetExportData?.sql;
+
   const handleSqlChange = (sql: string) => {
     form?.setFieldsValue({
       sql,
@@ -146,12 +151,16 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   useEffect(() => {
     if (resultSetExportData) {
-      const { sql, tableName, databaseId } = resultSetExportData;
+      const { sql, tableName, databaseId, task } = resultSetExportData;
       handleSqlChange(sql);
       form.setFieldsValue({
         tableName,
         databaseId,
       });
+      if (task) {
+        form.setFieldsValue(task.parameters);
+        form.setFieldValue('description', task.description);
+      }
     }
   }, [resultSetExportData]);
 
@@ -177,7 +186,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               formatMessage({
                 id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.Cancel',
                 defaultMessage: '取消',
-              }) /* 
+              }) /*
           取消
           */
             }
@@ -187,7 +196,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               formatMessage({
                 id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.NewlyBuilt',
                 defaultMessage: '新建',
-              }) /* 
+              }) /*
           新建
           */
             }

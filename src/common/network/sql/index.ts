@@ -48,7 +48,7 @@ export async function uploadTableObject(file: File, sessionId: string) {
   const form = new FormData();
   form.append('file', file);
   const res = await request.post(url, {
-    body: form,
+    data: form,
   });
   return res?.data;
 }

@@ -139,6 +139,75 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
           </Descriptions>
         );
       }
+      case ISSOType.SAML: {
+        return (
+          <Descriptions column={1} title="SAML">
+            <Descriptions.Item label="SP Endpoint">
+              {configJson?.ssoParameter?.acsLocation}
+            </Descriptions.Item>
+            <Descriptions.Item label="ACS EntityID">
+              {configJson?.ssoParameter?.acsEntityId}
+            </Descriptions.Item>
+            <Descriptions.Item label="Metadata URI">
+              {configJson?.ssoParameter?.metadataUri || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Provider EntityID">
+              {configJson?.ssoParameter?.providerEntityId || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="URL">
+              {configJson?.ssoParameter?.singlesignon?.url || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.C1180202',
+                defaultMessage: '绑定方法',
+              })}
+            >
+              {configJson?.ssoParameter?.singlesignon?.binding || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.726E9DA6',
+                defaultMessage: '登录请求',
+              })}
+            >
+              {configJson?.ssoParameter?.singlesignon?.signRequest
+                ? formatMessage({
+                    id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.DD9B8A8C',
+                    defaultMessage: '是',
+                  })
+                : formatMessage({
+                    id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.064D2CFE',
+                    defaultMessage: '否',
+                  })}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.C7659EBA',
+                defaultMessage: '签名配置',
+              })}
+            >
+              {configJson?.ssoParameter?.signing?.certificate || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.502C8F41',
+                defaultMessage: '认证配置',
+              })}
+            >
+              {configJson?.ssoParameter?.verification?.certificate || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.2335A558',
+                defaultMessage: '解密配置',
+              })}
+            >
+              {configJson?.ssoParameter?.decryption.certificate || '-'}
+            </Descriptions.Item>
+          </Descriptions>
+        );
+      }
       default: {
         return null;
       }

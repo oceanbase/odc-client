@@ -18,7 +18,7 @@ import { SubTaskType, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import { DatabasePermissionType } from '@/d.ts/database';
 import login from '@/store/login';
 import settingStore from '@/store/setting';
-import { haveOCP, isClient } from '@/util/env';
+import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { flatten } from 'lodash';
 export { TaskTypeMap } from '@/component/Task/component/TaskTable';
@@ -73,6 +73,7 @@ export const isCycleTaskPage = (type: TaskPageType) => {
     TaskPageType.LOGICAL_DATABASE_CHANGE,
   ].includes(type);
 };
+
 interface ITaskGroupLabel {
   groupName: string;
   icon?: React.ReactNode;
@@ -178,13 +179,13 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         {
           value: TaskPageType.MULTIPLE_ASYNC,
           label: formatMessage({ id: 'src.component.Task.1EDC83CC', defaultMessage: '多库变更' }),
-          enabled: !login.isPrivateSpace(),
+          enabled: settingStore.enableMultipleAsyncTask,
           // 数据库变更
         },
         {
           value: TaskPageType.LOGICAL_DATABASE_CHANGE,
           label: formatMessage({ id: 'src.component.Task.A7954C70', defaultMessage: '逻辑库变更' }),
-          enabled: !login.isPrivateSpace() && settingStore?.enableLogicaldatabase
+          enabled: !login.isPrivateSpace() && settingStore?.enableLogicaldatabase,
         },
         {
           value: TaskPageType.SHADOW,
@@ -193,13 +194,13 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
             defaultMessage: '影子表同步',
           }),
           //影子表同步
-          enabled: true,
+          enabled: settingStore.enableShadowTableSync,
         },
         {
           value: TaskPageType.STRUCTURE_COMPARISON,
           label: formatMessage({ id: 'src.component.Task.223677D8', defaultMessage: '结构比对' }), //'结构比对'
 
-          enabled: true,
+          enabled: settingStore.enableStructureCompare,
         },
         {
           value: TaskPageType.ONLINE_SCHEMA_CHANGE,
@@ -226,7 +227,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
             defaultMessage: 'SQL 计划',
           }),
           //SQL 计划
-          enabled: !isClient(),
+          enabled: settingStore.enableSQLPlan,
         },
         {
           value: TaskPageType.PARTITION_PLAN,
@@ -234,7 +235,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
             id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
             defaultMessage: '分区计划',
           }),
-          enabled: !isClient(),
+          enabled: settingStore.enablePartitionPlan,
         },
         {
           value: TaskPageType.DATA_ARCHIVE,
@@ -243,7 +244,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
             defaultMessage: '数据归档',
           }),
           //数据归档
-          enabled: !isClient(),
+          enabled: settingStore.enableDataArchive,
         },
         {
           value: TaskPageType.DATA_DELETE,
@@ -252,7 +253,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
             defaultMessage: '数据清理',
           }),
           //数据清理
-          enabled: !isClient(),
+          enabled: settingStore.enableDataClear,
         },
       ],
     },
@@ -265,7 +266,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         {
           value: TaskPageType.APPLY_DATABASE_PERMISSION,
           label: formatMessage({ id: 'src.component.Task.F2EE6904', defaultMessage: '申请库权限' }), //'申请库权限'
-          enabled: !isClient() && !isPersonal,
+          enabled: settingStore.enableApplyDBAuth,
         },
         {
           value: TaskPageType.APPLY_PROJECT_PERMISSION,
@@ -273,12 +274,15 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
             id: 'odc.src.component.Task.ApplicationProjectPermissions',
             defaultMessage: '申请项目权限',
           }), //'申请项目权限'
-          enabled: !isClient() && !isPersonal,
+          enabled: settingStore.enableApplyProjectAuth,
         },
         {
           value: TaskPageType.APPLY_TABLE_PERMISSION,
-          label: formatMessage({ id: 'src.component.Task.D7396534', defaultMessage: '申请表权限' }),
-          enabled: !isClient() && !isPersonal,
+          label: formatMessage({
+            id: 'src.component.Task.7FE73181',
+            defaultMessage: '申请表/视图权限',
+          }),
+          enabled: settingStore.enableApplyTableAuth,
         },
       ],
     },

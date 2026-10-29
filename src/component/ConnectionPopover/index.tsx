@@ -18,6 +18,7 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { ConnectTypeText } from '@/constant/label';
 import { IConnection } from '@/d.ts';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { IDatabase } from '@/d.ts/database';
 import { ClusterStore } from '@/store/cluster';
 import { isLogicalDatabase } from '@/util/database';
@@ -38,12 +39,71 @@ const ConnectionPopover: React.FC<{
 }> = (props) => {
   const { connection, clusterStore, showType = true, database } = props;
   const isLogicDb = isLogicalDatabase(database);
-
+  const isFileSyetem = isConnectTypeBeFileSystemGroup(connection?.type);
   if (!connection && !isLogicDb) {
     return null;
   }
 
   const DBIcon = getDataSourceStyleByConnectType(connection?.type || database?.connectType)?.icon;
+
+  if (isFileSyetem) {
+    return (
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        style={{ lineHeight: '20px' }}
+      >
+        <Space direction="vertical">
+          <Tooltip title={connection.name}>
+            <div
+              style={{
+                marginBottom: 4,
+                fontFamily: 'PingFangSC-Semibold',
+                color: 'var(--text-color-primary)',
+                fontWeight: 'bold',
+                maxWidth: '240px',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <RiskLevelLabel
+                  content={connection?.environmentName}
+                  color={connection?.environmentStyle?.toLowerCase()}
+                />
+                <Icon
+                  component={DBIcon?.component}
+                  style={{ fontSize: 22, marginRight: 4, color: DBIcon?.color }}
+                />{' '}
+                {connection.name}
+              </div>
+            </div>
+          </Tooltip>
+          {renderConnectionMode()}
+          <div>
+            {formatMessage(
+              {
+                id: 'src.component.ConnectionPopover.986CE021',
+                defaultMessage: '文件URL：{LogicalExpression0}',
+              },
+              { LogicalExpression0: connection.host ?? '-' },
+            )}
+          </div>
+          <div>
+            {formatMessage(
+              {
+                id: 'src.component.ConnectionPopover.4A02B634',
+                defaultMessage: '地域：{LogicalExpression0}',
+              },
+              { LogicalExpression0: connection.region ?? '-' },
+            )}
+          </div>
+        </Space>
+      </div>
+    );
+  }
 
   if (isLogicDb) {
     return (
@@ -115,6 +175,7 @@ const ConnectionPopover: React.FC<{
       </div>
     );
   }
+
   let clusterAndTenant = (
     <div>
       {

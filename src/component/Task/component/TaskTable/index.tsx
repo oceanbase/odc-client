@@ -50,10 +50,14 @@ import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import type { FixedType } from 'rc-table/lib/interface';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../helper';
 import styles from '../../index.less';
 import TaskTools from '../ActionBar';
+import { listProjects } from '@/common/network/project';
+import ProjectContext from '@/page/Project/ProjectContext';
+import { isProjectArchived } from '@/page/Project/helper';
+import { useRequest } from 'ahooks';
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
 
@@ -140,8 +144,8 @@ export const TaskTypeMap = {
     defaultMessage: '申请库权限',
   }), //'申请库权限'
   [TaskType.APPLY_TABLE_PERMISSION]: formatMessage({
-    id: 'src.component.Task.component.TaskTable.3236150E',
-    defaultMessage: '申请表权限',
+    id: 'src.component.Task.component.TaskTable.573E2A28',
+    defaultMessage: '申请表/视图权限',
   }),
   [TaskType.STRUCTURE_COMPARISON]: formatMessage({
     id: 'src.component.Task.component.TaskTable.80E1D16A',
@@ -188,15 +192,33 @@ interface IProps {
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onChange?: (args: ITableLoadOptions) => void;
   onMenuClick?: (type: TaskPageType) => void;
+  disableProjectCol?: boolean;
 }
 const TaskTable: React.FC<IProps> = inject(
   'taskStore',
   'pageStore',
 )(
   observer((props) => {
-    const { taskStore, pageStore, taskTabType, tableRef, taskList, isMultiPage } = props;
+    const {
+      taskStore,
+      pageStore,
+      taskTabType,
+      tableRef,
+      taskList,
+      isMultiPage,
+      disableProjectCol,
+    } = props;
     const { taskPageScope } = taskStore;
     const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
+
+    const { data: projects } = useRequest(listProjects, {
+      defaultParams: [null, 1, 40],
+    });
+    const projectOptions = projects?.contents?.map(({ name, id }) => ({
+      text: name,
+      value: id?.toString(),
+    }));
+
     const currentTask = taskList;
     const [executeTime, setExecuteTime] = useState(() => {
       return JSON.parse(localStorage?.getItem(TASK_EXECUTE_TIME_KEY)) ?? 7;
@@ -209,6 +231,9 @@ const TaskTable: React.FC<IProps> = inject(
     const [hoverInNewTaskMenuBtn, setHoverInNewTaskMenuBtn] = useState(false);
     const [hoverInNewTaskMenu, setHoverInNewTaskMenu] = useState(false);
     const [listParams, setListParams] = useState(null);
+    const [delTaskList, setDelTaskList] = useState<number[]>([]);
+    const { project } = useContext(ProjectContext) || {};
+    const projectArchived = isProjectArchived(project);
     const loadParams = useRef(null);
     const { activePageKey } = pageStore;
     const columns = initColumns(listParams);
@@ -225,6 +250,7 @@ const TaskTable: React.FC<IProps> = inject(
           ...args?.filters,
           executeTime: _executeTime,
         };
+
         setListParams({
           ...args,
           filters,
@@ -242,6 +268,7 @@ const TaskTable: React.FC<IProps> = inject(
     useEffect(() => {
       loadData(loadParams.current);
     }, [executeDate]);
+
     useEffect(() => {
       if (loadParams.current) {
         setLoading(true);
@@ -262,9 +289,11 @@ const TaskTable: React.FC<IProps> = inject(
     }, [executeTime]);
     function initColumns(listParams: { filters: ITableFilter; sorter: ITableSorter }) {
       const { filters, sorter } = listParams ?? {};
+
       const columns = [
         {
           dataIndex: 'id',
+          key: 'id',
           title: formatMessage({
             id: 'odc.component.TaskTable.No',
             defaultMessage: '编号',
@@ -284,7 +313,6 @@ const TaskTable: React.FC<IProps> = inject(
               />
             );
           },
-
           filterIcon: (filtered) => (
             <SearchOutlined
               style={{
@@ -297,10 +325,10 @@ const TaskTable: React.FC<IProps> = inject(
           filters: [],
           ellipsis: true,
           width: 80,
-          fixed: 'left' as FixedType,
         },
         {
           dataIndex: 'type',
+          key: 'type',
           title: formatMessage({
             id: 'odc.component.TaskTable.Type',
             defaultMessage: '类型',
@@ -312,12 +340,31 @@ const TaskTable: React.FC<IProps> = inject(
             return TaskTypeMap[type === TaskType.ALTER_SCHEDULE ? record?.parameters?.type : type];
           },
         },
+        disableProjectCol
+          ? null
+          : {
+              dataIndex: 'project',
+              key: 'projectIdList',
+              title: formatMessage({
+                id: 'src.component.Task.component.TaskTable.CDB513DC',
+                defaultMessage: '项目',
+              }),
+              filters: projectOptions,
+              filteredValue: filters?.projectIdList || null,
+              ellipsis: true,
+              width: 80,
+              render(project) {
+                return project?.name || '-';
+              },
+            },
         {
           dataIndex: 'description',
+          key: 'description',
           title: formatMessage({
             id: 'odc.component.TaskTable.TicketDescription',
             defaultMessage: '工单描述',
           }),
+          width: 100,
           //工单描述
           ellipsis: {
             showTitle: false,
@@ -326,6 +373,7 @@ const TaskTable: React.FC<IProps> = inject(
         },
         {
           dataIndex: 'candidateApprovers',
+          key: 'candidateApprovers',
           title: formatMessage({
             id: 'odc.component.TaskTable.CurrentHandler',
             defaultMessage: '当前处理人',
@@ -333,34 +381,12 @@ const TaskTable: React.FC<IProps> = inject(
           //当前处理人
           ellipsis: true,
           width: 115,
-          filterDropdown: (props) => {
-            return (
-              <SearchFilter
-                {...props}
-                selectedKeys={filters?.candidateApprovers}
-                placeholder={formatMessage({
-                  id: 'odc.component.TaskTable.CurrentHandler',
-                  defaultMessage: '当前处理人',
-                })} /*当前处理人*/
-              />
-            );
-          },
-
-          filterIcon: (filtered) => (
-            <SearchOutlined
-              style={{
-                color: filtered ? 'var(--icon-color-focus)' : undefined,
-              }}
-            />
-          ),
-
-          filteredValue: filters?.candidateApprovers || null,
-          filters: [],
           render: (candidateApprovers) =>
             candidateApprovers?.map((item) => item.name)?.join(', ') || '-',
         },
         {
           dataIndex: 'creator',
+          key: 'creator',
           title: formatMessage({
             id: 'odc.TaskManagePage.component.TaskTable.Created',
             defaultMessage: '创建人',
@@ -419,6 +445,7 @@ const TaskTable: React.FC<IProps> = inject(
         },
         {
           dataIndex: 'status',
+          key: 'status',
           title: formatMessage({
             id: 'odc.component.TaskTable.Status',
             defaultMessage: '状态',
@@ -437,20 +464,24 @@ const TaskTable: React.FC<IProps> = inject(
         },
         {
           dataIndex: 'deal',
+
+          key: 'deal',
           title: formatMessage({
             id: 'odc.components.TaskManagePage.Operation',
             defaultMessage: '操作',
           }),
-          width: 145,
+          width: 150,
           render: (_, record) => (
             <TaskTools
               task={record}
+              delTaskList={delTaskList}
+              setDelTaskList={setDelTaskList}
               onReloadList={props.onReloadList}
               onDetailVisible={props.onDetailVisible}
             />
           ),
         },
-      ];
+      ].filter(Boolean);
 
       return !isClient() ? columns : columns.filter((item) => item.dataIndex !== 'creator');
     }
@@ -525,65 +556,75 @@ const TaskTable: React.FC<IProps> = inject(
       );
     };
 
+    const getOperationContentOption = () => {
+      if (projectArchived) return [];
+      if (isAll) {
+        return [
+          {
+            type: IOperationOptionType.custom,
+            render: () => (
+              <Popover
+                content={newTaskMenu}
+                placement="bottomLeft"
+                open={hoverInNewTaskMenuBtn || hoverInNewTaskMenu}
+              >
+                <Button
+                  type="primary"
+                  onMouseMove={() => setHoverInNewTaskMenu(true)}
+                  onMouseLeave={() => {
+                    setTimeout(() => {
+                      setHoverInNewTaskMenu(false);
+                    }, 500);
+                  }}
+                >
+                  {
+                    formatMessage({
+                      id: 'odc.component.TaskTable.NewWorkOrder',
+                      defaultMessage: '新建工单',
+                    }) /*新建工单*/
+                  }
+
+                  <DownOutlined />
+                </Button>
+              </Popover>
+            ),
+          },
+        ];
+      }
+      return [
+        {
+          type: IOperationOptionType.button,
+          content: [
+            TaskPageType.APPLY_PROJECT_PERMISSION,
+            TaskPageType.APPLY_DATABASE_PERMISSION,
+            TaskPageType.APPLY_TABLE_PERMISSION,
+          ].includes(taskTabType)
+            ? activeTaskLabel
+            : formatMessage(
+                {
+                  id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
+                  defaultMessage: '新建{activeTaskLabel}',
+                },
+                { activeTaskLabel },
+              ),
+          //`新建${activeTaskLabel}`
+          isPrimary: true,
+          onClick: () => {
+            props.onMenuClick(taskTabType);
+          },
+        },
+      ];
+    };
+
     return (
       <CommonTable
         ref={tableRef}
         mode={CommonTableMode.SMALL}
         titleContent={null}
+        enableResize
         operationContent={{
-          options: [
-            isAll
-              ? {
-                  type: IOperationOptionType.custom,
-                  render: () => (
-                    <Popover
-                      content={newTaskMenu}
-                      placement="bottomLeft"
-                      open={hoverInNewTaskMenuBtn || hoverInNewTaskMenu}
-                    >
-                      <Button
-                        type="primary"
-                        onMouseMove={() => setHoverInNewTaskMenu(true)}
-                        onMouseLeave={() => {
-                          setTimeout(() => {
-                            setHoverInNewTaskMenu(false);
-                          }, 500);
-                        }}
-                      >
-                        {
-                          formatMessage({
-                            id: 'odc.component.TaskTable.NewWorkOrder',
-                            defaultMessage: '新建工单',
-                          }) /*新建工单*/
-                        }
-
-                        <DownOutlined />
-                      </Button>
-                    </Popover>
-                  ),
-                }
-              : {
-                  type: IOperationOptionType.button,
-                  content: [
-                    TaskPageType.APPLY_PROJECT_PERMISSION,
-                    TaskPageType.APPLY_DATABASE_PERMISSION,
-                    TaskPageType.APPLY_TABLE_PERMISSION,
-                  ].includes(taskTabType)
-                    ? activeTaskLabel
-                    : formatMessage(
-                        {
-                          id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
-                          defaultMessage: '新建{activeTaskLabel}',
-                        },
-                        { activeTaskLabel },
-                      ),
-                  //`新建${activeTaskLabel}`
-                  isPrimary: true,
-                  onClick: () => {
-                    props.onMenuClick(taskTabType);
-                  },
-                },
-          ],
+          options: getOperationContentOption(),
+          isNeedOccupyElement: projectArchived,
         }}
         filterContent={{
           enabledSearch: false,
@@ -637,9 +678,6 @@ const TaskTable: React.FC<IProps> = inject(
           pagination: {
             current: currentTask?.page?.number,
             total: currentTask?.page?.totalElements,
-          },
-          scroll: {
-            x: 900,
           },
         }}
       />

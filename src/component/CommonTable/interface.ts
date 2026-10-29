@@ -87,6 +87,8 @@ export interface IOperationOption {
 }
 export interface IOperationContent {
   options: IOperationOption[];
+  /** 是否需要占位 */
+  isNeedOccupyElement?: boolean;
 }
 export interface IRowSelecter<T> extends TableRowSelection<T> {
   options: {

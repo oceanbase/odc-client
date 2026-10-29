@@ -22,12 +22,13 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { TaskType } from '@/d.ts';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import Icon from '@ant-design/icons';
+import Icon, { LoadingOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Divider, Select, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import SessionContext from '../context';
 import { DEFALT_WIDTH } from './const';
+import { IDatabase } from '@/d.ts/database';
 import styles from './index.less';
 import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
 
@@ -42,7 +43,10 @@ interface IProps {
   isLogicalDatabase?: boolean;
   datasourceMode?: boolean;
   projectMode?: boolean;
-  onChange?: (value: number) => void;
+  onChange?: (value: number, database?: IDatabase) => void;
+  options?: {
+    hideFileSystem?: boolean;
+  };
 }
 
 const SelectItem: React.FC<IProps> = ({
@@ -60,6 +64,7 @@ const SelectItem: React.FC<IProps> = ({
   isLogicalDatabase = false,
   datasourceMode = false,
   projectMode = isLogicalDatabase,
+  options,
 }) => {
   const [from, setFrom] = useState<'project' | 'datasource'>(
     datasourceMode || projectMode ? (datasourceMode ? 'datasource' : 'project') : 'datasource',
@@ -105,7 +110,10 @@ const SelectItem: React.FC<IProps> = ({
         </Space>
       );
     }
-    if (projectMode && logicalDatabase?.data) {
+    if (projectMode) {
+      if (!logicalDatabase?.data) {
+        return <LoadingOutlined />;
+      }
       const dbIcon = getDataSourceStyleByConnectType(
         logicalDatabase?.data?.dialectType as any,
       )?.dbIcon;
@@ -164,8 +172,13 @@ const SelectItem: React.FC<IProps> = ({
         datasourceMode,
         projectMode,
         isLogicalDatabase,
-        selectSession(databaseId: number, datasourceId: number, from: 'project' | 'datasource') {
-          onChange(datasourceMode ? datasourceId : databaseId);
+        selectSession(
+          databaseId: number,
+          datasourceId: number,
+          from: 'project' | 'datasource',
+          database?: IDatabase,
+        ) {
+          onChange(datasourceMode ? datasourceId : databaseId, database);
         },
       }}
     >
@@ -175,6 +188,8 @@ const SelectItem: React.FC<IProps> = ({
           filters={filters}
           width={width || DEFALT_WIDTH}
           taskType={taskType}
+          options={options}
+          disabled={disabled}
         >
           <Select
             disabled={disabled}

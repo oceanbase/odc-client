@@ -330,7 +330,7 @@ const CommonTable: <RecordType extends object = any>(
   function getFilteredColumns() {
     return columns.map((item) => {
       if (item?.filteredValue) {
-        item.filteredValue = filters[(item as any).dataIndex];
+        item.filteredValue = filters[(item as any).key || (item as any).dataIndex];
       }
       return item;
     });

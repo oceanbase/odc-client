@@ -15,9 +15,9 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
-import { ExportFormData } from '@/d.ts';
+import { EXPORT_CONTENT, ExportFormData, TaskDetail } from '@/d.ts';
 // compatible
 import { Form, message } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -29,6 +29,7 @@ import { useRequest } from 'ahooks';
 import { useForm } from 'antd/es/form/Form';
 import ConfigPanel from './ConfigPanel';
 import ObjSelecterPanel from './ObjSelecterPanel';
+import { getTaskDetail } from '@/common/network/task';
 
 export enum FormType {
   ObjSelecter,
@@ -47,6 +48,7 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
   observer(
     forwardRef(function (props, ref) {
       const { formData, formType, onFormValueChange, projectId } = props;
+      const { taskId } = formData;
       const [form] = useForm<ExportFormData>();
       const databaseId = Form.useWatch('databaseId', form);
       const { data, run } = useRequest(getDatabase, {
@@ -83,6 +85,55 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
         }
         callback(false, values);
       }
+
+      useEffect(() => {
+        getTaskDetailFoTaskId();
+      }, [taskId]);
+
+      function getExportContent(transferDDL: boolean, transferData: boolean) {
+        if (transferDDL && transferData) {
+          return EXPORT_CONTENT.DATA_AND_STRUCT;
+        }
+        if (transferData) {
+          return EXPORT_CONTENT.DATA;
+        }
+        if (transferDDL) {
+          return EXPORT_CONTENT.STRUCT;
+        }
+        return EXPORT_CONTENT.DATA_AND_STRUCT;
+      }
+
+      const getTaskDetailFoTaskId = async () => {
+        if (taskId) {
+          const detailRes = (await getTaskDetail(taskId)) as TaskDetail<ExportFormData>;
+          const exportContent = getExportContent(
+            detailRes?.parameters?.transferDDL,
+            detailRes?.parameters?.transferData,
+          );
+          const withColumnTitle = !detailRes?.parameters?.csvConfig?.skipHeader;
+          const exportFileMaxSize =
+            detailRes?.parameters?.exportFileMaxSize === -1
+              ? formatMessage({
+                  id: 'odc.components.ExportDrawer.Unlimited',
+                  defaultMessage: '无限制',
+                })
+              : detailRes?.parameters?.exportFileMaxSize;
+          onFormValueChange('exportDbObjects', {
+            ...detailRes?.parameters,
+            ...detailRes?.parameters?.csvConfig,
+            exportContent,
+            exportFileMaxSize,
+            withColumnTitle,
+          });
+          form.setFieldsValue({
+            ...detailRes?.parameters,
+            exportContent,
+            exportFileMaxSize,
+            ...detailRes?.parameters?.csvConfig,
+            withColumnTitle,
+          });
+        }
+      };
 
       useImperativeHandle(ref, () => {
         return {
