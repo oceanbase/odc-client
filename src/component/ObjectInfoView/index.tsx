@@ -15,13 +15,14 @@
  */
 
 import React from 'react';
-
+import { Row, Col } from 'antd';
 import styles from './index.less';
 
 interface IProps {
   data: {
     label: string;
     content: React.ReactNode;
+    span?: number;
   }[];
 }
 
@@ -29,14 +30,21 @@ const ObjectInfoView: React.FC<IProps> = function (props) {
   const { data } = props;
   return (
     <div className={styles.textFrom}>
-      {data?.map(({ label, content }) => {
-        return (
-          <div className={styles.textFromLine}>
-            <span className={styles.textFromLabel}>{label}:</span>
-            <span className={styles.textFromContent}>{content}</span>
-          </div>
-        );
-      })}
+      <Row gutter={16}>
+        {data?.map(({ label, content, span = 24 }) => {
+          return (
+            <Col span={span}>
+              <div className={styles.textFromLine}>
+                <span className={styles.textFromLabel}>
+                  {label}
+                  {label && ':'}
+                </span>
+                <span className={styles.textFromContent}>{content}</span>
+              </div>
+            </Col>
+          );
+        })}
+      </Row>
     </div>
   );
 };

@@ -32,6 +32,7 @@ const SessionParamDrawer: React.FC<IProps> = function ({ visible, sessionId, onC
       title={
         formatMessage({
           id: 'odc.components.SessionParamPage.SessionParamDrawer.SessionVariables',
+          defaultMessage: '会话变量',
         }) //会话变量
       }
       open={visible}

@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-import PageContainer, { TitleType } from '@/component/PageContainer';
-import { formatMessage } from '@/util/intl';
-import { EllipsisOutlined } from '@ant-design/icons';
-import { Link, useNavigate } from '@umijs/max';
-import { Button, Dropdown, message, Modal, Space } from 'antd';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { history, useParams } from '@umijs/max';
-import Info from './Info';
-import Recycle from './Recycle';
-import Session from './Session';
+import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
 import {
   deleteConnection,
   getConnectionDetail,
   getConnectionList,
 } from '@/common/network/connection';
+import PageContainer, { TitleType } from '@/component/PageContainer';
 import { actionTypes } from '@/d.ts';
-import { IDataSourceType, IDatasource } from '@/d.ts/datasource';
+import { IDatasource } from '@/d.ts/datasource';
 import { IPageType } from '@/d.ts/_index';
 import setting from '@/store/setting';
+import { formatMessage } from '@/util/intl';
+import { EllipsisOutlined } from '@ant-design/icons';
+import { history, Link, useNavigate, useParams } from '@umijs/max';
 import { useRequest } from 'ahooks';
+import { Button, Dropdown, message, Modal, Space } from 'antd';
 import { isNumber } from 'lodash';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Info from './Info';
 import OBClientPage from './OBClient';
-import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
+import Recycle from './Recycle';
+import Session from './Session';
 const ExtraContent = ({
   cid,
   name,
@@ -55,6 +54,7 @@ const ExtraContent = ({
             {
               label: formatMessage({
                 id: 'odc.page.Datasource.Delete',
+                defaultMessage: '删除',
               }),
               //删除
               key: 'delete',
@@ -63,14 +63,14 @@ const ExtraContent = ({
                   title: formatMessage(
                     {
                       id: 'odc.page.Datasource.ConfirmToDeleteName',
+                      defaultMessage: '是否确认删除 {name}',
                     },
-                    {
-                      name: name,
-                    },
+                    { name },
                   ),
                   //`是否确认删除 ${name}`
                   content: formatMessage({
                     id: 'odc.src.page.Datasource.AfterDeletingYouWill',
+                    defaultMessage: '删除后将无法访问该数据源',
                   }), //'删除后将无法访问该数据源'
                   async onOk() {
                     const isSuccess = await deleteConnection(cid?.toString());
@@ -78,6 +78,7 @@ const ExtraContent = ({
                       message.success(
                         formatMessage({
                           id: 'odc.page.Datasource.DeletedSuccessfully',
+                          defaultMessage: '删除成功',
                         }), //删除成功
                       );
 
@@ -114,6 +115,7 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.page.Datasource.Database',
+      defaultMessage: '数据库',
     }),
     //数据库
     key: IPageType.Datasource_info,
@@ -121,6 +123,7 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.page.Datasource.Session',
+      defaultMessage: '会话',
     }),
     //会话
     key: IPageType.Datasource_session,
@@ -134,6 +137,7 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.page.Datasource.RecycleBin',
+      defaultMessage: '回收站',
     }),
     //回收站
     key: IPageType.Datasource_recycle,
@@ -147,6 +151,7 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.page.Datasource.CommandLineWindow',
+      defaultMessage: '命令行窗口',
     }),
     //命令行窗口
     key: IPageType.Datasource_obclient,
@@ -159,6 +164,7 @@ const tabs = [
     },
   },
 ];
+
 const Index: React.FC<IProps> = function () {
   const params = useParams<{
     id: string;
@@ -242,6 +248,7 @@ const Index: React.FC<IProps> = function () {
           {
             formatMessage({
               id: 'odc.page.Datasource.ViewAllDataSources',
+              defaultMessage: '查看所有数据源',
             }) /*查看所有数据源*/
           }
         </Link>

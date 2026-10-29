@@ -17,11 +17,11 @@
 import { uploadSSLFileUrl } from '@/common/network/other';
 import { formatMessage } from '@/util/intl';
 import { UploadOutlined } from '@ant-design/icons';
+import { getLocale } from '@umijs/max';
 import { Button, Upload } from 'antd';
 import { UploadFile } from 'antd/es/upload/interface';
 import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
-import { getLocale } from '@umijs/max';
 
 interface IProps {
   label?: string;
@@ -32,6 +32,7 @@ interface IProps {
 const SingleUpload: React.FC<IProps> = function ({
   label = formatMessage({
     id: 'odc.AddConnectionForm.SSLItem.SingleUploadFile.UploadAPemFile',
+    defaultMessage: '上传 PEM 文件',
   }), //上传 PEM 文件
   value,
   onChange,
@@ -50,6 +51,7 @@ const SingleUpload: React.FC<IProps> = function ({
         uid: value,
         name: formatMessage({
           id: 'odc.AddConnectionForm.SSLItem.SingleUploadFile.UploadedFile',
+          defaultMessage: '已上传文件',
         }), //已上传文件
       });
     } else {

@@ -1,20 +1,36 @@
-import { IConnection, IConnectionStatus } from '@/d.ts';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { listDatabases } from '@/common/network/database';
+import { IConnection, IConnectionStatus, TaskType } from '@/d.ts';
+import { DatabasePermissionType } from '@/d.ts/database';
+import datasourceStatus from '@/store/datasourceStatus';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { Button, Divider, Form, Space, Timeline, Tooltip } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
 import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import { Button, Divider, Form, Space, Timeline, Tooltip } from 'antd';
+import { observer } from 'mobx-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { listDatabases } from '@/common/network/database';
-import { useRequest } from 'ahooks';
-import _ from 'lodash';
-import InnerSelecter, { DatabaseOption } from './InnerSelecter';
-import { DatabasePermissionType } from '@/d.ts/database';
-import { SelectTemplate, CreateTemplate } from '../components/Template';
-import datasourceStatus from '@/store/datasourceStatus';
+import { CreateTemplate, SelectTemplate } from '../components/Template';
 import styles from './index.less';
-import { observer } from 'mobx-react';
+import InnerSelecter, { DatabaseOption } from './InnerSelecter';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 export const checkDbExpiredByDataSourceStatus = (status: IConnectionStatus) => {
   switch (status) {
@@ -39,6 +55,7 @@ export const DatabaseQueueSelect: React.FC<{
   const form = Form.useFormInstance();
   const statusMap = datasourceStatus.statusMap;
   const projectId = Form.useWatch('projectId', form);
+  const orderedDatabaseIds = Form.useWatch(['parameters', 'orderedDatabaseIds'], form);
   const [databaseIdMap, setDatabaseIdMap] = useState<Map<number, boolean>>(new Map());
   const [_databaseOptions, setDatabaseOptions] = useState<DatabaseOption[]>([]);
   const {
@@ -63,21 +80,33 @@ export const DatabaseQueueSelect: React.FC<{
     if (databaseList?.contents?.length) {
       setDefaultDatasource(databaseList?.contents?.[0]?.dataSource);
       datasourceStatus.asyncUpdateStatus([
-        ...new Set(databaseList?.contents?.map((item) => item.dataSource?.id)),
+        ...new Set(
+          databaseList?.contents
+            ?.filter((item) => item.type !== 'LOGICAL')
+            ?.map((item) => item?.dataSource?.id),
+        ),
       ]);
       setDatabaseOptions(
-        databaseList?.contents?.map((item) => {
-          const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
-          return {
-            label: item?.name,
-            value: item?.id,
-            environment: item?.environment,
-            dataSource: item?.dataSource,
-            existed: item?.existed,
-            unauthorized: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
-            expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
-          };
-        }),
+        databaseList?.contents
+          ?.filter((i) => {
+            const config = getDataSourceModeConfig(i?.dataSource?.type);
+            return config?.features?.task?.includes(TaskType.MULTIPLE_ASYNC);
+          })
+          .map((item) => {
+            const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
+            return {
+              label: item?.name,
+              value: item?.id,
+              environment: item?.environment,
+              dataSource: item?.dataSource,
+              existed: item?.existed,
+              unauthorized: !item?.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.CHANGE,
+              ),
+              expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
+              connectType: item?.connectType,
+            };
+          }),
       );
     }
     databaseList?.contents?.forEach((db) => {
@@ -87,13 +116,27 @@ export const DatabaseQueueSelect: React.FC<{
   };
 
   const databaseOptions = useMemo(() => {
-    return _databaseOptions?.map((item) => {
-      return {
-        ...item,
-        expired: checkDbExpiredByDataSourceStatus(statusMap.get(item?.dataSource?.id)?.status),
-      };
-    });
-  }, [statusMap, _databaseOptions]);
+    const selectedDbId = orderedDatabaseIds?.flat()?.filter(Boolean)?.[0];
+    const selectedDbInfo = _databaseOptions?.find((_db) => _db.value === selectedDbId);
+    if (selectedDbId) {
+      // 这里加同数据源类型的限制
+      return _databaseOptions
+        ?.filter((_db) => _db?.connectType === selectedDbInfo?.connectType)
+        ?.map((item) => {
+          return {
+            ...item,
+            expired: checkDbExpiredByDataSourceStatus(statusMap.get(item?.dataSource?.id)?.status),
+          };
+        });
+    } else {
+      return _databaseOptions?.map((item) => {
+        return {
+          ...item,
+          expired: checkDbExpiredByDataSourceStatus(statusMap.get(item?.dataSource?.id)?.status),
+        };
+      });
+    }
+  }, [statusMap, _databaseOptions, orderedDatabaseIds]);
 
   useEffect(() => {
     if (multipleDatabaseChangeOpen && projectId) {
@@ -135,7 +178,7 @@ export const DatabaseQueueSelect: React.FC<{
                               {formatMessage(
                                 {
                                   id: 'src.component.Task.MutipleAsyncTask.CreateModal.6E409607',
-                                  defaultMessage: '执行节点${index + 1}',
+                                  defaultMessage: '执行节点{ BinaryExpression0 }',
                                 },
                                 { BinaryExpression0: index + 1 },
                               )}

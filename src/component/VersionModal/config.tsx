@@ -28,13 +28,17 @@ function getVersionModalImg(fileName: string) {
 
 const webVersionInfo: VersionMenuType[] = [
   {
-    title: formatMessage({ id: 'odc.component.VersionModal.config.EfficientDevelopment' }), //高效开发
+    title: formatMessage({
+      id: 'odc.component.VersionModal.config.EfficientDevelopment',
+      defaultMessage: '高效开发',
+    }), //高效开发
     content: (
       <div>
         <Paragraph>
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.OdcProvidesRichAndEasy',
+              defaultMessage: 'ODC 提供了丰富且易用的工具能力，帮助您快速进行数据库开发。',
             }) /*ODC 提供了丰富且易用的工具能力，帮助您快速进行数据库开发。*/
           }
         </Paragraph>
@@ -42,17 +46,21 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.OdcProvidesDatabaseObjectManagement',
+              defaultMessage:
+                'ODC 提供了数据库对象管理、数据导入导出、SQL 编辑与执行、PL\n          编译与调试、数据生成、执行分析、数据库运维等工具能力。',
             }) /*ODC 提供了数据库对象管理、数据导入导出、SQL 编辑与执行、PL
-          编译与调试、数据生成、执行分析、数据库运维等工具能力。*/
+      编译与调试、数据生成、执行分析、数据库运维等工具能力。*/
           }
         </Paragraph>
         <Paragraph>
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.AtTheSameTimeIn',
+              defaultMessage:
+                '同时为了提高您的使用体验，也做了如下功能设计：支持拖拽对象生成 SQL 语句、支持类 EXCEL\n          的结果集编辑交互、在编辑 SQL 时支持语法高亮和 SQL\n          自动补全、支持代码片段的定义与引用以及支持快速生成测试数据等。',
             }) /*同时为了提高您的使用体验，也做了如下功能设计：支持拖拽对象生成 SQL 语句、支持类 EXCEL
-          的结果集编辑交互、在编辑 SQL 时支持语法高亮和 SQL
-          自动补全、支持代码片段的定义与引用以及支持快速生成测试数据等。*/
+      的结果集编辑交互、在编辑 SQL 时支持语法高亮和 SQL
+      自动补全、支持代码片段的定义与引用以及支持快速生成测试数据等。*/
           }
         </Paragraph>
       </div>
@@ -62,13 +70,17 @@ const webVersionInfo: VersionMenuType[] = [
   },
 
   {
-    title: formatMessage({ id: 'odc.component.VersionModal.config.ChangeRiskControl' }), //变更风险管控
+    title: formatMessage({
+      id: 'odc.component.VersionModal.config.ChangeRiskControl',
+      defaultMessage: '变更风险管控',
+    }), //变更风险管控
     content: (
       <div>
         <Paragraph>
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.OdcProvidesACompleteSolution',
+              defaultMessage: 'ODC 为生产安全场景提供了完备的解决方案。',
             }) /*ODC 为生产安全场景提供了完备的解决方案。*/
           }
         </Paragraph>
@@ -76,6 +88,8 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.FirstTheDatabaseAddressAnd',
+              defaultMessage:
+                '首先数据库地址和账号密码信息由 DBA 录入，并授权给开发者访问，避免账号密码泄漏。',
             }) /*首先数据库地址和账号密码信息由 DBA 录入，并授权给开发者访问，避免账号密码泄漏。*/
           }
         </Paragraph>
@@ -83,9 +97,11 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.SecondlyOdcProvidesPerfectDatabase',
+              defaultMessage:
+                '其次 ODC 提供了完善的数据库开发规范，您可以根据环境差异灵活地定义 SQL 检查规则和 SQL\n          窗口拦截规则。根据不同的风险等级，对您的操作进行建议、上升至 DBA\n          审批或拦截，控制变更风险保障生产系统稳定运行。',
             }) /*其次 ODC 提供了完善的数据库开发规范，您可以根据环境差异灵活地定义 SQL 检查规则和 SQL
-          窗口拦截规则。根据不同的风险等级，对您的操作进行建议、上升至 DBA
-          审批或拦截，控制变更风险保障生产系统稳定运行。*/
+      窗口拦截规则。根据不同的风险等级，对您的操作进行建议、上升至 DBA
+      审批或拦截，控制变更风险保障生产系统稳定运行。*/
           }
         </Paragraph>
       </div>
@@ -95,13 +111,17 @@ const webVersionInfo: VersionMenuType[] = [
   },
 
   {
-    title: formatMessage({ id: 'odc.component.VersionModal.config.SecurityCompliance' }), //安全合规
+    title: formatMessage({
+      id: 'odc.component.VersionModal.config.SecurityCompliance',
+      defaultMessage: '安全合规',
+    }), //安全合规
     content: (
       <div>
         <Paragraph>
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.OdcProvidesDataDesensitizationAnd',
+              defaultMessage: 'ODC 提供了数据脱敏和细粒度审计能力保障数据安全和合规。',
             }) /*ODC 提供了数据脱敏和细粒度审计能力保障数据安全和合规。*/
           }
         </Paragraph>
@@ -109,16 +129,20 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.OdcHasBuiltInPerfect',
+              defaultMessage:
+                'ODC 内置了完善的脱敏算法和灵活的识别规则，可以保证您在 SQL\n          窗口访问、数据出库等场景下敏感数据的安全，满足隐私数据安全合规的诉求。',
             }) /*ODC 内置了完善的脱敏算法和灵活的识别规则，可以保证您在 SQL
-          窗口访问、数据出库等场景下敏感数据的安全，满足隐私数据安全合规的诉求。*/
+      窗口访问、数据出库等场景下敏感数据的安全，满足隐私数据安全合规的诉求。*/
           }
         </Paragraph>
         <Paragraph>
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.AtTheSameTimeOdc',
+              defaultMessage:
+                '同时 ODC 还提供了操作审计和 SQL 审计的能力。您在 ODC\n          上所有的功能操作都会被同步到操作记录中心，此外在 ODC 上发起的所有 SQL 请求也会被记录。',
             }) /*同时 ODC 还提供了操作审计和 SQL 审计的能力。您在 ODC
-          上所有的功能操作都会被同步到操作记录中心，此外在 ODC 上发起的所有 SQL 请求也会被记录。*/
+      上所有的功能操作都会被同步到操作记录中心，此外在 ODC 上发起的所有 SQL 请求也会被记录。*/
           }
         </Paragraph>
       </div>
@@ -128,21 +152,28 @@ const webVersionInfo: VersionMenuType[] = [
   },
 
   {
-    title: formatMessage({ id: 'odc.component.VersionModal.config.DataLifecycleManagement' }), //数据生命周期管理
+    title: formatMessage({
+      id: 'odc.component.VersionModal.config.DataLifecycleManagement',
+      defaultMessage: '数据生命周期管理',
+    }), //数据生命周期管理
     content: (
       <div>
         <Paragraph>
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.OdcProvidesDataLifecycleManagement',
+              defaultMessage:
+                'ODC 提供了数据生命周期管理能力来为您提供数据处理解决方案。ODC\n          的数据处理能力包括数据清理、数据归档和分区计划。',
             }) /*ODC 提供了数据生命周期管理能力来为您提供数据处理解决方案。ODC
-          的数据处理能力包括数据清理、数据归档和分区计划。*/
+      的数据处理能力包括数据清理、数据归档和分区计划。*/
           }
         </Paragraph>
         <Paragraph>
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.ThroughDataCleaningYouCan',
+              defaultMessage:
+                '通过数据清理，您可以定期清理掉业务表中的过期数据，实现在线库的瘦身。',
             }) /*通过数据清理，您可以定期清理掉业务表中的过期数据，实现在线库的瘦身。*/
           }
         </Paragraph>
@@ -150,6 +181,7 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.ThroughDataArchivingYouCan',
+              defaultMessage: '通过数据归档，您可以配置灵活的归档条件，实现冷热数据分离。',
             }) /*通过数据归档，您可以配置灵活的归档条件，实现冷热数据分离。*/
           }
         </Paragraph>
@@ -157,6 +189,8 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.PartitionPlanningAllowsYouTo',
+              defaultMessage:
+                '通过分区计划，您可以按需求定期新增和删除分区，实现 RANGE 分区自动维护。',
             }) /*通过分区计划，您可以按需求定期新增和删除分区，实现 RANGE 分区自动维护。*/
           }
         </Paragraph>
@@ -167,13 +201,17 @@ const webVersionInfo: VersionMenuType[] = [
   },
 
   {
-    title: formatMessage({ id: 'odc.component.VersionModal.config.OpenIntegration' }), //开放集成
+    title: formatMessage({
+      id: 'odc.component.VersionModal.config.OpenIntegration',
+      defaultMessage: '开放集成',
+    }), //开放集成
     content: (
       <div>
         <Paragraph>
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.OdcSupportsSingleSignOn',
+              defaultMessage: 'ODC 支持单点登录、工单审批集成、SQL 审核集成及数据库堡垒机集成。',
             }) /*ODC 支持单点登录、工单审批集成、SQL 审核集成及数据库堡垒机集成。*/
           }
         </Paragraph>
@@ -181,6 +219,7 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.SingleSignOnSsoSupports',
+              defaultMessage: '单点登录（SSO）支持 OAuth2、OIDC 协议。',
             }) /*单点登录（SSO）支持 OAuth2、OIDC 协议。*/
           }
         </Paragraph>
@@ -188,6 +227,7 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.TicketApprovalSupportsBpmsAnd',
+              defaultMessage: '工单审批支持 BPMS 和自定义审批系统。',
             }) /*工单审批支持 BPMS 和自定义审批系统。*/
           }
         </Paragraph>
@@ -195,6 +235,8 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.SqlAuditAllowsYouTo',
+              defaultMessage:
+                'SQL 审核支持您使用企业已有的 SQL 审核平台对 ODC 内执行的 SQL 语句进行审核。',
             }) /*SQL 审核支持您使用企业已有的 SQL 审核平台对 ODC 内执行的 SQL 语句进行审核。*/
           }
         </Paragraph>
@@ -202,6 +244,7 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.DatabaseBastionMachineIntegrationSupports',
+              defaultMessage: '数据库堡垒机集成支持票据的自动登录和数据库账密的自动填写等能力。',
             }) /*数据库堡垒机集成支持票据的自动登录和数据库账密的自动填写等能力。*/
           }
         </Paragraph>
@@ -212,13 +255,17 @@ const webVersionInfo: VersionMenuType[] = [
   },
 
   {
-    title: formatMessage({ id: 'odc.component.VersionModal.config.CollaborationEfficiency' }), //协同效率
+    title: formatMessage({
+      id: 'odc.component.VersionModal.config.CollaborationEfficiency',
+      defaultMessage: '协同效率',
+    }), //协同效率
     content: (
       <div>
         <Paragraph>
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.OdcProvidesASeriesOf',
+              defaultMessage: 'ODC 提供了一系列功能、设计理念来帮助提升您的效率。',
             }) /*ODC 提供了一系列功能、设计理念来帮助提升您的效率。*/
           }
         </Paragraph>
@@ -226,6 +273,7 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.ForExampleYouCanUse',
+              defaultMessage: '比如您可以通过批量导入的能力避免繁重的手动单条录入。',
             }) /*比如您可以通过批量导入的能力避免繁重的手动单条录入。*/
           }
         </Paragraph>
@@ -233,15 +281,19 @@ const webVersionInfo: VersionMenuType[] = [
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.ForExampleTheProjectOwner',
+              defaultMessage:
+                '又比如项目 OWNER 负责管理项目所有数据库和成员、项目 DBA 负责管理项目所有数据库、项目\n          DEVELOPER\n          专注访问项目所有数据库，不需要为协作者配置复杂的权限，只需把协作者加入到指定的项目中即可实现团队协作模式。',
             }) /*又比如项目 OWNER 负责管理项目所有数据库和成员、项目 DBA 负责管理项目所有数据库、项目
-          DEVELOPER
-          专注访问项目所有数据库，不需要为协作者配置复杂的权限，只需把协作者加入到指定的项目中即可实现团队协作模式。*/
+      DEVELOPER
+      专注访问项目所有数据库，不需要为协作者配置复杂的权限，只需把协作者加入到指定的项目中即可实现团队协作模式。*/
           }
         </Paragraph>
         <Paragraph>
           {
             formatMessage({
               id: 'odc.component.VersionModal.config.ForExampleYouCanConfigure',
+              defaultMessage:
+                '再比如通过配置自动授权规则，实现了根据访问者是否触发授权条件来自动给访问者授权。',
             }) /*再比如通过配置自动授权规则，实现了根据访问者是否触发授权条件来自动给访问者授权。*/
           }
         </Paragraph>

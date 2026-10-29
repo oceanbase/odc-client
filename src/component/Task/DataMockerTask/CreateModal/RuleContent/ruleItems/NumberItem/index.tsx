@@ -79,7 +79,7 @@ const NumberItem: React.FC<INumberItemProps> = forwardRef<FormInstance, INumberI
         case NumberRuleType.NORMAL: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.NumberItem.Value' }), // 值
+              formatMessage({ id: 'odc.ruleItems.NumberItem.Value', defaultMessage: '值' }), // 值
               value?.['genParams']?.fixNum,
             ],
           ]);
@@ -88,20 +88,29 @@ const NumberItem: React.FC<INumberItemProps> = forwardRef<FormInstance, INumberI
         case NumberRuleType.ORDER: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.NumberItem.StartValue' }), // 起始值
+              formatMessage({
+                id: 'odc.ruleItems.NumberItem.StartValue',
+                defaultMessage: '起始值',
+              }), // 起始值
               value?.['lowValue'],
             ],
+
             [
-              formatMessage({ id: 'odc.ruleItems.NumberItem.StepSize' }), // 步长
+              formatMessage({ id: 'odc.ruleItems.NumberItem.StepSize', defaultMessage: '步长' }), // 步长
               value?.['genParams']?.step,
             ],
+
             [
-              formatMessage({ id: 'odc.ruleItems.NumberItem.SortingMethod' }), // 排序方式
+              formatMessage({
+                id: 'odc.ruleItems.NumberItem.SortingMethod',
+                defaultMessage: '排序方式',
+              }), // 排序方式
               value?.['order'] === 'asc'
                 ? formatMessage({
                     id: 'odc.ruleItems.NumberItem.PositiveSequence',
+                    defaultMessage: '正序',
                   }) // 正序
-                : formatMessage({ id: 'odc.ruleItems.NumberItem.Reverse' }), // 倒序
+                : formatMessage({ id: 'odc.ruleItems.NumberItem.Reverse', defaultMessage: '倒序' }), // 倒序
             ],
           ]);
           break;
@@ -109,7 +118,7 @@ const NumberItem: React.FC<INumberItemProps> = forwardRef<FormInstance, INumberI
         case NumberRuleType.RANDOM: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.NumberItem.Interval' }), // 区间
+              formatMessage({ id: 'odc.ruleItems.NumberItem.Interval', defaultMessage: '区间' }), // 区间
               value?.['range'],
             ],
           ]);
@@ -134,6 +143,7 @@ const NumberItem: React.FC<INumberItemProps> = forwardRef<FormInstance, INumberI
                 isInt={isInt}
                 addonBefore={formatMessage({
                   id: 'odc.ruleItems.NumberItem.Value',
+                  defaultMessage: '值',
                 })} /* 值 */
               />
             </Form.Item>
@@ -149,6 +159,7 @@ const NumberItem: React.FC<INumberItemProps> = forwardRef<FormInstance, INumberI
                   isInt={isInt}
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.NumberItem.StartValue',
+                    defaultMessage: '起始值',
                   })} /* 起始值 */
                 />
               </Form.Item>
@@ -162,6 +173,7 @@ const NumberItem: React.FC<INumberItemProps> = forwardRef<FormInstance, INumberI
                   isInt
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.NumberItem.StepSize',
+                    defaultMessage: '步长',
                   })} /* 步长 */
                 />
               </Form.Item>
@@ -169,6 +181,7 @@ const NumberItem: React.FC<INumberItemProps> = forwardRef<FormInstance, INumberI
                 <WrapItemWithTitle
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.NumberItem.Sort',
+                    defaultMessage: '排序',
                   })} /* 排序 */
                 >
                   <Select>
@@ -176,6 +189,7 @@ const NumberItem: React.FC<INumberItemProps> = forwardRef<FormInstance, INumberI
                       {
                         formatMessage({
                           id: 'odc.ruleItems.NumberItem.PositiveSequence',
+                          defaultMessage: '正序',
                         }) /* 正序 */
                       }
                     </Option>
@@ -183,6 +197,7 @@ const NumberItem: React.FC<INumberItemProps> = forwardRef<FormInstance, INumberI
                       {
                         formatMessage({
                           id: 'odc.ruleItems.NumberItem.Reverse',
+                          defaultMessage: '倒序',
                         }) /* 倒序 */
                       }
                     </Option>

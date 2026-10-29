@@ -17,18 +17,17 @@
 import { clearModalConfirm } from '@/component/ErrorConfirmModal';
 import OBLogin from '@/component/Login';
 import { SPACE_REGEX } from '@/constant';
-import { ESSOLgoinType, ODCErrorsCode } from '@/d.ts';
+import { ODCErrorsCode } from '@/d.ts';
+import { toDefaultProjectPage } from '@/service/projectHistory';
 import type { UserStore } from '@/store/login';
 import loginStore from '@/store/login';
 import type { SettingStore } from '@/store/setting';
 import { formatMessage, getLocalImg } from '@/util/intl';
 import logger from '@/util/logger';
-import { useLocation } from '@umijs/max';
+import { history, useLocation } from '@umijs/max';
 import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
-import { history } from '@umijs/max';
-import { toDefaultProjectPage } from '@/service/projectHistory';
 
 const Login: React.FC<{
   userStore: UserStore;
@@ -83,7 +82,7 @@ const Login: React.FC<{
     try {
       const { success, message: msg, errCode } = await userStore.login(params);
       if (success) {
-        message.success(formatMessage({ id: 'login.login.success' }));
+        message.success(formatMessage({ id: 'login.login.success', defaultMessage: '登录成功' }));
         await userStore.getOrganizations();
         const isSuccess = await userStore.switchCurrentOrganization();
         if (!isSuccess) {
@@ -118,7 +117,9 @@ const Login: React.FC<{
       }
     } catch (e) {
       console.trace(e);
-      setErrMsg(formatMessage({ id: 'odc.page.Login.NetworkException' }));
+      setErrMsg(
+        formatMessage({ id: 'odc.page.Login.NetworkException', defaultMessage: '网络异常' }),
+      );
       setLoginLoading(false);
       reloadAuthCode();
     }
@@ -134,6 +135,7 @@ const Login: React.FC<{
       status = {
         errMsg: formatMessage({
           id: 'odc.page.Login.ThePasswordCannotContainSpaces',
+          defaultMessage: '密码不能包含空格',
         }), //密码不能包含空格
         loginLoading: false,
       };
@@ -153,7 +155,7 @@ const Login: React.FC<{
 
       if (res) {
         message.success(
-          formatMessage({ id: 'odc.page.Login.Activated' }), // 激活成功
+          formatMessage({ id: 'odc.page.Login.Activated', defaultMessage: '激活成功' }), // 激活成功
         );
         setShowActivate(false);
         setLoginLoading(false);
@@ -162,12 +164,16 @@ const Login: React.FC<{
           return loginValues;
         });
       } else {
-        setErrMsg(formatMessage({ id: 'odc.page.Login.ActivationFailed' })); // 激活失败
+        setErrMsg(
+          formatMessage({ id: 'odc.page.Login.ActivationFailed', defaultMessage: '激活失败' }),
+        ); // 激活失败
         setLoginLoading(false);
       }
     } catch (e) {
       console.trace(e);
-      setErrMsg(formatMessage({ id: 'odc.page.Login.NetworkException' })); // 网络异常
+      setErrMsg(
+        formatMessage({ id: 'odc.page.Login.NetworkException', defaultMessage: '网络异常' }),
+      ); // 网络异常
       setLoginLoading(false);
     }
   };

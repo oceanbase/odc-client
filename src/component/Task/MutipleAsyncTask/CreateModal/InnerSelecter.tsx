@@ -1,19 +1,34 @@
-import { formatMessage } from '@/util/intl';
-import { IConnection } from '@/d.ts';
-import { Empty, Form, FormListFieldData, Popover, Select, Space, Tooltip } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
-import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { useDrag, useDrop } from 'react-dnd';
-import { IEnvironment } from '@/d.ts/environment';
-import { useWatch } from 'antd/lib/form/Form';
-import _ from 'lodash';
-import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import styles from './index.less';
-import { flatArray } from './helper';
-import classNames from 'classnames';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
 import ConnectionPopover from '@/component/ConnectionPopover';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { ConnectType, IConnection } from '@/d.ts';
+import { IEnvironment } from '@/d.ts/environment';
+import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
+import { formatMessage } from '@/util/intl';
+import Icon, { DeleteOutlined } from '@ant-design/icons';
+import { Empty, Form, FormListFieldData, Popover, Select, Space, Tooltip } from 'antd';
+import { useWatch } from 'antd/lib/form/Form';
+import classNames from 'classnames';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
+import { flatArray } from './helper';
+import styles from './index.less';
 
 export type DatabaseOption = {
   label: string;
@@ -23,6 +38,7 @@ export type DatabaseOption = {
   existed: boolean;
   unauthorized: boolean;
   expired: boolean;
+  connectType: ConnectType;
 };
 const InnerSelect: React.FC<{
   rootName: (number | string)[];
@@ -131,17 +147,22 @@ const InnerSelect: React.FC<{
         </div>
       );
     }
-    return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ color: 'var(--text-color-primary)' }}>{currnetOrderedDatabaseId}</div>
-      </div>
-    );
+    // return (
+    //   <div
+    //     style={{
+    //       display: 'flex',
+    //       alignItems: 'center',
+    //       justifyContent: 'space-between',
+    //     }}
+    //   >
+    //     <div style={{ color: 'var(--text-color-primary)' }}>{currnetOrderedDatabaseId}</div>
+    //   </div>
+    // );
+
+    return formatMessage({
+      id: 'src.component.Task.MutipleAsyncTask.CreateModal.91F6B921',
+      defaultMessage: '请选择数据库',
+    });
   };
 
   const checkDatabaseExsisted = async (ruler, value) => {

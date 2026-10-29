@@ -20,29 +20,23 @@ import { statsSensitiveColumns } from '@/common/network/sensitiveColumn';
 import { listSensitiveRules } from '@/common/network/sensitiveRule';
 import { IDatasource } from '@/d.ts/datasource';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
+import tracert from '@/util/tracert';
 import { useEffect, useState } from 'react';
 import SensitiveColumn from './components/SensitiveColumn';
 import styles from './index.less';
 import { FilterItemProps, SelectItemProps } from './interface';
 import SensitiveContext from './SensitiveContext';
-import tracert from '@/util/tracert';
 
 const Sensitive: React.FC<{ id: number }> = ({ id }) => {
-  const [dataSourceIdMap, setDataSourceIdMap] = useState<
-    {
-      [key in string | number]: string;
-    }
-  >({});
-  const [sensitiveRuleIdMap, setSensitiveRuleIdMap] = useState<
-    {
-      [key in string | number]: string;
-    }
-  >({});
-  const [maskingAlgorithmIdMap, setMaskingAlgorithmIdMap] = useState<
-    {
-      [key in string | number]: string;
-    }
-  >({});
+  const [dataSourceIdMap, setDataSourceIdMap] = useState<{
+    [key in string | number]: string;
+  }>({});
+  const [sensitiveRuleIdMap, setSensitiveRuleIdMap] = useState<{
+    [key in string | number]: string;
+  }>({});
+  const [maskingAlgorithmIdMap, setMaskingAlgorithmIdMap] = useState<{
+    [key in string | number]: string;
+  }>({});
   const [maskingAlgorithms, setMaskingAlgorithms] = useState<IMaskingAlgorithm[]>([]);
   const [dataSources, setDataSources] = useState<IDatasource[]>([]);
   const [maskingAlgorithmOptions, setMaskingAlgorithmOptions] = useState<SelectItemProps[]>();
@@ -52,11 +46,9 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
     tracert.expo('a3112.b64002.c330861');
   }, []);
 
-  const getStatsSensitiveColumns = async (
-    maskingAlgorithmIdMap: {
-      [key in string | number]: string;
-    },
-  ) => {
+  const getStatsSensitiveColumns = async (maskingAlgorithmIdMap: {
+    [key in string | number]: string;
+  }) => {
     const rawData = await statsSensitiveColumns(id);
     initSensitiveColumnFilters(rawData, maskingAlgorithmIdMap);
   };
@@ -103,11 +95,9 @@ const Sensitive: React.FC<{ id: number }> = ({ id }) => {
     );
   };
 
-  const getListMaskingAlgorithm = async (): Promise<
-    {
-      [key in string | number]: string;
-    }
-  > => {
+  const getListMaskingAlgorithm = async (): Promise<{
+    [key in string | number]: string;
+  }> => {
     const rawData = await listMaskingAlgorithm();
     setMaskingAlgorithms(rawData?.contents);
 

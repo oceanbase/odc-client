@@ -330,7 +330,7 @@ const CommonTable: <RecordType extends object = any>(
   function getFilteredColumns() {
     return columns.map((item) => {
       if (item?.filteredValue) {
-        item.filteredValue = filters[(item as any).dataIndex];
+        item.filteredValue = filters[(item as any).key || (item as any).dataIndex];
       }
       return item;
     });
@@ -397,6 +397,7 @@ const CommonTable: <RecordType extends object = any>(
           onOperationClick={handleOperationClick}
         />
       )}
+
       {alertInfoVisible && (
         <Alert
           className={styles.alertInfo}
@@ -407,6 +408,7 @@ const CommonTable: <RecordType extends object = any>(
           onClose={handleCloseAlert}
         />
       )}
+
       {showInfoBar && (
         <TableInfo
           {...rowSelecter}
@@ -415,6 +417,7 @@ const CommonTable: <RecordType extends object = any>(
           onSelectAllRows={handleSelectAllRows}
         />
       )}
+
       {
         <Spin key="wrapTableSpin" spinning={loading}>
           <Table
@@ -479,6 +482,7 @@ const CommonTable: <RecordType extends object = any>(
                 return formatMessage(
                   {
                     id: 'odc.components.CommonTable.TotalTotals',
+                    defaultMessage: '共 {totals} 条',
                   },
                   { totals },
                 ); // `共 ${totals} 条`

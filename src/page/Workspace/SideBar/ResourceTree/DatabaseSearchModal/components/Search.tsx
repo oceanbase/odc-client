@@ -1,13 +1,29 @@
-import { formatMessage } from '@/util/intl';
-import { Input, Tooltip } from 'antd';
-import React, { useContext, useEffect, useRef } from 'react';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import styles from '../index.less';
-import { SearchOutlined, LoadingOutlined, CloseCircleFilled } from '@ant-design/icons';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { IDatabase } from '@/d.ts/database';
-import { SearchTypeMap } from '../constant';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { formatMessage } from '@/util/intl';
+import { CloseCircleFilled, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
+import { Input, Tooltip } from 'antd';
 import { InputRef } from 'antd/lib/input';
+import React, { useContext, useEffect, useRef } from 'react';
+import { SearchTypeMap } from '../constant';
+import styles from '../index.less';
 
 interface Iprops {
   database: IDatabase;
@@ -88,8 +104,8 @@ const Search = ({
           size="small"
           ref={inputRef}
           placeholder={formatMessage({
-            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.ACB992B0',
-            defaultMessage: '搜索数据库、表、字段、视图等',
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.EBF92A7F',
+            defaultMessage: '搜索数据库、表、外表、字段、视图等',
           })}
           onChange={handleChangeDatabaseSearch}
           value={searchKey}
@@ -102,7 +118,7 @@ const Search = ({
         ref={inputRef}
         placeholder={formatMessage({
           id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.EF45DCA4',
-          defaultMessage: '搜索表、字段、视图等',
+          defaultMessage: '搜索表、外表、字段、视图等',
         })}
         onChange={handleChangeObjectSearch}
         value={searchKey}

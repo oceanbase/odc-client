@@ -17,19 +17,19 @@ import { formatMessage } from '@/util/intl';
 
 import { deleteEnvironment, listEnvironments } from '@/common/network/env';
 import { getIntegrationList } from '@/common/network/manager';
-import { IManagerIntegration, IManagerResourceType, IntegrationType, actionTypes } from '@/d.ts';
+import { Acess, createPermission } from '@/component/Acess';
+import { actionTypes, IManagerIntegration, IManagerResourceType, IntegrationType } from '@/d.ts';
 import { IEnvironment } from '@/d.ts/environment';
 import { RuleType } from '@/d.ts/rule';
+import tracert from '@/util/tracert';
+import Icon, { PlusOutlined } from '@ant-design/icons';
+import { message, Modal, SelectProps } from 'antd';
 import { useLayoutEffect, useState } from 'react';
 import SecureLayout from '../components/SecureLayout';
 import SecureSider, { SiderItem } from '../components/SecureSider';
-import InnerEnvironment from './components/InnerEnvironment';
-import tracert from '@/util/tracert';
-import styles from './index.less';
-import Icon, { PlusOutlined } from '@ant-design/icons';
-import { Modal, SelectProps, message } from 'antd';
 import { FormEnvironmentModal } from './components/FormEnvironmentModal';
-import { Acess, createPermission } from '@/component/Acess';
+import InnerEnvironment from './components/InnerEnvironment';
+import styles from './index.less';
 
 // 从Environment数组中生成Sider中的Item数据
 function genEnv(env: IEnvironment): {
@@ -99,8 +99,14 @@ const Environment = () => {
   };
   const handleDeleteEnvironment = async () => {
     return Modal.confirm({
-      title: formatMessage({ id: 'src.page.Secure.Env.65EAAB75' }), //'确认删除该环境么？'
-      content: formatMessage({ id: 'src.page.Secure.Env.CFE6811F' }), //'删除后不可撤回'
+      title: formatMessage({
+        id: 'src.page.Secure.Env.65EAAB75',
+        defaultMessage: '确认删除该环境么？',
+      }), //'确认删除该环境么？'
+      content: formatMessage({
+        id: 'src.page.Secure.Env.CFE6811F',
+        defaultMessage: '删除后不可撤回',
+      }), //'删除后不可撤回'
       centered: true,
       onCancel: () => {},
       onOk: async () => {
@@ -110,11 +116,21 @@ const Environment = () => {
         const successful = await deleteEnvironment(currentEnvironment?.id);
         if (successful) {
           await initEnvironment();
-          message.success(formatMessage({ id: 'src.page.Secure.Env.9D97D589' /*'删除成功'*/ }));
+          message.success(
+            formatMessage({
+              id: 'src.page.Secure.Env.9D97D589' /*'删除成功'*/,
+              defaultMessage: '删除成功',
+            }),
+          );
           setIsEdit(null);
           return;
         }
-        message.error(formatMessage({ id: 'src.page.Secure.Env.F0BFC158' /*'删除失败'*/ }));
+        message.error(
+          formatMessage({
+            id: 'src.page.Secure.Env.F0BFC158' /*'删除失败'*/,
+            defaultMessage: '删除失败',
+          }),
+        );
       },
     });
   };
@@ -148,7 +164,12 @@ const Environment = () => {
           extra={
             <div className={styles.extra}>
               <div className={styles.groupTitle}>
-                {formatMessage({ id: 'src.page.Secure.Env.48529F6E' /*全部环境*/ }) /* 全部环境 */}
+                {
+                  formatMessage({
+                    id: 'src.page.Secure.Env.48529F6E' /*全部环境*/,
+                    defaultMessage: '全部环境',
+                  }) /* 全部环境 */
+                }
               </div>
               <Acess
                 fallback={null}

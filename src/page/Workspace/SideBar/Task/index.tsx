@@ -16,10 +16,10 @@
 
 import Sider from '@/component/Task/Sider';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import React, { useEffect } from 'react';
 import SideTabs from '../components/SideTabs';
 import styles from './index.less';
-import tracert from '@/util/tracert';
 
 interface IProps {}
 
@@ -32,7 +32,7 @@ const Task: React.FC<IProps> = () => {
       key="Task"
       tabs={[
         {
-          title: formatMessage({ id: 'odc.SideBar.Task.Ticket' }), //工单
+          title: formatMessage({ id: 'odc.SideBar.Task.Ticket', defaultMessage: '工单' }), //工单
           key: 'task',
           actions: [],
           render() {

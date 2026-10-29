@@ -16,7 +16,6 @@
 
 import { formatMessage } from '@/util/intl';
 import { Button } from 'antd';
-import { FormattedMessage } from '@umijs/max';
 
 export const getSqlExplainColumns = ({ handleShowOutputFilter }) => {
   return [
@@ -24,12 +23,14 @@ export const getSqlExplainColumns = ({ handleShowOutputFilter }) => {
       dataIndex: 'operator',
       title: formatMessage({
         id: 'workspace.window.sql.explain.tab.summary.columns.operator',
+        defaultMessage: '算子',
       }), // width: 530,
     },
     {
       dataIndex: 'name',
       title: formatMessage({
         id: 'workspace.window.sql.explain.tab.summary.columns.name',
+        defaultMessage: '名称',
       }),
       width: 126,
       fixed: 'right',
@@ -62,6 +63,7 @@ export const getSqlExplainColumns = ({ handleShowOutputFilter }) => {
       dataIndex: 'rowCount',
       title: formatMessage({
         id: 'workspace.window.sql.explain.tab.summary.columns.rows',
+        defaultMessage: '预估行',
       }),
       width: 86,
       fixed: 'right',
@@ -70,6 +72,7 @@ export const getSqlExplainColumns = ({ handleShowOutputFilter }) => {
       dataIndex: 'cost',
       title: formatMessage({
         id: 'workspace.window.sql.explain.tab.summary.columns.cost',
+        defaultMessage: '代价',
       }),
       width: 86,
       fixed: 'right',
@@ -78,6 +81,7 @@ export const getSqlExplainColumns = ({ handleShowOutputFilter }) => {
       dataIndex: 'outputFilter',
       title: formatMessage({
         id: 'workspace.window.sql.explain.tab.summary.columns.output',
+        defaultMessage: '输出过滤',
       }),
       width: 366,
       fixed: 'right',
@@ -109,7 +113,10 @@ export const getSqlExplainColumns = ({ handleShowOutputFilter }) => {
               size="small"
               onClick={() => handleShowOutputFilter(v)}
             >
-              {formatMessage({ id: 'workspace.window.sql.explain.button.showOutputFilter' })}
+              {formatMessage({
+                id: 'workspace.window.sql.explain.button.showOutputFilter',
+                defaultMessage: '查看',
+              })}
             </Button>
           </div>
         </>
@@ -124,12 +131,14 @@ export const getSqlProfileColumns = () => {
       dataIndex: 'operator',
       title: formatMessage({
         id: 'workspace.window.sql.explain.tab.summary.columns.operator',
+        defaultMessage: '算子',
       }),
     },
     {
       dataIndex: 'name',
       title: formatMessage({
         id: 'workspace.window.sql.explain.tab.summary.columns.name',
+        defaultMessage: '名称',
       }),
       width: 126,
       fixed: 'right',
@@ -162,6 +171,7 @@ export const getSqlProfileColumns = () => {
       dataIndex: 'rowCount',
       title: formatMessage({
         id: 'workspace.window.sql.explain.tab.summary.columns.rows',
+        defaultMessage: '预估行',
       }),
       width: 86,
       fixed: 'right',

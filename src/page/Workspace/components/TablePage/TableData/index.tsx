@@ -18,7 +18,6 @@ import { executeSQL } from '@/common/network/sql';
 import { batchGetDataModifySQL, queryTableOrViewData } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
-import { TAB_HEADER_HEIGHT } from '@/constant';
 import { EStatus, IResultSet, ISqlExecuteResultStatus, ITable } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
 import modal, { ModalStore } from '@/store/modal';
@@ -47,6 +46,7 @@ interface ITableDataProps {
   tableName: string;
   pageKey: string;
   session: SessionStore;
+  isExternalTable?: boolean;
 }
 
 @inject('sqlStore', 'pageStore', 'settingStore', 'modalStore')
@@ -177,6 +177,7 @@ class TableData extends React.Component<
           message.warning(
             formatMessage({
               id: 'odc.TablePage.TableData.DoNotSubmitBlankLines',
+              defaultMessage: '请不要提交空行',
             }), // 请不要提交空行
           );
           return;
@@ -206,7 +207,10 @@ class TableData extends React.Component<
       .filter(Boolean);
     if (!editRows?.length) {
       message.warning(
-        formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
+        formatMessage({
+          id: 'odc.TablePage.TableData.NoContentToSubmit',
+          defaultMessage: '无内容可提交',
+        }), // 无内容可提交
       );
       return;
     }
@@ -230,7 +234,10 @@ class TableData extends React.Component<
 
     if (!sql) {
       message.warning(
-        formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
+        formatMessage({
+          id: 'odc.TablePage.TableData.NoContentToSubmit',
+          defaultMessage: '无内容可提交',
+        }), // 无内容可提交
       );
       return;
     }
@@ -256,6 +263,9 @@ class TableData extends React.Component<
         session.database.dbName,
         false,
       );
+      if (result?.unauthorizedDBResources?.length) {
+        return { unauthorizedDBResources: result?.unauthorizedDBResources };
+      }
       if (!hasExecuted) {
         if (result?.status !== EStatus.SUBMIT) {
           this.setState({
@@ -326,14 +336,17 @@ class TableData extends React.Component<
         if (session.params.autoCommit) {
           msg = formatMessage({
             id: 'odc.TablePage.TableData.SubmittedSuccessfully',
+            defaultMessage: '提交成功',
           }); // 提交成功
         } else if (!/commit;$/.test(this.state.updateDataDML)) {
           msg = formatMessage({
             id: 'odc.TablePage.TableData.TheModificationIsSuccessfulAnd',
+            defaultMessage: '修改成功，手动提交后生效',
           }); // 修改成功，手动提交后生效
         } else {
           msg = formatMessage({
             id: 'odc.TablePage.TableData.SubmittedSuccessfully',
+            defaultMessage: '提交成功',
           }); // 提交成功
         } // 关闭对话框
 
@@ -370,7 +383,7 @@ class TableData extends React.Component<
   };
 
   render() {
-    const { tableName, pageKey, table, settingStore, session } = this.props;
+    const { tableName, pageKey, table, settingStore, session, isExternalTable } = this.props;
     const {
       dataLoading,
       resultSet,
@@ -386,12 +399,13 @@ class TableData extends React.Component<
       <Spin wrapperClassName={styles.spin} spinning={dataLoading || !resultSet}>
         {resultSet && (
           <DDLResultSet
+            isExternalTable={isExternalTable}
             key={this._resultSetKey}
             autoCommit={session?.params.autoCommit}
             showPagination={true}
             showMock={settingStore.enableMockdata}
             isEditing={isEditing}
-            disableEdit={!resultSet.resultSetMetaData?.editable}
+            disableEdit={!resultSet.resultSetMetaData?.editable || isExternalTable}
             table={{ ...table, columns: resultSet.resultSetMetaData?.columnList }}
             pageKey={pageKey}
             session={session}
@@ -417,6 +431,7 @@ class TableData extends React.Component<
             }}
           />
         )}
+
         <ExecuteSQLModal
           sessionStore={session}
           tip={this.state.tipToShow}

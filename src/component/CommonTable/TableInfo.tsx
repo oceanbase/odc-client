@@ -38,6 +38,7 @@ export const TableInfo: React.FC<IProps<unknown>> = (props) => {
                 formatMessage(
                   {
                     id: 'odc.component.CommonTable.TableInfo.SelectedrowkeyslengthIsSelected',
+                    defaultMessage: '已选择{selectedRowKeysLength}项',
                   },
 
                   { selectedRowKeysLength: selectedRowKeys.length },
@@ -50,14 +51,17 @@ export const TableInfo: React.FC<IProps<unknown>> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.component.CommonTable.TableInfo.SelectAll',
+                    defaultMessage: '全选所有',
                   }) /*全选所有*/
                 }
               </span>
             )}
+
             <span className={styles.btn} onClick={onCancelSelect}>
               {
                 formatMessage({
                   id: 'odc.component.CommonTable.TableInfo.Deselect',
+                  defaultMessage: '取消选择',
                 })
                 /*取消选择*/
               }

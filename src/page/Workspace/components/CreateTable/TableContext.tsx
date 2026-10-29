@@ -45,6 +45,8 @@ interface ITableContextProps {
   checkConstraints?: TableCheckConstraint[];
   setCheckConstraints?: (newPartition: TableCheckConstraint[]) => void;
   session?: SessionStore;
+  isLogicalTableValid?: boolean;
+  setIsLogicalTableValid?: (isLogicalTableValid: boolean) => void;
 }
 
 function voidFunc(v: any) {}

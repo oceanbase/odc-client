@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { formatMessage } from '@/util/intl';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { Component } from 'react';
 import update from 'immutability-helper';
+import { Component } from 'react';
 import DragableViewColumn from './DragableViewColumn';
 import styles from './index.less';
-import { formatMessage } from '@/util/intl';
 
 let dragIdxGenerator = 1;
 
@@ -107,7 +107,10 @@ export default class ViewColumn extends Component<IProps> {
       <>
         <div className={styles.list}>{value && value.map(this.renderSingleRule)}</div>
         <Button icon={<PlusOutlined />} size="small" onClick={this.handleAdd}>
-          {formatMessage({ id: 'workspace.window.createView.button.addColumn' })}
+          {formatMessage({
+            id: 'workspace.window.createView.button.addColumn',
+            defaultMessage: '添加字段',
+          })}
         </Button>
       </>
     );

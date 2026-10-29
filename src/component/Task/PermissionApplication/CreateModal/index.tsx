@@ -69,7 +69,10 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
 
     const closeWithConfirm = useCallback(() => {
       Modal.confirm({
-        title: formatMessage({ id: 'odc.PermissionApplication.CreateModal.AreYouSureYouWant' }), //确认取消新建敏感列申请吗？
+        title: formatMessage({
+          id: 'odc.PermissionApplication.CreateModal.AreYouSureYouWant',
+          defaultMessage: '是否确认取消新建敏感列申请？',
+        }), //确认取消新建敏感列申请吗？
         centered: true,
         onOk() {
           onClose();
@@ -121,6 +124,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         title={
           formatMessage({
             id: 'odc.PermissionApplication.CreateModal.CreateASensitiveColumnRequest',
+            defaultMessage: '新建敏感列申请',
           }) //新建敏感列申请
         }
         footer={
@@ -129,6 +133,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               {
                 formatMessage({
                   id: 'odc.components.PartitionDrawer.Cancel',
+                  defaultMessage: '取消',
                 }) /*取消*/
               }
             </Button>
@@ -137,6 +142,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 disabledSubmit
                   ? formatMessage({
                       id: 'odc.components.PartitionDrawer.SetPartitionPoliciesForAll',
+                      defaultMessage: '请设置所有 Range 分区表的分区策略',
                     }) //请设置所有 Range 分区表的分区策略
                   : null
               }
@@ -150,6 +156,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 {
                   formatMessage({
                     id: 'odc.components.PartitionDrawer.Submit',
+                    defaultMessage: '提交',
                   }) /*提交*/
                 }
               </Button>
@@ -160,7 +167,10 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         <Form form={form} layout="vertical" requiredMark="optional" initialValues={{}}>
           <Form.Item
             label={
-              formatMessage({ id: 'odc.PermissionApplication.CreateModal.SelectSensitiveColumns' }) //选择敏感列
+              formatMessage({
+                id: 'odc.PermissionApplication.CreateModal.SelectSensitiveColumns',
+                defaultMessage: '选择敏感列',
+              }) //选择敏感列
             }
             required
           >
@@ -169,17 +179,33 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 {
                   formatMessage({
                     id: 'odc.PermissionApplication.CreateModal.DataSource',
+                    defaultMessage: '数据源',
                   }) /*数据源*/
                 }
               </span>
               <span style={{ width: '153px' }}>
-                {formatMessage({ id: 'odc.PermissionApplication.CreateModal.Database' }) /*数据库*/}
+                {
+                  formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.Database',
+                    defaultMessage: '数据库',
+                  }) /*数据库*/
+                }
               </span>
               <span style={{ width: '153px' }}>
-                {formatMessage({ id: 'odc.PermissionApplication.CreateModal.Table' }) /*表*/}
+                {
+                  formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.Table',
+                    defaultMessage: '表',
+                  }) /*表*/
+                }
               </span>
               <span style={{ width: '153px' }}>
-                {formatMessage({ id: 'odc.PermissionApplication.CreateModal.Column' }) /*列*/}
+                {
+                  formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.Column',
+                    defaultMessage: '列',
+                  }) /*列*/
+                }
               </span>
             </div>
             <Form.List
@@ -220,6 +246,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                             placeholder={
                               formatMessage({
                                 id: 'odc.PermissionApplication.CreateModal.PleaseSelect',
+                                defaultMessage: '请选择',
                               }) //请选择
                             }
                             style={{ width: '153px' }}
@@ -235,6 +262,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                             placeholder={
                               formatMessage({
                                 id: 'odc.PermissionApplication.CreateModal.PleaseSelect',
+                                defaultMessage: '请选择',
                               }) //请选择
                             }
                             style={{ width: '153px' }}
@@ -250,6 +278,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                             placeholder={
                               formatMessage({
                                 id: 'odc.PermissionApplication.CreateModal.PleaseSelect',
+                                defaultMessage: '请选择',
                               }) //请选择
                             }
                             style={{ width: '153px' }}
@@ -265,6 +294,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                             placeholder={
                               formatMessage({
                                 id: 'odc.PermissionApplication.CreateModal.PleaseSelect',
+                                defaultMessage: '请选择',
                               }) //请选择
                             }
                             style={{ width: '153px' }}
@@ -290,7 +320,12 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     );
                   })}
                   <Button type="dashed" block onClick={add} style={{ width: '628px' }}>
-                    {formatMessage({ id: 'odc.PermissionApplication.CreateModal.Add' }) /*添加*/}
+                    {
+                      formatMessage({
+                        id: 'odc.PermissionApplication.CreateModal.Add',
+                        defaultMessage: '添加',
+                      }) /*添加*/
+                    }
                   </Button>
                 </>
               )}
@@ -299,34 +334,55 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           <Form.Item
             name={'expireTime'}
             label={
-              formatMessage({ id: 'odc.PermissionApplication.CreateModal.SelectValidityPeriod' }) //选择有效期
+              formatMessage({
+                id: 'odc.PermissionApplication.CreateModal.SelectValidityPeriod',
+                defaultMessage: '选择有效期',
+              }) //选择有效期
             }
             required
           >
             <Radio.Group
               options={[
                 {
-                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.Days' }), //7天
+                  label: formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.Days',
+                    defaultMessage: '7 天',
+                  }), //7天
                   value: '7d',
                 },
                 {
-                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.Days.1' }), //30天
+                  label: formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.Days.1',
+                    defaultMessage: '30天',
+                  }), //30天
                   value: '30d',
                 },
                 {
-                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.HalfAYear' }), //半年
+                  label: formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.HalfAYear',
+                    defaultMessage: '半年',
+                  }), //半年
                   value: 'hy',
                 },
                 {
-                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.OneYear' }), //一年
+                  label: formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.OneYear',
+                    defaultMessage: '一年',
+                  }), //一年
                   value: '1y',
                 },
                 {
-                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.ThreeYears' }), //三年
+                  label: formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.ThreeYears',
+                    defaultMessage: '三年',
+                  }), //三年
                   value: '3y',
                 },
                 {
-                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.Custom' }), //自定义
+                  label: formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.Custom',
+                    defaultMessage: '自定义',
+                  }), //自定义
                   value: 'custom',
                 },
               ]}
@@ -338,6 +394,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             required
             label={formatMessage({
               id: 'odc.PermissionApplication.CreateModal.SelectAnEffectiveRange',
+              defaultMessage: '选择生效范围',
             })} /*选择生效范围*/
           >
             <Checkbox.Group
@@ -345,16 +402,21 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 {
                   label: formatMessage({
                     id: 'odc.PermissionApplication.CreateModal.SqlWindowQuery',
+                    defaultMessage: 'SQL 窗口查询',
                   }), //SQL 窗口查询
                   value: 'sql-window',
                 },
                 {
-                  label: formatMessage({ id: 'odc.PermissionApplication.CreateModal.Export' }), //导出
+                  label: formatMessage({
+                    id: 'odc.PermissionApplication.CreateModal.Export',
+                    defaultMessage: '导出',
+                  }), //导出
                   value: 'export',
                 },
                 {
                   label: formatMessage({
                     id: 'odc.PermissionApplication.CreateModal.DatabaseChanges',
+                    defaultMessage: '数据库变更',
                   }), //数据库变更
                   value: 'databaseChange',
                 },
@@ -364,12 +426,16 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           <Form.Item
             name={'tip'}
             label={
-              formatMessage({ id: 'odc.PermissionApplication.CreateModal.Remarks' }) //备注
+              formatMessage({
+                id: 'odc.PermissionApplication.CreateModal.Remarks',
+                defaultMessage: '备注',
+              }) //备注
             }
           >
             <Input.TextArea
               placeholder={formatMessage({
                 id: 'odc.PermissionApplication.CreateModal.PleaseEnter',
+                defaultMessage: '请输入',
               })}
               /*请输入*/ rows={3}
             />

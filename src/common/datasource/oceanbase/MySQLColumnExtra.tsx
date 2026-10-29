@@ -68,10 +68,12 @@ const MySQLColumnExtra: columnExtraComponent = ({
       </>
     );
   } else if (column.generated) {
-    <>
-      <DefaultValue originColumns={originColumns} column={column} onChange={onChange} />
-      <Generation column={column} onChange={onChange} />
-    </>;
+    return (
+      <>
+        <DefaultValue originColumns={originColumns} column={column} onChange={onChange} />
+        <Generation column={column} onChange={onChange} />
+      </>
+    );
   } else {
     return <DefaultValue originColumns={originColumns} column={column} onChange={onChange} />;
   }

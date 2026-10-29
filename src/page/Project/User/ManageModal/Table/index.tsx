@@ -16,18 +16,18 @@
 
 import { getTablePermissions, reclaimTablePermission } from '@/common/network/project';
 import { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
+import HelpDoc from '@/component/helpDoc';
 import type { IResponseData } from '@/d.ts';
-import { TablePermissionType } from '@/d.ts/table';
 import { ITablePermission, PermissionSourceType } from '@/d.ts/project';
+import { TablePermissionType } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
-import { Modal, Radio, Space, Typography, message } from 'antd';
+import { message, Modal, Radio, Typography } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CreateAuth from './CreateAuth';
+import styles from './index.less';
 import { tablePermissionStatusMap } from './Status';
 import TaskApplyList from './TaskApplyList';
 import UserAuthList from './UserAuthList';
-import styles from './index.less';
-import HelpDoc from '@/component/helpDoc';
 
 const { Text } = Typography;
 
@@ -62,10 +62,11 @@ interface IProps {
   projectId: number;
   userId: number;
   isOwner: boolean;
+  isDBA: boolean;
 }
 
 const ManageModal: React.FC<IProps> = (props) => {
-  const { isOwner, projectId, userId } = props;
+  const { isOwner, projectId, userId, isDBA } = props;
   const [dataSource, setDataSource] = useState<IResponseData<ITablePermission>>(null);
   const [authorizationType, setAuthorizationType] = useState(
     PermissionSourceType.TICKET_APPLICATION,
@@ -122,8 +123,14 @@ const ManageModal: React.FC<IProps> = (props) => {
   const handleReclaim = async (ids: number[]) => {
     const isBatch = ids?.length > 1;
     const title = isBatch
-      ? formatMessage({ id: 'src.page.Project.User.ManageModal.A23DCE27' })
-      : formatMessage({ id: 'src.page.Project.User.ManageModal.8B929D18' });
+      ? formatMessage({
+          id: 'src.page.Project.User.ManageModal.A23DCE27',
+          defaultMessage: '确认要批量回收权限吗？',
+        })
+      : formatMessage({
+          id: 'src.page.Project.User.ManageModal.8B929D18',
+          defaultMessage: '确认要回收权限吗？',
+        });
     Modal.confirm({
       title,
       content: (
@@ -134,6 +141,7 @@ const ManageModal: React.FC<IProps> = (props) => {
           })}
         </Text>
       ),
+
       cancelText: formatMessage({
         id: 'src.page.Project.User.ManageModal.Table.C5AD844C',
         defaultMessage: '取消',
@@ -193,7 +201,7 @@ const ManageModal: React.FC<IProps> = (props) => {
           </Radio.Group>
           <HelpDoc isTip leftText doc="userManageTip" />
         </div>
-        {isOwner && (
+        {(isOwner || isDBA) && (
           <CreateAuth projectId={projectId} userId={userId} onSwitchUserTab={handleSwitchUserTab} />
         )}
       </div>
@@ -204,6 +212,7 @@ const ManageModal: React.FC<IProps> = (props) => {
             dataSource={dataSource}
             params={params}
             isOwner={isOwner}
+            isDBA={isDBA}
             tableRef={tableRef}
             onLoad={loadData}
             onChange={handleChange}
@@ -215,6 +224,7 @@ const ManageModal: React.FC<IProps> = (props) => {
             dataSource={dataSource}
             params={params}
             isOwner={isOwner}
+            isDBA={isDBA}
             tableRef={tableRef}
             onLoad={loadData}
             onChange={handleChange}

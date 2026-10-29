@@ -23,7 +23,7 @@ import moment from 'moment';
 import { getOrderWithSign, getSignWithOrder, getTimeZone } from '../../util';
 import { CharRuleType } from './index';
 
-const ruleTypeToGenerator = {
+export const ruleTypeToGenerator = {
   [CharRuleType.NORMAL_TEXT]: MockGenerator.FIX_CHAR_GENERATOR,
   [CharRuleType.RANDOM_TEXT]: MockGenerator.RANDOM_GENERATOR,
   [CharRuleType.REGEXP_TEXT]: MockGenerator.REGEXP_GENERATOR,

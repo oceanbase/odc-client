@@ -97,7 +97,10 @@ const PasswordModal = function ({ formRef, cid, newConnection }) {
       />
 
       <Form.Item
-        label={formatMessage({ id: 'odc.component.ConnectPassowrd.Password' })}
+        label={formatMessage({
+          id: 'odc.component.ConnectPassowrd.Password',
+          defaultMessage: '密码',
+        })}
         /*密码*/ name="password"
       >
         <Input.Password autoComplete="new-password" id="connectPasswordInput" />
@@ -117,6 +120,7 @@ export default function ShowConnectPassword(
       zIndex: 1004,
       title: formatMessage({
         id: 'odc.component.ConnectPassowrd.EnterTheConnectionPassword',
+        defaultMessage: '请输入连接密码',
       }),
       // 请输入连接密码
       icon: <KeyOutlined />,

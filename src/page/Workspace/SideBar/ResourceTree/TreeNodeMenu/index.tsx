@@ -29,6 +29,8 @@ import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
 import { ReactNode } from 'react';
+import { menuAccessWrap } from './config/database';
+import IconLoadingWrapper from './IconLoadingWrapper';
 
 export const hasExportPermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
@@ -46,8 +48,10 @@ export const hasTableChangePermission = (dbSession: SessionStore, node: TreeData
 
 const TreeNodeMenu = (props: IProps) => {
   const { type = '', dbSession, databaseFrom, node, showTip, pollingDatabase } = props;
+
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
+
   const menuItems: IMenuItemConfig[] = MenuConfig[menuKey || type];
   /**
    * 非database的情况下，必须存在session
@@ -80,6 +84,7 @@ const TreeNodeMenu = (props: IProps) => {
       ) : null}
     </span>
   );
+
   const nodeChild = node.dbObjectType ? (
     <DragWrapper
       key={node.key + '-drag'}
@@ -102,6 +107,7 @@ const TreeNodeMenu = (props: IProps) => {
   ) : (
     titleNode
   );
+
   if (!isSessionValid || !menuItems?.length) {
     return nodeChild;
   }
@@ -143,7 +149,11 @@ const TreeNodeMenu = (props: IProps) => {
               return {
                 key: child.key,
                 className: styles.ellipsis,
-                label: child.text,
+                label: menuAccessWrap(
+                  child?.needAccessTypeList,
+                  node?.data?.authorizedPermissionTypes,
+                  child.text as ReactNode,
+                ),
               };
             })
             ?.filter(Boolean),
@@ -159,7 +169,7 @@ const TreeNodeMenu = (props: IProps) => {
         };
       }
       menuItems.push(menuItem);
-      if (item.hasDivider) {
+      if (typeof item.hasDivider === 'function' ? item.hasDivider(node) : item.hasDivider) {
         menuItems.push({
           type: 'divider',
         });
@@ -176,7 +186,6 @@ const TreeNodeMenu = (props: IProps) => {
     });
 
     let ellipsisItemsProp: ItemType[] = getMenuItems(ellipsisItems);
-
     return (
       <div className={treeStyles.menuActions}>
         {menuItems
@@ -194,7 +203,11 @@ const TreeNodeMenu = (props: IProps) => {
                   }}
                   className={styles.actionItem}
                 >
-                  <Icon component={item.icon || InfoCircleFilled} />
+                  {item?.key === 'REFRESH' ? (
+                    <IconLoadingWrapper icon={item.icon || InfoCircleFilled} />
+                  ) : (
+                    <Icon component={item.icon || InfoCircleFilled} />
+                  )}
                 </div>
               </Tooltip>
             );
@@ -237,6 +250,9 @@ const TreeNodeMenu = (props: IProps) => {
     <>
       <Dropdown
         menu={{
+          style: {
+            minWidth: '160px',
+          },
           items: allItemsProp,
           onClick: (info) => {
             info?.domEvent?.stopPropagation();

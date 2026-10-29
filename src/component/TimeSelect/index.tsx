@@ -23,27 +23,36 @@ const { RangePicker } = DatePicker;
 
 export const TimeOptions = [
   {
-    label: formatMessage({ id: 'odc.component.TimeSelect.LastDays' }), //最近 7 天
+    label: formatMessage({ id: 'odc.component.TimeSelect.LastDays', defaultMessage: '最近 7 天' }), //最近 7 天
     value: 7,
   },
 
   {
-    label: formatMessage({ id: 'odc.component.TimeSelect.LastDays.1' }), //最近 15 天
+    label: formatMessage({
+      id: 'odc.component.TimeSelect.LastDays.1',
+      defaultMessage: '最近 15 天',
+    }), //最近 15 天
     value: 15,
   },
 
   {
-    label: formatMessage({ id: 'odc.component.TimeSelect.LastDays.2' }), //最近 30 天
+    label: formatMessage({
+      id: 'odc.component.TimeSelect.LastDays.2',
+      defaultMessage: '最近 30 天',
+    }), //最近 30 天
     value: 30,
   },
 
   {
-    label: formatMessage({ id: 'odc.component.TimeSelect.LastSixMonths' }), //最近半年
+    label: formatMessage({
+      id: 'odc.component.TimeSelect.LastSixMonths',
+      defaultMessage: '最近半年',
+    }), //最近半年
     value: 183,
   },
 
   {
-    label: formatMessage({ id: 'odc.component.TimeSelect.Custom' }), //自定义
+    label: formatMessage({ id: 'odc.component.TimeSelect.Custom', defaultMessage: '自定义' }), //自定义
     value: 'custom',
   },
 ];
@@ -76,6 +85,7 @@ export const TimeSelect: React.FC<{
         {
           formatMessage({
             id: 'odc.component.TimeSelect.ExecutionTime',
+            defaultMessage: '执行时间：',
           }) /*执行时间：*/
         }
       </span>

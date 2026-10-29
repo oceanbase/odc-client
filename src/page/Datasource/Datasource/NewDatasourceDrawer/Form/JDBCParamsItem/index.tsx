@@ -79,8 +79,8 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
     return [
       {
         name: formatMessage({
-          id:
-            'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ConfigurationItem',
+          id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ConfigurationItem',
+          defaultMessage: '配置项',
         }), //'配置项'
         key: 'name',
         editor: TextEditor,
@@ -88,8 +88,8 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
       },
       {
         name: formatMessage({
-          id:
-            'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ConfigurationInformation',
+          id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ConfigurationInformation',
+          defaultMessage: '配置信息',
         }), //'配置信息'
         key: 'value',
         editor: TextEditor,
@@ -112,8 +112,8 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
       <div style={{ marginTop: 12 }}>
         {
           formatMessage({
-            id:
-              'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.AttributeConfiguration',
+            id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.AttributeConfiguration',
+            defaultMessage: '\n        属性配置',
           }) /* 
         属性配置 */
         }{' '}
@@ -126,11 +126,11 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
         >
           {
             formatMessage({
-              id:
-                'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ExplanationDocument',
+              id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.JDBCParamsItem.ExplanationDocument',
+              defaultMessage: '\n          说明文档\n        ',
             }) /* 
           说明文档
-         */
+          */
           }
         </a>
       </div>
@@ -147,13 +147,16 @@ const JDBCParams: React.FC<IProps> = function ({ value, onChange }) {
             icon={<PlusOutlined />}
             text={formatMessage({
               id: 'odc.component.ProcedureParam.AddParameters',
+              defaultMessage: '添加参数',
             })}
             /* 添加参数 */ onClick={addParam}
           />
+
           <Toolbar.Button
             icon={<DeleteOutlined />}
             text={formatMessage({
               id: 'odc.component.ProcedureParam.DeleteParameters',
+              defaultMessage: '删除参数',
             })}
             /* 删除参数 */ onClick={deleteParam}
           />

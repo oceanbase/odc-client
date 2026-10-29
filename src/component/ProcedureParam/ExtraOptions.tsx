@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { ConnectType, DbObjectType } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { Col, Form, Row, Select } from 'antd';
 import HelpDoc from '../helpDoc';
 export default function ExtraOptions({
@@ -43,11 +43,13 @@ export default function ExtraOptions({
                   title={
                     formatMessage({
                       id: 'odc.src.component.ProcedureParam.DetermineWhetherTheFunctionProduces',
+                      defaultMessage: '判断函数是否对相同的输入产生相同的结果',
                     }) /* 判断函数是否对相同的输入产生相同的结果 */
                   }
                 >
                   {formatMessage({
                     id: 'odc.src.component.ProcedureParam.Decisive',
+                    defaultMessage: '决定性',
                   })}
                 </HelpDoc> /* 决定性 */
               }
@@ -70,6 +72,7 @@ export default function ExtraOptions({
               label={
                 formatMessage({
                   id: 'odc.src.component.ProcedureParam.DataOption',
+                  defaultMessage: '数据选项',
                 }) /* 数据选项 */
               }
               name={['characteristic', 'dataNature']}
@@ -93,6 +96,7 @@ export default function ExtraOptions({
               label={
                 formatMessage({
                   id: 'odc.src.component.ProcedureParam.SQLSecurity',
+                  defaultMessage: 'SQL 安全性',
                 }) /* SQL 安全性 */
               }
               name={['characteristic', 'sqlSecurity']}

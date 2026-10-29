@@ -18,8 +18,10 @@ import { getFirstEnabledTask } from '@/component/Task/helper';
 import HelpItem from '@/layout/SpaceContainer/Sider/HelpItem';
 import MenuItem from '@/layout/SpaceContainer/Sider/MenuItem';
 import MineItem from '@/layout/SpaceContainer/Sider/MineItem';
+import SettingItem from '@/layout/SpaceContainer/Sider/SettingItem';
 import SpaceSelect from '@/layout/SpaceContainer/Sider/SpaceSelect';
 import { openTasksPage } from '@/store/helper/page';
+import { UserStore } from '@/store/login';
 import { ReactComponent as DBSvg } from '@/svgr/database_outline.svg';
 import { ReactComponent as TaskSvg } from '@/svgr/icon_task.svg';
 import { ReactComponent as ManagerSvg } from '@/svgr/operate.svg';
@@ -28,15 +30,17 @@ import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { BulbOutlined, UserOutlined } from '@ant-design/icons';
 import { Divider, Space } from 'antd';
+import { inject, observer } from 'mobx-react';
 import React, { useContext } from 'react';
 import ActivityBarContext from '../context/ActivityBarContext';
 import ActivityBarButton from './ActivityBarButton';
 import styles from './index.less';
 import Logo from './Logo';
 import { ActivityBarItemType, ActivityBarItemTypeText } from './type';
-import SettingItem from '@/layout/SpaceContainer/Sider/SettingItem';
 
-interface IProps {}
+interface IProps {
+  userStore?: UserStore;
+}
 
 interface IItem {
   title: string;
@@ -45,8 +49,10 @@ interface IItem {
   isVisible?: boolean;
 }
 
-const ActivityBar: React.FC<IProps> = function () {
+const ActivityBar: React.FC<IProps> = (props) => {
+  const { userStore } = props;
   const context = useContext(ActivityBarContext);
+
   const items: IItem[] = [
     {
       title: ActivityBarItemTypeText[ActivityBarItemType.Database],
@@ -73,6 +79,7 @@ const ActivityBar: React.FC<IProps> = function () {
       isVisible: true,
     },
   ];
+
   return (
     <div className={styles.bar}>
       <div className={styles.top}>
@@ -94,7 +101,7 @@ const ActivityBar: React.FC<IProps> = function () {
                   title={item.title}
                   icon={item.icon}
                   isActive={context?.activeKey === item.key}
-                  onClick={() => {
+                  onClick={async () => {
                     if (item.key === context.activeKey) {
                       context.setActiveKey(null);
                       return;
@@ -120,7 +127,7 @@ const ActivityBar: React.FC<IProps> = function () {
               disableTip={true}
               icon={BulbOutlined}
               collapsed={true}
-              label={formatMessage({ id: 'odc.Index.Sider.Help' })} /*帮助*/
+              label={formatMessage({ id: 'odc.Index.Sider.Help', defaultMessage: '帮助' })} /*帮助*/
             />
           </HelpItem>
           <MineItem>
@@ -128,7 +135,7 @@ const ActivityBar: React.FC<IProps> = function () {
               disableTip={true}
               icon={UserOutlined}
               collapsed={true}
-              label={formatMessage({ id: 'odc.Index.Sider.Mine' })} /*我的*/
+              label={formatMessage({ id: 'odc.Index.Sider.Mine', defaultMessage: '我的' })} /*我的*/
             />
           </MineItem>
         </Space>
@@ -137,4 +144,4 @@ const ActivityBar: React.FC<IProps> = function () {
   );
 };
 
-export default ActivityBar;
+export default inject('userStore')(observer(ActivityBar));

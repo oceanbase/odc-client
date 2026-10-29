@@ -41,6 +41,9 @@ import SyncMetadata from '@/component/Button/SyncMetadata';
 import { IManagerResourceType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { isPhysicalDatabase } from '@/util/database';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -108,14 +111,31 @@ const ResourceTree: React.FC<IProps> = function ({
   const setDatabaseSelected = (key) => {
     setExpandedKeys([key]);
     treeContext.setCurrentDatabaseId(key);
-    // 滚动到指定高度
-    const findIndex = databases.findIndex((i) => i.id === key);
-    treeRef?.current?.scrollTo({ top: findIndex * 28 });
   };
+
+  useEffect(() => {
+    //滚动到指定高度
+    const key = treeContext?.currentDatabaseId;
+    const findIndex = databases.findIndex((i) => i.id === key);
+    setTimeout(() => {
+      treeRef?.current?.scrollTo({ top: findIndex * 28 });
+    });
+  }, [treeContext?.currentDatabaseId, databases]);
 
   const treeData: TreeDataNode[] = (() => {
     const root = databases
       ?.filter((db) => {
+        const config = getDataSourceModeConfig(db?.dataSource?.type);
+        // 隐藏对象存储类型数据库
+        if (isConnectTypeBeFileSystemGroup(db?.dataSource?.type)) {
+          return false;
+        }
+        /**
+         * feature filter
+         */
+        if (!config?.features?.resourceTree && isPhysicalDatabase(db)) {
+          return;
+        }
         if (
           searchValue?.type === DbObjectType.database &&
           !db.name.toLowerCase()?.includes(searchValue?.value?.toLowerCase())

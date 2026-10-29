@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { INlsObject, ITable, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
-import { ITableModel, TableColumn } from '@/page/Workspace/components/CreateTable/interface';
+import { DbObjectType, INlsObject, ITable, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
+import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
 import { getNlsValueKey } from '@/util/column';
@@ -29,7 +29,7 @@ import { isNil, toInteger } from 'lodash';
 import moment from 'moment';
 import { generateDatabaseSid, generateTableSid } from '../pathUtil';
 import { convertServerTableToTable, convertTableToServerTable } from './helper';
-
+import { getLogicalTableDetail } from '@/common/network/logicalDatabase';
 export async function getTableColumnList(
   tableName: string,
   databaseName?: string,
@@ -64,14 +64,39 @@ export async function getTableInfo(
   tableName: string,
   databaseName: string,
   sessionId: string,
+  isExternalTable?: boolean,
 ): Promise<Partial<ITableModel>> {
+  const params: { type?: string } = {};
+  if (isExternalTable) {
+    params.type = 'EXTERNAL_TABLE';
+  }
+
   const res = await request.get(
     `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
       databaseName,
     )}/tables/${encodeObjName(Base64.encode(tableName))}`,
+    { params },
   );
+  const session = sessionManager.sessionMap.get(sessionId);
+  return convertServerTableToTable(res?.data, null, session?.connection?.dialectType);
+}
 
-  return convertServerTableToTable(res?.data);
+export async function getLogicTableInfo(
+  databaseId: number,
+  tableId: number,
+): Promise<Partial<ITableModel>> {
+  const res = await getLogicalTableDetail(databaseId, tableId);
+  return {
+    ...res,
+    ...convertServerTableToTable(
+      { ...res?.basePhysicalTable, name: res?.name },
+      {
+        isLogicalTable: true,
+        tableId,
+        databaseId,
+      },
+    ),
+  };
 }
 
 export async function queryTableOrViewData(
@@ -144,10 +169,32 @@ export async function generateUpdateTableDDL(
 
   if (!res?.data?.sql) {
     notification.error({
-      track: formatMessage({ id: 'odc.network.table.CurrentlyNoSqlCanBe' }), //当前无 SQL 可提交
+      track: formatMessage({
+        id: 'odc.network.table.CurrentlyNoSqlCanBe',
+        defaultMessage: '当前无 SQL 可提交',
+      }), //当前无 SQL 可提交
     });
   }
   return res?.data || { sql: '', tip: '' };
+}
+
+/** 同步外表文件 */
+export async function syncExternalTableFiles(
+  sessionId: string,
+  databaseName: string,
+  externalTableName: string,
+): Promise<boolean> {
+  const res = await request.post(
+    `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
+      databaseName,
+    )}/externalTables/${encodeObjName(Base64.encode(externalTableName))}/syncExternalTableFiles`,
+    {
+      params: {
+        ignoreError: true,
+      },
+    },
+  );
+  return res?.data;
 }
 
 export async function getTableListByDatabaseName(
@@ -164,8 +211,11 @@ export async function getTableListByDatabaseName(
  * @param databaseId 数据库ID
  * @returns 数据库的表列表
  */
-export async function getTableListWithoutSession(databaseId: number): Promise<ITable[]> {
-  const params = { databaseId: databaseId };
+export async function getTableListWithoutSession(
+  databaseId: number,
+  type?: string,
+): Promise<ITable[]> {
+  const params: { type?: string; databaseId: number } = { databaseId: databaseId, type };
   const ret = await request.get(`/api/v2/databaseSchema/tables`, { params });
   return ret?.data?.contents || [];
 }

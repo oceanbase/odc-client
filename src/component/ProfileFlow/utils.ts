@@ -1,8 +1,31 @@
-import { REACT_FLOW_ID } from './constant';
-import { Tree, Node } from './treeLayout';
-import { NODE_WIDTH, KILO, NODE_HEIGTH, INIT_HEIGHT_GAP, CPU_TIME, IO_WAIT_TIME } from './constant';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { IProfileVertexes } from '@/d.ts';
-import type { Node as FlowNode, SetViewport, SetCenter } from 'reactflow';
+import type { Node as FlowNode, SetCenter, SetViewport } from 'reactflow';
+import {
+  CPU_TIME,
+  INIT_HEIGHT_GAP,
+  IO_WAIT_TIME,
+  KILO,
+  NODE_HEIGTH,
+  NODE_WIDTH,
+  REACT_FLOW_ID,
+} from './constant';
+import { Node, Tree } from './treeLayout';
 
 const hiddenChild = (allNodes, node, nodeHidden, isChild = false) => {
   if (nodeHidden && isChild) {

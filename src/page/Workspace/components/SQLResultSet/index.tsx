@@ -16,29 +16,30 @@
 
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, LockOutlined } from '@ant-design/icons';
-import { Badge, Dropdown, Menu, MenuProps, Tabs, Tooltip } from 'antd';
+import { Badge, Dropdown, MenuProps, Tabs, Tooltip } from 'antd';
 import Cookie from 'js-cookie';
 import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
 // @ts-ignore
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 import { LockResultSetHint } from '@/component/LockResultSetHint';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { LOCK_RESULT_SET_COOKIE_KEY, TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus, ITableColumn } from '@/d.ts';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { ModalStore } from '@/store/modal';
+import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { inject, observer } from 'mobx-react';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import DDLResultSet from '../DDLResultSet';
+import { SqlExecuteResultStatusLabel } from './const';
+import DBPermissionTable from './DBPermissionTable';
 import ExecuteHistory from './ExecuteHistory';
 import styles from './index.less';
 import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
-import DBPermissionTable from './DBPermissionTable';
-import { IUnauthorizedDBResources } from '@/d.ts/table';
-import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
-import sessionManager from '@/store/sessionManager';
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';
@@ -107,6 +108,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     hanldeCloseLintPage,
     onUpdateEditing,
   } = props;
+
   const [showLockResultSetHint, setShowLockResultSetHint] = useState(false);
   const { resultSets: r } = sqlStore;
   const resultSets = r.get(pageKey);
@@ -172,11 +174,17 @@ const SQLResultSet: React.FC<IProps> = function (props) {
       items: [
         {
           key: MenuKey.LOCK,
-          label: formatMessage({ id: 'workspace.window.sql.record.column.lock' }),
+          label: formatMessage({
+            id: 'workspace.window.sql.record.column.lock',
+            defaultMessage: '固定',
+          }),
         },
         {
           key: MenuKey.UNLOCK,
-          label: formatMessage({ id: 'workspace.window.sql.record.column.unlock' }),
+          label: formatMessage({
+            id: 'workspace.window.sql.record.column.unlock',
+            defaultMessage: '解除固定',
+          }),
         },
       ],
     };
@@ -267,7 +275,10 @@ const SQLResultSet: React.FC<IProps> = function (props) {
         animated={false}
         items={[
           {
-            label: formatMessage({ id: 'workspace.window.sql.record.title' }),
+            label: formatMessage({
+              id: 'workspace.window.sql.record.title',
+              defaultMessage: '执行记录',
+            }),
             key: recordsTabKey,
             children: (
               <ExecuteHistory
@@ -284,6 +295,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     {
                       formatMessage({
                         id: 'odc.components.SQLResultSet.Problem',
+                        defaultMessage: '问题',
                       }) /*问题*/
                     }
 
@@ -336,9 +348,10 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                   label: getResultSetTitle(
                     i,
                     set.executeSql,
-                    `${formatMessage({
+                    formatMessage({
                       id: 'workspace.window.sql.result',
-                    })}${resultTabCount}`,
+                      defaultMessage: '结果',
+                    }) + resultTabCount,
                     set.locked,
                     set.uniqKey,
                   ),
@@ -396,33 +409,24 @@ const SQLResultSet: React.FC<IProps> = function (props) {
               }
               if (isLogTab) {
                 let count = {
-                  [ISqlExecuteResultStatus.WAITING]: {
-                    lable: formatMessage({
-                      id: 'src.page.Workspace.components.SQLResultSet.6F910473',
-                      defaultMessage: '待执行',
-                    }),
+                  [ISqlExecuteResultStatus.CREATED]: {
+                    lable: SqlExecuteResultStatusLabel.CREATED,
                     count: set?.total,
                   },
                   [ISqlExecuteResultStatus.SUCCESS]: {
-                    lable: formatMessage({
-                      id: 'odc.components.SQLResultSet.SuccessfulExecution',
-                    }),
+                    lable: SqlExecuteResultStatusLabel.SUCCESS,
                     //执行成功
                     count: 0,
                   },
 
                   [ISqlExecuteResultStatus.FAILED]: {
-                    lable: formatMessage({
-                      id: 'odc.components.SQLResultSet.ExecutionFailed',
-                    }),
+                    lable: SqlExecuteResultStatusLabel.FAILED,
                     //执行失败
                     count: 0,
                   },
 
                   [ISqlExecuteResultStatus.CANCELED]: {
-                    lable: formatMessage({
-                      id: 'odc.components.SQLResultSet.CancelExecution',
-                    }),
+                    lable: SqlExecuteResultStatusLabel.CANCELED,
                     //执行取消
                     count: 0,
                   },
@@ -430,7 +434,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
 
                 set?.logTypeData?.forEach((item) => {
                   count[item.status].count += 1;
-                  count[ISqlExecuteResultStatus.WAITING].count -= 1;
+                  count[ISqlExecuteResultStatus.CREATED].count -= 1;
                 });
                 const hasError =
                   count[ISqlExecuteResultStatus.SUCCESS].count !== set?.logTypeData?.length;
@@ -444,6 +448,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                               return formatMessage(
                                 {
                                   id: 'odc.components.SQLResultSet.ItemcountSqlItemlabel',
+                                  defaultMessage: '{itemCount} 条 SQL {itemLabel}',
                                 },
 
                                 { itemCount: item.count, itemLabel: item.lable },
@@ -459,6 +464,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                         {
                           formatMessage({
                             id: 'odc.components.SQLResultSet.Log',
+                            defaultMessage: '日志',
                           })
 
                           /* 日志 */
@@ -486,7 +492,11 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     <SQLResultLog
                       resultHeight={resultHeight}
                       resultSet={set}
-                      stopRunning={stopRunning}
+                      stopRunning={
+                        (ctx?.getSession() as SessionStore)?.params?.killCurrentQuerySupported
+                          ? stopRunning
+                          : null
+                      }
                       onOpenExecutingDetailModal={onOpenExecutingDetailModal}
                       loading={sqlStore.logLoading}
                       isSupportProfile={isSupportProfile}

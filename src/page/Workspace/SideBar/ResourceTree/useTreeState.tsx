@@ -15,7 +15,7 @@
  */
 
 import { TreeProps } from 'antd';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import TreeStateStore from './TreeStateStore';
 import { TreeDataNode } from './type';
 import { EventDataNode } from 'antd/lib/tree';
@@ -68,6 +68,12 @@ export default function useTreeState(id: string) {
     setLoadedKeys(loadedKeys);
     setExpandedKeys(newExpandedKeys);
   };
+
+  useEffect(()=>{
+    if(treeContext.selectDatasourceId){
+      setLoadedKeys([]);
+    }
+  }, [treeContext.selectDatasourceId])
 
   return {
     onExpand,

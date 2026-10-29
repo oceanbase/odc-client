@@ -59,9 +59,11 @@ const CreateFunctionModal: React.FC<IProps> = inject(
       Modal.confirm({
         title: formatMessage({
           id: 'odc.component.CreateFunctionModal.ConfirmToClose',
+          defaultMessage: '确认关闭',
         }), // 确认关闭
         content: formatMessage({
           id: 'odc.component.CreateFunctionModal.CurrentPopUpDataWill',
+          defaultMessage: '当前弹窗数据将清空',
         }), // 当前弹窗数据将清空
         onOk: () => {
           modalStore.changeCreateFunctionModalVisible(false);
@@ -98,6 +100,7 @@ const CreateFunctionModal: React.FC<IProps> = inject(
         message.error(
           formatMessage({
             id: 'workspace.window.createFunction.params.validation',
+            defaultMessage: '请填写参数名称',
           }),
         );
 
@@ -109,6 +112,7 @@ const CreateFunctionModal: React.FC<IProps> = inject(
         message.error(
           formatMessage({
             id: 'workspace.window.createFunction.dataType.validation',
+            defaultMessage: '请填写数据类型',
           }),
         );
 
@@ -129,6 +133,7 @@ const CreateFunctionModal: React.FC<IProps> = inject(
         destroyOnClose={true}
         title={formatMessage({
           id: 'workspace.window.createFunction.modal.title',
+          defaultMessage: '新建函数',
         })}
         open={visible}
         onOk={save}
@@ -142,12 +147,14 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                   name="funName"
                   label={formatMessage({
                     id: 'workspace.window.createFunction.funName',
+                    defaultMessage: '函数名称',
                   })}
                   rules={[
                     {
                       required: true,
                       message: formatMessage({
                         id: 'workspace.window.createFunction.funName.validation',
+                        defaultMessage: '请输入函数名称',
                       }),
                     },
                   ]}
@@ -158,6 +165,7 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                     }}
                     placeholder={formatMessage({
                       id: 'workspace.window.createFunction.funName.placeholder',
+                      defaultMessage: '请输入函数名称',
                     })}
                   />
                 </Form.Item>
@@ -167,12 +175,14 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                   name="returnType"
                   label={formatMessage({
                     id: 'workspace.window.createFunction.returnType',
+                    defaultMessage: '返回类型',
                   })}
                   rules={[
                     {
                       required: true,
                       message: formatMessage({
                         id: 'workspace.window.createFunction.returnType.validation',
+                        defaultMessage: '请输入函数返回值',
                       }),
                     },
                   ]}
@@ -200,6 +210,7 @@ const CreateFunctionModal: React.FC<IProps> = inject(
             <Form.Item
               label={formatMessage({
                 id: 'odc.component.CreateFunctionModal.Parameter',
+                defaultMessage: '参数',
               })}
               /* 参数 */ required
             >

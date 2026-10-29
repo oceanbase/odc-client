@@ -113,11 +113,15 @@ class CsvMapping extends React.Component<
     });
     return [
       {
-        title: formatMessage({ id: 'odc.ImportDrawer.csvMapping.ImportFile' }), //导入文件
+        title: formatMessage({
+          id: 'odc.ImportDrawer.csvMapping.ImportFile',
+          defaultMessage: '导入文件',
+        }), //导入文件
         children: [
           {
             title: formatMessage({
               id: 'odc.ImportDrawer.csvMapping.OriginalField',
+              defaultMessage: '原字段',
             }),
 
             dataIndex: 'srcColumnName',
@@ -127,6 +131,7 @@ class CsvMapping extends React.Component<
           {
             title: formatMessage({
               id: 'odc.ImportDrawer.csvMapping.FirstLineValue',
+              defaultMessage: '首行值',
             }),
 
             dataIndex: 'firstLineValue',
@@ -134,6 +139,7 @@ class CsvMapping extends React.Component<
               if (t === '') {
                 return formatMessage({
                   id: 'odc.ImportDrawer.csvMapping.Null',
+                  defaultMessage: '(空)',
                 }); // (空)
               } else if (isNil(t)) {
                 return '(null)';
@@ -145,11 +151,15 @@ class CsvMapping extends React.Component<
       },
 
       {
-        title: formatMessage({ id: 'odc.ImportDrawer.csvMapping.TargetTable' }), //目标表
+        title: formatMessage({
+          id: 'odc.ImportDrawer.csvMapping.TargetTable',
+          defaultMessage: '目标表',
+        }), //目标表
         children: [
           {
             title: formatMessage({
               id: 'odc.ImportDrawer.csvMapping.TargetField',
+              defaultMessage: '目标字段',
             }),
             dataIndex: 'destColumnName',
             width: 100,
@@ -158,7 +168,11 @@ class CsvMapping extends React.Component<
                 return (
                   <Tooltip title={errorMap[i]}>
                     <div style={{ color: '#FF4D4F' }}>
-                      {columnName || formatMessage({ id: 'odc.ImportDrawer.csvMapping.No' })}
+                      {columnName ||
+                        formatMessage({
+                          id: 'odc.ImportDrawer.csvMapping.No',
+                          defaultMessage: '无',
+                        })}
                     </div>
                   </Tooltip>
                 );
@@ -198,6 +212,7 @@ class CsvMapping extends React.Component<
           {
             title: formatMessage({
               id: 'odc.ImportDrawer.csvMapping.TargetFieldType',
+              defaultMessage: '目标字段类型',
             }),
 
             dataIndex: 'destColumnType',
@@ -219,13 +234,17 @@ class CsvMapping extends React.Component<
       } else {
         errorMsg = formatMessage({
           id: 'odc.ImportDrawer.csvMapping.IncorrectFormSettings',
+          defaultMessage: '表单设置有误',
         });
       }
     }
     return (
       <div>
         <div style={{ lineHeight: '20px', fontSize: 12, margin: '16px 0px' }}>
-          {formatMessage({ id: 'odc.ImportDrawer.csvMapping.FieldMapping' })}
+          {formatMessage({
+            id: 'odc.ImportDrawer.csvMapping.FieldMapping',
+            defaultMessage: '字段映射',
+          })}
         </div>
         <Editable
           rowKey={(_, i) => {

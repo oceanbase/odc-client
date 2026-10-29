@@ -15,24 +15,24 @@
  */
 
 import DelimiterSelect from '@/component/DelimiterSelect';
+import { getKeyCodeText } from '@/component/Input/Keymap/keycodemap';
 import SQLConfig from '@/component/SQLConfig';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { TransState } from '@/d.ts';
 import { SQLPage } from '@/page/Workspace/components/SQLPage';
 import login from '@/store/login';
+import setting from '@/store/setting';
 import sqlStore from '@/store/sql';
-import modalStore from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { SaveOutlined } from '@ant-design/icons';
 import { ToolBarActions } from '..';
-import setting from '@/store/setting';
-import { KeyCode } from 'monaco-editor';
-import { getKeyCodeText } from '@/component/Input/Keymap/keycodemap';
-import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 
 const sqlActions: ToolBarActions = {
   SQL_SAVE: {
-    name: formatMessage({ id: 'odc.component.SaveSQLModal.SaveScript' }),
+    name: formatMessage({
+      id: 'odc.component.SaveSQLModal.SaveScript',
+      defaultMessage: '保存脚本',
+    }),
     icon: SaveOutlined,
     statusFunc: (ctx) => {
       const { pageKey } = ctx.props;
@@ -50,7 +50,7 @@ const sqlActions: ToolBarActions = {
   },
 
   SQL_PLAN: {
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Plan' }),
+    name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Plan', defaultMessage: '执行计划' }),
     icon: 'EXPAIN',
     isVisible(ctx: SQLPage) {
       if (!ctx.getSession?.()) {
@@ -67,6 +67,7 @@ const sqlActions: ToolBarActions = {
     name: () =>
       /*'运行 '*/ formatMessage({
         id: 'src.component.EditorToolBar.actions.C07F15B8' /*'运行 '*/,
+        defaultMessage: '运行 ',
       }) + getKeyCodeText(setting.configurations['odc.editor.shortcut.executeStatement']).join(''),
 
     icon: 'SQL_RUN',
@@ -103,6 +104,7 @@ const sqlActions: ToolBarActions = {
     name: () =>
       /*'运行当前语句 '*/ formatMessage({
         id: 'src.component.EditorToolBar.actions.3BDAC881' /*'运行当前语句 '*/,
+        defaultMessage: '运行当前语句 ',
       }) +
       getKeyCodeText(setting.configurations['odc.editor.shortcut.executeCurrentStatement']).join(
         '',
@@ -140,7 +142,7 @@ const sqlActions: ToolBarActions = {
 
   SQL_COMMIT: {
     isShowText: true,
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Submitted' }), // 提交
+    name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Submitted', defaultMessage: '提交' }), // 提交
     icon: 'SQL_COMMIT',
     confirmConfig: () => {
       return null;
@@ -184,7 +186,7 @@ const sqlActions: ToolBarActions = {
 
   SQL_ROLLBACK: {
     isShowText: true,
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Rollback' }), // 回滚
+    name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Rollback', defaultMessage: '回滚' }), // 回滚
     icon: 'SQL_ROLLBACK',
     confirmConfig: () => {
       return null;
@@ -227,7 +229,10 @@ const sqlActions: ToolBarActions = {
   },
 
   SQL_STOP: {
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Termination' }), // 终止
+    name: formatMessage({
+      id: 'odc.EditorToolBar.actions.sql.Termination',
+      defaultMessage: '终止',
+    }), // 终止
     icon: 'SQL_STOP',
     statusFunc: (ctx) => {
       const { pageKey } = ctx.props;
@@ -244,7 +249,7 @@ const sqlActions: ToolBarActions = {
       return IConStatus.INIT;
     },
     isVisible: (ctx: SQLPage) => {
-      return ctx.getSession()?.supportFeature.enableKillQuery;
+      return ctx.getSession()?.params?.killCurrentQuerySupported;
     },
     async action(ctx: SQLPage) {
       sqlStore.stopExec(ctx.props.pageKey, ctx?.getSession()?.sessionId);
@@ -261,7 +266,7 @@ const sqlActions: ToolBarActions = {
 
   VIEW_CREATE_SQL_SUBMIT: {
     isShowText: true,
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Create' }), // 创建
+    name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.Create', defaultMessage: '创建' }), // 创建
     icon: null,
     type: 'BUTTON_PRIMARY',
     async action(ctx: any) {
@@ -271,7 +276,10 @@ const sqlActions: ToolBarActions = {
 
   VIEW_CREATE_LASR_STEP: {
     isShowText: true,
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.PreviousStep' }), // 上一步
+    name: formatMessage({
+      id: 'odc.EditorToolBar.actions.sql.PreviousStep',
+      defaultMessage: '上一步',
+    }), // 上一步
     icon: null,
     type: 'BUTTON',
     async action(ctx: any) {
@@ -280,7 +288,10 @@ const sqlActions: ToolBarActions = {
   },
 
   SQL_LINT: {
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.sql.SqlCheck' }), //SQL 检查
+    name: formatMessage({
+      id: 'odc.EditorToolBar.actions.sql.SqlCheck',
+      defaultMessage: 'SQL 检查',
+    }), //SQL 检查
     icon: 'LINT',
     isVisible(ctx: SQLPage) {
       if (!ctx.getSession?.()) {

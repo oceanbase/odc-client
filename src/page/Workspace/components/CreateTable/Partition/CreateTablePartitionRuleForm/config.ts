@@ -20,15 +20,19 @@ import { formatMessage } from '@/util/intl';
 export const partitionValuePlaceholder = {
   [IPartitionType.LIST]: formatMessage({
     id: 'workspace.window.createTable.partition.value.list.placelholder',
+    defaultMessage: '值1,值2',
   }),
   [IPartitionType.LIST_COLUMNS]: formatMessage({
     id: 'workspace.window.createTable.partition.value.listColumns.placelholder',
+    defaultMessage: '(字段1,字段2),(字段1,字段2)',
   }),
   [IPartitionType.RANGE]: formatMessage({
     id: 'workspace.window.createTable.partition.value.range.placelholder',
+    defaultMessage: '字段1',
   }),
   [IPartitionType.RANGE_COLUMNS]: formatMessage({
     id: 'workspace.window.createTable.partition.value.rangeColumns.placelholder',
+    defaultMessage: '字段 1,字段 2',
   }),
 };
 
@@ -36,11 +40,13 @@ export function getPartitionValueLabel(partitionType: IPartitionType) {
   if (partitionType === IPartitionType.LIST || partitionType === IPartitionType.LIST_COLUMNS) {
     return formatMessage({
       id: 'workspace.window.createTable.partition.value.list',
+      defaultMessage: '枚举值',
     });
   }
   if (partitionType === IPartitionType.RANGE_COLUMNS || partitionType === IPartitionType.RANGE) {
     return formatMessage({
       id: 'workspace.window.createTable.partition.value.range',
+      defaultMessage: '区间上限值',
     });
   }
   return '';

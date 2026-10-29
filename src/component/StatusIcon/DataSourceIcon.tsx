@@ -15,9 +15,9 @@
  */
 
 import { IConnection, IConnectionStatus } from '@/d.ts';
-import { Tooltip } from 'antd';
-import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 import { formatMessage } from '@/util/intl';
+import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import datasourceStatus from '@/store/datasourceStatus';
@@ -33,6 +33,7 @@ export default function StatusIcon({ item }: { item: IConnection }) {
           placement="top"
           title={formatMessage({
             id: 'odc.components.ConnectionCardList.StatusSynchronizationInProgress',
+            defaultMessage: '状态同步中',
           })}
         >
           <Loading3QuartersOutlined
@@ -50,6 +51,7 @@ export default function StatusIcon({ item }: { item: IConnection }) {
           placement="top"
           title={formatMessage({
             id: 'odc.components.ConnectionCardList.ValidConnection',
+            defaultMessage: '有效连接',
           })}
         >
           <Icon component={icon.component} style={{ fontSize: 16, color: icon?.color }} />
@@ -63,6 +65,7 @@ export default function StatusIcon({ item }: { item: IConnection }) {
           title={
             formatMessage({
               id: 'odc.components.ConnectionCardList.TheConnectionPasswordIsNot',
+              defaultMessage: '连接密码未保存，无法获取状态',
             })
 
             // 连接密码未保存，无法获取状态
@@ -78,6 +81,7 @@ export default function StatusIcon({ item }: { item: IConnection }) {
           placement="top"
           title={formatMessage({
             id: 'odc.page.ConnectionList.columns.TheConnectionIsDisabled',
+            defaultMessage: '连接已停用',
           })}
 
           /* 连接已停用 */

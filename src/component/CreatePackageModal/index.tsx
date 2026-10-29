@@ -63,10 +63,12 @@ function CreatePackageModal(props: IProps) {
       destroyOnClose={true}
       title={formatMessage({
         id: 'workspace.window.createPackage.modal.title',
+        defaultMessage: '新建程序包',
       })}
       open={modalStore.createPackageModalVisible}
       okText={formatMessage({
         id: 'odc.component.CreatePackageModal.NextConfirmTheSqlStatement',
+        defaultMessage: '下一步：确认 SQL',
       })} /* 下一步：确认 SQL */
       onOk={save}
       onCancel={() => {
@@ -83,12 +85,14 @@ function CreatePackageModal(props: IProps) {
           name="packageName"
           label={formatMessage({
             id: 'workspace.window.createPackage.packageName',
+            defaultMessage: '程序包名称',
           })}
           rules={[
             {
               required: true,
               message: formatMessage({
                 id: 'workspace.window.createPackage.packageName.required',
+                defaultMessage: '程序包不能为空',
               }),
             },
           ]}
@@ -98,6 +102,7 @@ function CreatePackageModal(props: IProps) {
             autoComplete={'off'}
             placeholder={formatMessage({
               id: 'workspace.window.createPackage.packageName.placeholder',
+              defaultMessage: '请输入程序包名称',
             })}
           />
         </Form.Item>

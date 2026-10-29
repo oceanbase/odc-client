@@ -15,30 +15,30 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Button, Form, Space, message } from 'antd';
-import RiskLevelInfo from './RiskLevelInfo';
-import styles from './index.less';
-import { useEffect, useRef, useState } from 'react';
-import useForm from 'antd/es/form/hooks/useForm';
-import classnames from 'classnames';
-import _ from 'lodash';
-import Condition from './Condition';
-import { Expression, SelectItemProps } from '../interface';
-import TreeTitle from './TreeTitle';
 import {
   createRiskDetectRules,
   deleteRiskDetectRule,
   listRiskDetectRules,
   updateRiskDetectRule,
 } from '@/common/network/riskDetectRule';
-import { IRiskLevel } from '@/d.ts/riskLevel';
-import RootNodeContent from './RootNodeContent';
-import { initOptions } from './options';
-import { IConditionGroup } from '@/d.ts/riskDetectRule';
 import { Acess, createPermission } from '@/component/Acess';
 import Action from '@/component/Action';
-import { IManagerResourceType, actionTypes } from '@/d.ts';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
+import { IConditionGroup } from '@/d.ts/riskDetectRule';
+import { IRiskLevel } from '@/d.ts/riskLevel';
 import tracert from '@/util/tracert';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Form, message, Space, Tooltip } from 'antd';
+import useForm from 'antd/es/form/hooks/useForm';
+import classnames from 'classnames';
+import { useEffect, useRef, useState } from 'react';
+import { Expression, SelectItemProps } from '../interface';
+import Condition from './Condition';
+import styles from './index.less';
+import { initOptions } from './options';
+import RiskLevelInfo from './RiskLevelInfo';
+import RootNodeContent from './RootNodeContent';
+import TreeTitle from './TreeTitle';
 export type Operator = string;
 export enum EBooleanOperator {
   AND = 'AND',
@@ -47,9 +47,11 @@ export enum EBooleanOperator {
 export const BooleanOperatorMap = {
   [EBooleanOperator.AND]: formatMessage({
     id: 'odc.src.page.Secure.RiskLevel.components.And',
+    defaultMessage: '且',
   }), //'且'
   [EBooleanOperator.OR]: formatMessage({
     id: 'odc.src.page.Secure.RiskLevel.components.Or',
+    defaultMessage: '或',
   }), //'或'
 };
 export enum EConditionType {
@@ -206,9 +208,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
         empty
           ? formatMessage({
               id: 'odc.src.page.Secure.RiskLevel.components.NewAchievement',
+              defaultMessage: '新建成功',
             }) //'新建成功'
           : formatMessage({
               id: 'odc.src.page.Secure.RiskLevel.components.UpdateCompleted',
+              defaultMessage: '更新成功',
             }), //'更新成功'
       );
       memoryReload();
@@ -222,9 +226,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
         empty
           ? formatMessage({
               id: 'odc.src.page.Secure.RiskLevel.components.NewFailure',
+              defaultMessage: '新建失败',
             }) //'新建失败'
           : formatMessage({
               id: 'odc.src.page.Secure.RiskLevel.components.UpdateFailure',
+              defaultMessage: '更新失败',
             }), //'更新失败'
       );
     }
@@ -236,6 +242,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       message.success(
         formatMessage({
           id: 'odc.src.page.Secure.RiskLevel.components.SuccessfullyDeleted',
+          defaultMessage: '删除成功',
         }), //'删除成功'
       );
       memoryReload();
@@ -249,6 +256,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       message.error(
         formatMessage({
           id: 'odc.src.page.Secure.RiskLevel.components.FailedToDelete',
+          defaultMessage: '删除失败',
         }), //'删除失败'
       );
     }
@@ -269,10 +277,23 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
           {
             formatMessage({
               id: 'odc.src.page.Secure.RiskLevel.components.RiskRecognitionRules',
+              defaultMessage: '风险识别规则',
             }) /* 
           风险识别规则
-           */
+          */
           }
+
+          <Tooltip
+            trigger={'hover'}
+            title={formatMessage({
+              id: 'src.page.Secure.RiskLevel.components.6814586C',
+              defaultMessage:
+                '风险识别规则是通过表达式配置的规则，会决定工单的审批流程。\n如：「环境 等于 生产」将会匹配在「生产」环境中执行的工单，并执行对应的审批流程',
+            })}
+          >
+            {' '}
+            <QuestionCircleOutlined />{' '}
+          </Tooltip>
           <span> :</span>
         </div>
         {isEdit ? (
@@ -301,6 +322,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                             : styles.left
                         }
                       />
+
                       <div
                         className={
                           isHover
@@ -323,6 +345,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                       </div>
                     </div>
                   )}
+
                   <div className={styles.conditions}>
                     <Form.List name={'conditions'}>
                       {(fields, { add, remove }) => {
@@ -347,6 +370,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                         }}
                                         fieldName={[field.name, 'booleanOperator']}
                                       />
+
                                       <div>
                                         <Form.List name={[field.name, 'children']}>
                                           {(inFields, { add: inAdd, remove: inRemove }) => {
@@ -386,9 +410,10 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                                     {
                                                       formatMessage({
                                                         id: 'odc.src.page.Secure.RiskLevel.components.AddConditions',
+                                                        defaultMessage: '添加条件',
                                                       }) /* 
-                                                    添加条件
-                                                   */
+                                                  添加条件
+                                                  */
                                                     }
                                                   </Button>
                                                 </div>
@@ -450,9 +475,10 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                 {
                                   formatMessage({
                                     id: 'odc.src.page.Secure.RiskLevel.components.AddConditions.1',
+                                    defaultMessage: '添加条件',
                                   }) /* 
-                                添加条件
-                               */
+                              添加条件
+                              */
                                 }
                               </Button>
                               <Button
@@ -468,6 +494,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                         value: undefined,
                                       },
                                     ],
+
                                     booleanOperator: EBooleanOperator.AND,
                                   });
                                   const raw = await formRef.getFieldsValue()?.conditions;
@@ -479,9 +506,10 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                 {
                                   formatMessage({
                                     id: 'odc.src.page.Secure.RiskLevel.components.AddConditionGroup',
+                                    defaultMessage: '添加条件组',
                                   }) /* 
-                                添加条件组
-                               */
+                              添加条件组
+                              */
                                 }
                               </Button>
                             </Space>
@@ -502,6 +530,28 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
             environmentMap={environmentMap}
             taskTypeIdMap={taskTypeIdMap}
             sqlCheckResultIdMap={sqlCheckResultIdMap}
+            showActionButton={() => {
+              return (
+                <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.create)}>
+                  <Action.Button
+                    disabled={isDefaultLevel}
+                    type="primary"
+                    onClick={async () => {
+                      setIsEdit(true);
+                      setShowConditionGroup(false);
+                      tracert.click('a3112.b64008.c330924.d367478');
+                    }}
+                  >
+                    {
+                      formatMessage({
+                        id: 'odc.src.page.Secure.RiskLevel.components.NewRules',
+                        defaultMessage: '新建规则',
+                      }) //'新建规则'})
+                    }
+                  </Action.Button>
+                </Acess>
+              );
+            }}
           />
         )}
       </div>
@@ -513,9 +563,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                 empty
                   ? formatMessage({
                       id: 'odc.src.page.Secure.RiskLevel.components.Confirm',
+                      defaultMessage: '确认',
                     }) //'确认'
                   : formatMessage({
                       id: 'odc.src.page.Secure.RiskLevel.components.Confirm.1',
+                      defaultMessage: '确认',
                     }) //'确认'
               }
             </Button>
@@ -531,33 +583,18 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                 empty
                   ? formatMessage({
                       id: 'odc.src.page.Secure.RiskLevel.components.Cancel',
+                      defaultMessage: '取消',
                     }) //'取消'
                   : formatMessage({
                       id: 'odc.src.page.Secure.RiskLevel.components.Cancel.1',
+                      defaultMessage: '取消',
                     }) //'取消'
               }
             </Button>
           </Space>
         ) : (
           <Action.Group>
-            {empty ? (
-              <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.create)}>
-                <Action.Button
-                  disabled={isDefaultLevel}
-                  onClick={async () => {
-                    setIsEdit(true);
-                    setShowConditionGroup(false);
-                    tracert.click('a3112.b64008.c330924.d367478');
-                  }}
-                >
-                  {
-                    formatMessage({
-                      id: 'odc.src.page.Secure.RiskLevel.components.NewRules',
-                    }) //'新建规则'})
-                  }
-                </Action.Button>
-              </Acess>
-            ) : (
+            {!empty && (
               <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.update)}>
                 <Action.Button
                   disabled={isDefaultLevel}
@@ -570,6 +607,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                   {
                     formatMessage({
                       id: 'odc.src.page.Secure.RiskLevel.components.EditRules',
+                      defaultMessage: '编辑规则',
                     }) //'编辑规则'
                   }
                 </Action.Button>
@@ -586,9 +624,10 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                   {
                     formatMessage({
                       id: 'odc.src.page.Secure.RiskLevel.components.EmptyRules',
+                      defaultMessage: '清空规则',
                     }) /* 
-                  清空规则
-                 */
+              清空规则
+              */
                   }
                 </Action.Button>
               </Acess>

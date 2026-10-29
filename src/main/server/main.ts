@@ -29,7 +29,6 @@ import {
   getSetting,
 } from '../utils';
 import log from '../utils/log';
-import { writeFileSync } from 'fs';
 
 class MainServer {
   static _mainServer: MainServer = null;
