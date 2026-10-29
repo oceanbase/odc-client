@@ -15,7 +15,7 @@
  */
 
 import dayjs from 'dayjs';
-import { addComment, getPLScriptTemplate, removeComment, removeTableQuote } from '../sql';
+import { addComment, getPLScriptTemplate, removeComment, removeTableQuote } from '@/util/data/sql';
 
 describe('test sql utils', () => {
   it('addComment', () => {

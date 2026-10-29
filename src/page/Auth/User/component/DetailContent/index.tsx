@@ -25,7 +25,7 @@ import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { actionTypes, IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Button, Descriptions, Divider, message, Modal, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getAuthLabelString, resourceAuthMap, ResourceManagementAction } from '../../../utils';

@@ -24,7 +24,7 @@ import {
   IServerMockColumn,
   MockGenerator,
 } from '@/d.ts';
-import { convertColumnType } from '@/util/utils';
+import { convertColumnType } from '@/util/data/string';
 import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { Space } from 'antd';
 import { FormInstance } from 'antd/lib/form';

@@ -16,7 +16,7 @@ import { formatMessage } from '@/util/intl';
  */
 
 import type { IApplyPermissionTaskParams, TaskDetail } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Divider } from 'antd';
 import { projectRoleMap } from '../CreateModal';
 import EllipsisText from '@/component/EllipsisText';

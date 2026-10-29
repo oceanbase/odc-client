@@ -15,6 +15,21 @@
  */
 
 import { formatMessage } from '@/util/intl';
+import { FormInstance } from 'antd';
+import { convertCronToMinutes } from '@/component/Crontab/utils';
+import { ICrontab } from '@/component/Crontab/interface';
+import setting from '@/store/setting';
+
+export const ChineseAndEnglishAndNumberAndUnderline = {
+  pattern: /^[\w\u4e00-\u9fa5]*$/,
+  message: formatMessage({
+    id: 'odc.src.util.validRule.OnlyAllowInputChinese',
+    defaultMessage: '只允许输入中文，字母，数字与下划线',
+  }), //'只允许输入中文，字母，数字与下划线'
+};
+export const Required = {
+  required: true,
+};
 
 export function checkNumberRange(min: number, max: number) {
   return (rule, value) => {
@@ -63,4 +78,51 @@ export function validTrimEmptyWithErrorWhenNeed(msg, needValid) {
       throw new Error(msg);
     }
   };
+}
+
+/**
+ * 校验 crontab 调度间隔是否符合最小间隔要求
+ * @param crontab - crontab 配置对象
+ * @param form - Ant Design 表单实例
+ * @param fieldName - 要设置错误的字段名，默认为 'crontab'
+ * @param clearErrorOnSuccess - 校验通过时是否清除错误，默认为 true
+ * @returns 校验是否通过
+ */
+export function validateCrontabInterval(
+  crontab: ICrontab | null,
+  form: FormInstance,
+  fieldName: string = 'crontab',
+): boolean {
+  if (!crontab?.cronString) {
+    return true;
+  }
+
+  const intervalMinutes = convertCronToMinutes(crontab.cronString);
+  const minSchedulingIntervalMinutes =
+    setting?.spaceConfigurations?.['odc.schedule.minSchedulingIntervalMinutes'];
+  const limit = Number(minSchedulingIntervalMinutes);
+
+  if (intervalMinutes && minSchedulingIntervalMinutes && intervalMinutes < limit) {
+    form.setFields([
+      {
+        name: fieldName,
+        errors: [
+          formatMessage(
+            { id: 'src.util.0BB62F3F', defaultMessage: '作业任务最小调度间隔不小于 {limit} 分钟' },
+            { limit },
+          ),
+        ],
+      },
+    ]);
+    return false;
+  }
+
+  form.setFields([
+    {
+      name: fieldName,
+      errors: [],
+    },
+  ]);
+
+  return true;
 }

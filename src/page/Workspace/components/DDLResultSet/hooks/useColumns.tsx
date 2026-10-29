@@ -15,7 +15,7 @@
  */
 
 import { ConnectionMode, ResultSetColumn } from '@/d.ts';
-import { isNlsColumn, isObjectColumn } from '@/util/column';
+import { isNlsColumn, isObjectColumn } from '@/util/database/column';
 import { isNil, isString, isUndefined } from 'lodash';
 import React, { useMemo } from 'react';
 import {

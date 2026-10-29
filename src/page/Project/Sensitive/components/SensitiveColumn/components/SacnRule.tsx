@@ -28,7 +28,7 @@ import { useWatch } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
 import MultipleDatabaseSelect from '@/component/Task/component/MultipleDatabaseSelect/index';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);

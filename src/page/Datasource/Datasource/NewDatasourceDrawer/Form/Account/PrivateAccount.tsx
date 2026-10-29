@@ -17,7 +17,7 @@
 import Action from '@/component/Action';
 import { IConnectionTestErrorType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { validTrimEmptyWithWarn } from '@/util/valid';
+import { validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import { Col, Form, Input, Row, Select, Space, Typography } from 'antd';
 import React, { useContext, useMemo, useState } from 'react';
 import DatasourceFormContext from '../context';

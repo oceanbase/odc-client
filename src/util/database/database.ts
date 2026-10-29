@@ -1,4 +1,3 @@
-import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -15,13 +14,12 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-export const ChineseAndEnglishAndNumberAndUnderline = {
-  pattern: /^[\w\u4e00-\u9fa5]*$/,
-  message: formatMessage({
-    id: 'odc.src.util.validRule.OnlyAllowInputChinese',
-    defaultMessage: '只允许输入中文，字母，数字与下划线',
-  }), //'只允许输入中文，字母，数字与下划线'
+import { IDatabase, DBType } from '@/d.ts/database';
+
+export const isLogicalDatabase = (db: IDatabase) => {
+  return db?.type === DBType.LOGICAL;
 };
-export const Required = {
-  required: true,
+
+export const isPhysicalDatabase = (db: IDatabase) => {
+  return db?.type === DBType.PHYSICAL;
 };

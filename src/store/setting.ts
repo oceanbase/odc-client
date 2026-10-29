@@ -24,11 +24,15 @@ import type { IUserConfig, ServerSystemInfo } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { isClient } from '@/util/env';
 import request from '@/util/request';
-import { isLinux, isWin64, kbToMb } from '@/util/utils';
+import { isLinux, isWin64 } from '@/util/env';
+import { kbToMb } from '@/util/data/byte';
 import { message } from 'antd';
 import { action, observable, computed } from 'mobx';
 import login, { sessionKey } from '@/store/login';
-import { EShareableIdentifierType, makeDataShareable } from '@/util/makeDataShareable';
+import {
+  EShareableIdentifierType,
+  makeDataShareable,
+} from '@/util/communication/makeDataShareable';
 import { IAIConfig, IModel } from '@/d.ts/llm';
 import { getAIConfig, updateAIConfig } from '@/common/network/largeModel';
 

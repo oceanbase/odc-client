@@ -1,14 +1,23 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { action, observable, runInAction } from 'mobx';
 import { safeParseJson } from '@/util/utils';
 import { isArray } from 'lodash';
 import { UserStore } from '@/store/login';
-
-/**
- * 工单作业页面参数缓存
- */
-
-export const SCHEDULE_PARAMS_PERSISTENCE_KEY = 'schedule:paramsPersistenceLocalKey';
-export const SCHEDULETASK_PARAMS_PERSISTENCE_KEY = 'scheduleTask:paramsPersistenceLocalKey';
 
 export enum PERSISTENCE_KEY {
   /** 作业-作业视角参数缓存 */

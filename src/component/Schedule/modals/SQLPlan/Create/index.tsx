@@ -1,8 +1,24 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { getAsyncTaskUploadUrl } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
-import { validateCrontabInterval } from '@/util/schedule';
+import { validateCrontabInterval } from '@/util/ui/validRule';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
 import { SQLContentType, TaskExecStrategy } from '@/d.ts';
@@ -616,13 +632,13 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
                     }),
                     value: SQLContentType.TEXT,
                   },
-                  // {
-                  //   label: formatMessage({
-                  //     id: 'odc.components.CreateSQLPlanTaskModal.UploadAnAttachment',
-                  //     defaultMessage: '上传附件',
-                  //   }),
-                  //   value: SQLContentType.FILE,
-                  // },
+                  {
+                    label: formatMessage({
+                      id: 'odc.components.CreateSQLPlanTaskModal.UploadAnAttachment',
+                      defaultMessage: '上传附件',
+                    }),
+                    value: SQLContentType.FILE,
+                  },
                 ]}
               />
             </Form.Item>

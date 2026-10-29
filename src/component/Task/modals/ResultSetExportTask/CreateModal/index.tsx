@@ -42,6 +42,7 @@ import styles from './index.less';
 import setting from '@/store/setting';
 import { rules } from './const';
 import dayjs from 'dayjs';
+import { stringSeparatorToCRLF } from '@/util/data/string';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -118,7 +119,14 @@ const CreateModal: React.FC<IProps> = (props) => {
           sql,
           fileFormat,
           fileEncoding,
-          csvFormat,
+          csvFormat: {
+            ...csvFormat,
+            ...{
+              lineSeparator: csvFormat?.lineSeparator
+                ? stringSeparatorToCRLF(csvFormat?.lineSeparator)
+                : undefined,
+            },
+          },
           fileName,
           maxRows,
           tableName,

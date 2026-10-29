@@ -24,7 +24,7 @@ import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import datasourceStatus from '@/store/datasourceStatus';
 import useGroupData from './useGroupData';
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { isPhysicalDatabase } from '@/util/database';
+import { isPhysicalDatabase } from '@/util/database/database';
 import { getGroupKey, getSecondGroupKey } from '../const';
 
 const DatabaseTree = function () {

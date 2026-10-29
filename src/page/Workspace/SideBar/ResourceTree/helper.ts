@@ -20,7 +20,7 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import { EventDataNode } from 'antd/lib/tree';
 import { ITableModel } from '../../components/CreateTable/interface';
 import { ResourceNodeType, TreeDataNode } from './type';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { IDatabase, DatabaseGroup } from '@/d.ts/database';
 import { ConnectType, IConnection, IMaterializedView } from '@/d.ts';
 import { ConnectTypeText } from '@/constant/label';

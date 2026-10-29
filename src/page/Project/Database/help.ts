@@ -1,9 +1,25 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { DatabaseGroup } from '@/d.ts/database';
 import { DataBaseOperationKey, getOperatioFunc } from '@/d.ts/operation';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { ProjectRole } from '@/d.ts/project';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import tracert from '@/util/tracert';
 import { formatMessage } from '@/util/intl';
 import { TaskPageType, TaskType, ConnectType } from '@/d.ts';
@@ -12,7 +28,7 @@ import { Modal, message } from 'antd';
 import modalStore from '@/store/modal';
 import { gotoSQLWorkspace } from '@/util/route';
 import { IProject } from '@/d.ts/project';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { deleteLogicalDatabse } from '@/common/network/logicalDatabase';
 import { IOperation } from '@/d.ts/operation';
 import { isString } from 'lodash';

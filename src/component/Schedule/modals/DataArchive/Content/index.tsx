@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { IScheduleRecord, IDataArchiveParameters } from '@/d.ts/schedule';
 import { Descriptions, Collapse, Space, Divider, message } from 'antd';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
@@ -6,13 +22,13 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { formatMessage } from '@/util/intl';
 import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import ArchiveRange from './ArchiveRange';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import {
   DirtyRowActionEnum,
   DirtyRowActionLabelMap,
 } from '@/component/ExecuteSqlDetailModal/constant';
-import { kbToMb, mbToKb } from '@/util/utils';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { kbToMb, mbToKb } from '@/util/data/byte';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/data/dateTime';
 import { InsertActionOptions } from '@/component/Schedule/modals/DataArchive/Create/helper';
 import { SyncTableStructureConfig } from '@/component/Task/const';
 import ThrottleEditableCell from '@/component/Task/component/ThrottleEditableCell';

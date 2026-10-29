@@ -23,7 +23,7 @@ import {
 import { testConnection } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { ConnectTypeText } from '@/constant/label';
 import { AccountType, ConnectType, IConnectionTestErrorType, DatasourceGroup } from '@/d.ts';
 import { IDatasource, IDataSourceType } from '@/d.ts/datasource';

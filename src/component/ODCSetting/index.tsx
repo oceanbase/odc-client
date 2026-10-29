@@ -41,7 +41,7 @@ import odcSetting, {
 
 import { ModalStore } from '@/store/modal';
 import setting, { getCurrentOrganizationId } from '@/store/setting';
-import { getODCSetting, saveODCSetting } from '@/util/client';
+import { getODCSetting, saveODCSetting } from '@/util/business/client';
 import { isClient } from '@/util/env';
 import { encrypt, safeParseJson } from '@/util/utils';
 import { inject, observer } from 'mobx-react';

@@ -21,20 +21,13 @@ import {
   IConnectionPropertyType,
   IDataType,
   IndexRange,
-  IPartitionType,
 } from '@/d.ts';
 import setting from '@/store/setting';
-import getIntl, { formatMessage } from '@/util/intl';
-import BigNumber from 'bignumber.js';
 import { JSEncrypt } from 'jsencrypt';
 import { isNil } from 'lodash';
-import dayjs from 'dayjs';
 import { isSqlEmpty } from './parser/sql';
-import { encodeIdentifiers, splitSql } from './sql';
-import type { RangePickerProps } from 'antd/es/date-picker';
+import { encodeIdentifiers, splitSql } from '@/util/data/sql';
 import { runInAction } from 'mobx';
-import { IOperationTypeRole } from '@/d.ts/schedule';
-export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
 
 /**
  * 解析 SID 为 key/value
@@ -68,7 +61,6 @@ export function extractResourceId(id: string): {
  * from 【D】
  * test;【E】
  */
-
 export async function getCurrentSQL(
   rawSQL: string,
   offset: number,
@@ -169,6 +161,7 @@ export async function getCurrentSQL(
 
   return null;
 }
+
 /**
  * dataShowType 到表格自定义编辑组件类型的映射
  */
@@ -212,21 +205,7 @@ export function convertDataTypeToDataShowType(dt: string = '', map: IDataType[])
   }
 
   return (r && r.showType) || ColumnShowType.TEXT;
-} // export function convertTimestamp({ value }) {
-//   return value && dayjs(value).format('YYYY-MM-DD HH:mm:ss');
-// }
-// export function convertYear({ value }) {
-//   return value && dayjs(value).format('YYYY');
-// }
-// export function convertDate({ value }) {
-//   return value && dayjs(value).format('YYYY-MM-DD');
-// }
-// export function convertDatetime({ value }) {
-//   return value && dayjs(value).format('YYYY-MM-DD HH:mm:ss');
-// }
-// export function convertTime({ value }) {
-//   return value;
-// }
+}
 
 export function isRangeDisabled(partitioned: boolean, dbMode: ConnectionMode | undefined): boolean {
   return !partitioned; // return !(partitioned && dbMode === ConnectionMode.OB_ORACLE);
@@ -249,6 +228,7 @@ export function getRangeInitialValue(
 export function sortString(a: string = '', b: string = ''): number {
   return (a || '').localeCompare(b || '');
 }
+
 export function sortNumber(a: number = 0, b: number = 0): number {
   if (a < b) {
     return -1;
@@ -260,6 +240,7 @@ export function sortNumber(a: number = 0, b: number = 0): number {
 
   return 0;
 }
+
 export function isSupportAutoIncrement(dataType: string = ''): boolean {
   return (
     ['int', 'tinyint', 'smallint', 'bigint', 'mediumint', 'float', 'double'].indexOf(
@@ -267,50 +248,11 @@ export function isSupportAutoIncrement(dataType: string = ''): boolean {
     ) > -1
   );
 }
-export function convertPartitionType(
-  isOracle: boolean,
-  partitionType: IPartitionType,
-): IPartitionType {
-  if (isOracle && partitionType === IPartitionType.RANGE) {
-    return IPartitionType.RANGE_COLUMNS;
-  }
 
-  if (isOracle && partitionType === IPartitionType.LIST) {
-    return IPartitionType.LIST_COLUMNS;
-  }
-
-  return partitionType;
-} // 根据列名长度计算结果集列的宽度
-
-export function calcColumnWidth(columnName: string): number {
-  // 右侧筛选 + 过滤宽度为 30，最小宽度 160
-  return Math.max(columnName.length * 10 + 38, 120);
-}
-export function getFormatDateTime(time: number) {
-  return time > 0 ? dayjs(time).format('YYYY-MM-DD HH:mm:ss') : '';
-}
-/**
- * 获取国际化时间
- */
-export function getLocalFormatDateTime(time: number) {
-  if (time <= 0) {
-    return '';
-  }
-  return new Date(time).toLocaleString(getIntl()?.locale, {
-    hour12: false,
-    month: 'short',
-    year: 'numeric',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-}
 /**
  * 生成一个唯一key
  * @param suffixStr key后缀
  */
-
 export const generateUniqKey = (function () {
   let key = 0;
   return function (suffixStr: string = ''): string {
@@ -318,136 +260,6 @@ export const generateUniqKey = (function () {
     return `${key}-${Date.now()}-${~~(Math.random() * 10000)}-${suffixStr || ''}`;
   };
 })();
-export function transformSecond(d: number) {
-  if (!d) {
-    d = 0;
-  }
-
-  let h = Math.floor(d / 3600);
-  let m = Math.floor((d % 3600) / 60);
-  let s = Math.floor((d % 3600) % 60);
-  let hDisplay = h > 0 ? h + 'h ' : '';
-  let mDisplay = m > 0 ? m + 'm ' : '';
-  let sDisplay = s > 0 ? s + 's' : '';
-  return hDisplay + mDisplay + sDisplay;
-}
-export function formatBytes(bytes: number, decimals: number = 2) {
-  if (bytes === 0 || !bytes) return '0 Bytes';
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-}
-/**
- * 将OB的时间转换成前端展示文案
- * 10d2h5s => 10天2小时5秒
- */
-
-export function transformOBConfigTimeStringToText(timeString: string) {
-  const rxp = /\d+(ms|us|[dhms])/gi;
-  let result = [];
-  let execArr;
-
-  while ((execArr = rxp.exec(timeString))) {
-    let dString = execArr[0] as string;
-    let unit = execArr[1];
-    let num = dString.substring(0, dString.length - unit.length);
-    result.push([num, unit]);
-  }
-
-  if (!result.length) {
-    return '0s';
-  }
-
-  return result
-    .map(([num, unit]) => {
-      switch (unit.toLowerCase()) {
-        case 'us': {
-          return (
-            num + formatMessage({ id: 'odc.src.util.utils.Microseconds', defaultMessage: '微秒' }) //微秒
-          );
-        }
-
-        case 'ms': {
-          return (
-            num + formatMessage({ id: 'odc.src.util.utils.Milliseconds', defaultMessage: '毫秒' }) //毫秒
-          );
-        }
-
-        case 's': {
-          return (
-            num + formatMessage({ id: 'odc.src.util.utils.Seconds', defaultMessage: '秒' }) //秒
-          );
-        }
-
-        case 'm': {
-          return (
-            num + formatMessage({ id: 'odc.src.util.utils.Minutes', defaultMessage: '分钟' }) //分钟
-          );
-        }
-
-        case 'h': {
-          return (
-            num + formatMessage({ id: 'odc.src.util.utils.Hours', defaultMessage: '小时' }) //小时
-          );
-        }
-
-        case 'd': {
-          return (
-            num + formatMessage({ id: 'odc.src.util.utils.Days', defaultMessage: '天' }) //天
-          );
-        }
-      }
-    })
-    .join('');
-}
-
-export function encodeObjName(str: string) {
-  return encodeURIComponent(str);
-}
-
-/**
- * TIMESTAMP(10) WITH LOCAL TIME ZONE => TIMESTAMP_WITH_LOCAL_TIME_ZONE
- */
-export function convertColumnType(columnType: string) {
-  return columnType
-    ?.replace(/\(\d+\)/g, '')
-    .replace(/\s/g, '_')
-    .toUpperCase();
-}
-
-export function convertRegexpStr(value: string) {
-  return value.replace(invalidRegexpStr, '');
-}
-
-export function encodeRegexpStr(value: string) {
-  return value.replace(invalidRegexpStr, '\\$&');
-}
-
-export function isWin64() {
-  return navigator.userAgent.toLowerCase().indexOf('win64') > -1;
-}
-
-export function isLinux() {
-  return navigator.userAgent.toLowerCase().indexOf('linux') > -1;
-}
-
-export function downloadFile(downloadUrl: string) {
-  /**
-   * 防止触发beforeunload提示
-   */
-  window._forceRefresh = true;
-  const aDom = document.createElement('a');
-  aDom.setAttribute('download', '');
-  aDom.setAttribute('href', downloadUrl);
-  document.body.appendChild(aDom);
-  aDom.click();
-  setTimeout(() => {
-    document.body.removeChild(aDom);
-    window._forceRefresh = false;
-  });
-}
 
 export function safeParseJson(str: string, defaultValue = null) {
   try {
@@ -471,41 +283,6 @@ export function generateRandomPassword() {
      ${String.fromCharCode(35 + Math.floor(Math.random() * 3))}
      `;
   return randomPassword.replace(/\s+/g, '');
-}
-
-export function generateAndDownloadFile(fileName: string, content: string) {
-  let aDom = document.createElement('a');
-  let fileBlob = new Blob([content]);
-  let event = document.createEvent('MouseEvents');
-  event.initMouseEvent(
-    'click',
-    true,
-    false,
-    document.defaultView,
-    0,
-    0,
-    0,
-    0,
-    0,
-    false,
-    false,
-    false,
-    false,
-    0,
-    null,
-  );
-  aDom.download = fileName;
-  aDom.href = URL.createObjectURL(fileBlob);
-  aDom.dispatchEvent(event);
-}
-
-/**
- *  遵循 RFC 3986 标准
- */
-export function fixedEncodeURIComponent(str) {
-  return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
-    return '%' + c.charCodeAt(0).toString(16);
-  });
 }
 
 /**
@@ -534,10 +311,6 @@ export function decrypt(str: string) {
   return str;
 }
 
-// 获取x天前的时间戳
-export function getPreTime(day: number = 0) {
-  return Date.now() - day * 24 * 60 * 60 * 1000;
-}
 export function getBlobValueKey(columnKey: string) {
   return columnKey + '%' + 'odc_lob_value_key$$$';
 }
@@ -547,183 +320,6 @@ export const getPrefixCls = (suffixCls: string, customizePrefixCls?: string) => 
   if (customizePrefixCls) return customizePrefixCls;
   return suffixCls ? `${prefixCls}-${suffixCls}` : prefixCls;
 };
-
-/**
- *
- * @param time 秒时间
- * @returns
- */
-export function formatTimeTemplate(time: number) {
-  if (isNaN(time)) {
-    return '-';
-  }
-  if (time === 0) {
-    return '0 s';
-  }
-  let unit = ['s', 'ms', 'us', 'ns'];
-  let timeNumber = BigNumber(time);
-  while (timeNumber.comparedTo(1) === -1 && unit?.length) {
-    timeNumber = timeNumber.multipliedBy(1000);
-    unit.shift();
-  }
-  if (!unit.length) {
-    return '0 s';
-  } else {
-    return `${BigNumber(timeNumber.toFixed(2)).toString()} ${unit?.[0]}`;
-  }
-}
-/**
- *
- * @param time 传入微秒级时间戳，
- * @returns 返回最大单位时间, 例: 6000us => 6ms
- */
-export function formatTimeTemplatMicroSeconds(time: number): string {
-  return formatTimeTemplate(BigNumber(time).div(1000000).toNumber());
-}
-
-export const hourToMilliSeconds = (hour: number) => {
-  const milliSeconds = hour ? hour * 60 * 60 * 1000 : undefined;
-  return milliSeconds;
-};
-
-export const milliSecondsToHour = (seconds: number) => {
-  const hour = seconds ? seconds / 60 / 60 / 1000 : undefined;
-  return hour;
-};
-
-export const hourToSeconds = (hour: number) => {
-  const seconds = hour ? hour * 60 * 60 : undefined;
-  return seconds;
-};
-
-export const secondsToHour = (seconds: number) => {
-  const hour = seconds ? seconds / 60 / 60 : undefined;
-  return hour;
-};
-
-// MB -> KB
-export const mbToKb = (value: number) => {
-  return value * 1024;
-};
-
-// KB -> MB
-export const kbToMb = (value: number) => {
-  return value / 1024;
-};
-
-// MB -> B
-export const mbToB = (value: number) => {
-  return value * 1024 * 1024;
-};
-
-// B -> MB
-export const bToMb = (value: number) => {
-  return value / 1024 / 1024;
-};
-
-/**
- * https://tc39.es/proposal-array-grouping/#sec-object.groupby
- * @param array object array => [{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}, { level: 3, name: 'test3'}]
- * @param property object key => 'level'
- * @returns group by object key
- * @example groupByPropertyName([{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}, { level: 3, name: 'test3'}], 'level')
- * @example return { 1: [{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}], 3: [{ level: 3, name: 'test3'}]}
- */
-export function groupByPropertyName(array: any[], property: string): Object {
-  if (!Array.isArray(array)) {
-    return {};
-  }
-  return array?.reduce((group, cur) => {
-    group[cur[property]] ??= [];
-    group?.[cur?.[property]].push(cur);
-    return group;
-  }, {});
-}
-
-export const disabledDate: RangePickerProps['disabledDate'] = (current) => {
-  return current && current < dayjs().subtract(1, 'days').endOf('day');
-};
-
-const range = (start: number, end: number) => {
-  const result = [];
-  for (let i = start; i < end; i++) {
-    result.push(i);
-  }
-  return result;
-};
-
-export const disabledTime = (selectedDate) => {
-  const now = dayjs();
-  if (!selectedDate) {
-    return {
-      disabledHours: () => range(0, 24),
-      disabledMinutes: () => range(0, 60),
-      disabledSeconds: () => range(0, 60),
-    };
-  }
-  if (selectedDate && selectedDate.isSame(now, 'day')) {
-    return {
-      disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
-      disabledMinutes: (selectedHour) => {
-        if (selectedHour === now.hour()) {
-          return Array.from({ length: now.minute() }, (_, i) => i);
-        }
-        return [];
-      },
-      disabledSeconds: (selectedHour, selectedMinute) => {
-        if (selectedHour === now.hour() && selectedMinute === now.minute()) {
-          return Array.from({ length: now.second() }, (_, i) => i);
-        }
-        return [];
-      },
-    };
-  }
-  return {};
-};
-
-export const stringSeparatorToCRLF = (separator: string) => {
-  return separator?.replace(/\\r/g, '\r')?.replace(/\\n/g, '\n');
-};
-
-export const CRLFToSeparatorString = (separator: string) => {
-  return separator?.replace(/\r/g, '\\r').replace(/\n/g, '\\n');
-};
-
-export function groupBySessionId(filteredRows) {
-  const sessionMap = new Map();
-
-  filteredRows.forEach((row) => {
-    const sessionId = row?.sessionId;
-
-    if (!sessionMap.has(sessionId)) {
-      sessionMap.set(sessionId, {
-        ...row,
-        children: [],
-      });
-    } else {
-      const existingEntry = sessionMap.get(sessionId);
-
-      if (row.status === 'ACTIVE' && existingEntry.status !== 'ACTIVE') {
-        sessionMap.set(sessionId, {
-          ...row,
-          children: [existingEntry, ...existingEntry.children],
-        });
-        delete existingEntry.children;
-      } else {
-        existingEntry?.children?.push(row);
-      }
-    }
-  });
-
-  const cleanedSessions = Array.from(sessionMap.values()).map((entry) => {
-    if (entry.children && entry.children.length === 0) {
-      delete entry.children;
-    }
-    return entry;
-  });
-
-  return cleanedSessions;
-}
 
 export async function getSpaceConfigForFormInitialValue(isShow, callback) {
   if (isShow) {
@@ -735,133 +331,4 @@ export async function getSpaceConfigForFormInitialValue(isShow, callback) {
   } else {
     callback();
   }
-}
-
-/** 根据Key去重数组 */
-export const uniqueTools = (tools) => {
-  return Array.from(new Map(tools.map((obj) => [obj.key, obj])).values());
-};
-
-export const flatArray = (array: any[]): any[] => {
-  return array?.reduce?.((pre, cur) => pre?.concat(Array.isArray(cur) ? flatArray(cur) : cur), []);
-};
-
-/** 工单、作业、作业类任务权限判断 */
-export const widthPermission = (
-  /** 权限判断函数 */
-  fn: (hasPermission: boolean) => boolean,
-  /** 操作需要的权限列表 */
-  ActionsNeedRoles: IOperationTypeRole[] = [],
-  /** 当前工单的权限列表 */
-  taskIRoles: IOperationTypeRole[] = [],
-): (() => boolean) => {
-  let hasPermission = false;
-  /** ActionsNeedRoles为空数组 代表不需要权限 */
-  if (ActionsNeedRoles?.length === 0) {
-    hasPermission = true;
-  }
-
-  for (let i of taskIRoles) {
-    if (ActionsNeedRoles?.includes(i)) {
-      hasPermission = true;
-      break;
-    }
-  }
-  return () => fn(hasPermission);
-};
-
-export const valueFilter = (value: string) => {
-  return value.replace(/[\n\r\v\t\f\s]/g, '');
-};
-
-export const maskAPIKey = (apiKey: string) => {
-  if (apiKey.length <= 3) {
-    return apiKey; // 如果长度小于等于3，直接返回原字符串
-  }
-
-  const firstPart = apiKey.slice(0, 2); // 取前两位
-  const lastPart = apiKey.slice(-1); // 取最后一位
-  const maskedPart = '*'.repeat(apiKey.length - 3); // 生成遮盖部分
-
-  return `${firstPart}${maskedPart}${lastPart}`; // 拼接结果
-};
-
-export function getLanguageFromResourceType(type?: string): string {
-  if (!type) return 'text';
-
-  const lowerType = type.toLowerCase();
-  if (lowerType.includes('java') || lowerType.includes('jar')) {
-    return 'java';
-  } else if (lowerType.includes('python') || lowerType.includes('py')) {
-    return 'python';
-  } else if (lowerType.includes('javascript') || lowerType.includes('js')) {
-    return 'javascript';
-  } else if (lowerType.includes('sql')) {
-    return 'sql';
-  } else if (lowerType.includes('xml')) {
-    return 'xml';
-  } else if (lowerType.includes('json')) {
-    return 'json';
-  }
-  return 'text';
-}
-
-/**
- * 检查内容大小是否在 1MB 限制内
- * @param content 文件内容
- * @returns 是否在限制内
- */
-export const isContentSizeWithinLimit = (content: string): boolean => {
-  if (!content) return true;
-
-  // 使用 TextEncoder 计算准确的字节数
-  const byteSize = new TextEncoder().encode(content).length;
-  const maxSize = 1024 * 1024; // 1MB
-
-  return byteSize <= maxSize;
-};
-
-/**
- * 根据保存的键顺序对数组进行排序
- * 已保存的项按照保存的顺序排列在前面，新增的项排列在后面
- *
- * @param items 需要排序的数组
- * @param savedOrder 保存的键顺序数组
- * @param keyExtractor 从数组项提取键的函数，默认提取 key 属性
- * @returns 排序后的新数组（不修改原数组）
- *
- * @example
- * const items = [{ key: 'a' }, { key: 'b' }, { key: 'c' }, { key: 'd' }];
- * const savedOrder = ['c', 'a'];
- * const sorted = sortByPreservedOrder(items, savedOrder);
- * // 结果: [{ key: 'c' }, { key: 'a' }, { key: 'b' }, { key: 'd' }]
- * // 'c' 和 'a' 按保存的顺序排在前面，'b' 和 'd' 作为新增项排在后面
- */
-export function sortByPreservedOrder<T>(
-  items: T[],
-  savedOrder: React.Key[],
-  keyExtractor: (item: T) => React.Key = (item: any) => item.key,
-): T[] {
-  return items.slice().sort((a, b) => {
-    const aIndex = savedOrder.indexOf(keyExtractor(a));
-    const bIndex = savedOrder.indexOf(keyExtractor(b));
-
-    // Both items are in saved order, sort by saved order
-    if (aIndex !== -1 && bIndex !== -1) {
-      return aIndex - bIndex;
-    }
-
-    // Only a is in saved order, a comes first
-    if (aIndex !== -1) {
-      return -1;
-    }
-
-    // Only b is in saved order, b comes first
-    if (bIndex !== -1) {
-      return 1;
-    }
-
-    // Both are new items, maintain original order
-    return 0;
-  });
 }

@@ -17,7 +17,7 @@
 import DisplayTable from '@/component/DisplayTable';
 import { TraceSpanNode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { formatTimeTemplatMicroSeconds } from '@/util/utils';
+import { formatTimeTemplatMicroSeconds } from '@/util/data/dateTime';
 import { CopyOutlined } from '@ant-design/icons';
 import { message, Popover, Tooltip } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';

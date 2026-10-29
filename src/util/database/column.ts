@@ -17,7 +17,7 @@
 import { ConnectionMode, IColumn, IColumnSizeMap } from '@/d.ts';
 import BigNumber from 'bignumber.js';
 import { isNil } from 'lodash';
-import { convertColumnType } from './utils';
+import { convertColumnType } from '@/util/data/string';
 
 /**
  * 获取数字类型字段的最大值

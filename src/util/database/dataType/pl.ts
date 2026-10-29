@@ -15,7 +15,19 @@
  */
 
 import PLTYPE from '@/constant/plType';
-import { getRealNameInDatabase } from './sql';
+import { getRealNameInDatabase } from '@/util/data/sql';
+
+function removePkgBodyAndHead(plName, plType) {
+  if (!plName || ![PLTYPE.PKG_BODY, PLTYPE.PKG_HEAD].includes(plType)) {
+    return plName;
+  }
+  const arr = plName.split('.');
+  if (['body', 'head'].includes(arr[arr.length - 1])) {
+    arr.pop();
+    return arr.join('.');
+  }
+  return plName;
+}
 
 export function getPLName(plType: any, entryName: string, packageName?: string) {
   switch (plType) {
@@ -37,18 +49,6 @@ export function getPLName(plType: any, entryName: string, packageName?: string) 
       return entryName;
   }
   return null;
-}
-
-function removePkgBodyAndHead(plName, plType) {
-  if (!plName || ![PLTYPE.PKG_BODY, PLTYPE.PKG_HEAD].includes(plType)) {
-    return plName;
-  }
-  const arr = plName.split('.');
-  if (['body', 'head'].includes(arr[arr.length - 1])) {
-    arr.pop();
-    return arr.join('.');
-  }
-  return plName;
 }
 
 export function getEntryNameFromPLName(plType: any, plName: string, fromPackage: boolean = false) {

@@ -15,9 +15,9 @@
  */
 
 import setting from '@/store/setting';
-import { uploadFileToOSS } from '@/util/aliyun';
+import { uploadFileToOSS } from '@/common/network/aliyun';
 import { formatMessage } from '@/util/intl';
-import { encodeRegexpStr } from '@/util/utils';
+import { encodeRegexpStr } from '@/util/data/string';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useUnmountedRef } from 'ahooks';
 import { Button, Input, Space, Tooltip, Upload } from 'antd';

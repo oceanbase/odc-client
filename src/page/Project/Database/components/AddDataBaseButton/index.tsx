@@ -42,7 +42,7 @@ import {
 } from 'antd';
 import { useContext, useState } from 'react';
 import { IConnection } from '@/d.ts';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import settingStore from '@/store/setting';
 import DatasourceSelectEmpty from '@/component/Empty/DatasourceSelectEmpty';
 interface IProps {

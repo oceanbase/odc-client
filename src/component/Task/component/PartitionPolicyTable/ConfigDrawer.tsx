@@ -241,17 +241,28 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 </div>
               ) : (
                 <div style={{ marginBottom: 16, marginTop: 8 }}>
-                  {formatMessage(
-                    {
-                      id: 'src.component.Task.component.PartitionPolicyTable.F6F3B2EC',
-                      defaultMessage:
-                        '自定义：{partitionNameInvokerParametersPartitionNameGeneratorConfigGenerateExpr}',
-                    },
-                    {
-                      partitionNameInvokerParametersPartitionNameGeneratorConfigGenerateExpr:
-                        partitionNameInvokerParameters?.partitionNameGeneratorConfig?.generateExpr,
-                    },
-                  )}
+                  <Descriptions column={1}>
+                    <Descriptions.Item
+                      label={formatMessage({
+                        id: 'odc.component.ColumnSelector.Custom',
+                        defaultMessage: '自定义',
+                      })}
+                    >
+                      {partitionNameInvokerParameters?.partitionNameGeneratorConfig?.generateExpr}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item
+                      label={formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.7BC3752C',
+                        defaultMessage: '命名间隔',
+                      })}
+                    >
+                      {
+                        partitionNameInvokerParameters?.partitionNameGeneratorConfig
+                          ?.intervalGenerateExpr
+                      }
+                    </Descriptions.Item>
+                  </Descriptions>
                 </div>
               )
             }

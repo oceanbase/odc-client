@@ -1,8 +1,24 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getTableListByDatabaseName } from '@/common/network/table';
 import { previewSqlStatements } from '@/common/network/task';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
 import { convertCronToMinutes } from '@/component/Crontab/utils';
-import { validateCrontabInterval } from '@/util/schedule';
+import { validateCrontabInterval } from '@/util/ui/validRule';
 
 import FormItemPanel from '@/component/FormItemPanel';
 import { IDatabase } from '@/d.ts/database';
@@ -25,7 +41,8 @@ import {
 import { dmlPreCheckResult, SchedulePageType, ScheduleType } from '@/d.ts/schedule';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
-import { hourToMilliSeconds, kbToMb, mbToKb, milliSecondsToHour } from '@/util/utils';
+import { kbToMb, mbToKb } from '@/util/data/byte';
+import { hourToMilliSeconds, milliSecondsToHour } from '@/util/data/dateTime';
 import { Button, Checkbox, Form, Modal, Popover, Radio, Space, Spin, Tooltip, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import dayjs from 'dayjs';
@@ -34,7 +51,7 @@ import DatabaseSelect from '@/component/Task/component/DatabaseSelect';
 import SQLPreviewModal from '@/component/Task/component/SQLPreviewModal';
 import TaskdurationItem from '@/component/Task/component/TaskdurationItem';
 import ThrottleFormItem from '@/component/Task/component/ThrottleFormItem';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import ShardingStrategyItem from '@/component/Schedule/components/ShardingStrategyFormItem';
 import DirtyRowAction from '@/component/Task/component/DirtyRowAction';
 import MaxAllowedDirtyRowCount from '@/component/Task/component/MaxAllowedDirtyRowCount';

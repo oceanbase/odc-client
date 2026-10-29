@@ -21,7 +21,7 @@ import StatusLabel, { status } from '@/component/Task/component/Status';
 import DetailModal from '@/component/Task/modals/DetailModals';
 import { TaskDetail, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { FilterOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';

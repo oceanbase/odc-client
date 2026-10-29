@@ -17,7 +17,7 @@
 import Dragable, { IDragable } from '@/component/Dragable';
 import { ReactComponent as DragSvg } from '@/svgr/DragItem.svg';
 import { formatMessage } from '@/util/intl';
-import { encodeRegexpStr } from '@/util/utils';
+import { encodeRegexpStr } from '@/util/data/string';
 import Icon, { DeleteOutlined, LoadingOutlined, PaperClipOutlined } from '@ant-design/icons';
 import { Popconfirm, Progress, Space, Tooltip } from 'antd';
 import type { UploadFile } from 'antd/lib/upload/interface';

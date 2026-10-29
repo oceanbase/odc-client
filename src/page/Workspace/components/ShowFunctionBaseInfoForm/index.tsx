@@ -17,7 +17,7 @@
 import ObjectInfoView from '@/component/ObjectInfoView';
 import type { IFunction } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { Component } from 'react';
 
 interface IProps {

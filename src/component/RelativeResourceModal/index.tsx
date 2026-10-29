@@ -20,7 +20,7 @@ import { useRequest, useSetState } from 'ahooks';
 import { Modal, Radio, Table, Checkbox, Space, Typography, Spin, Button, Tooltip } from 'antd';
 
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { getResourceDependencies } from '@/common/network/relativeResource';
 
 import { TaskDetail, TaskRecordParameters, TaskStatus, TaskType } from '@/d.ts';

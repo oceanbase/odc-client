@@ -33,7 +33,7 @@ import { IPageType } from '@/d.ts/_index';
 import type { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Button, message, Modal, Space } from 'antd';
 import { inject, observer } from 'mobx-react';

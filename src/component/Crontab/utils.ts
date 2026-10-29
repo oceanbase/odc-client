@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import parser from 'cron-parser';
 import { initial, last } from 'lodash';
 import { cronErrorMessage, initCronString, weekOptions } from './const';

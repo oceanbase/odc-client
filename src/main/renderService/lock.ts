@@ -22,7 +22,7 @@ import MainServer from '../server/main';
 import { getJavaDBFilePath } from '../utils';
 import log from '../utils/log';
 
-const secret = Buffer.from('***REMOVED***=', 'base64');
+const secret = Buffer.from('**********************************', 'base64');
 
 const pwdFile = path.join(app.getPath('userData'), 'BYPZGDX');
 

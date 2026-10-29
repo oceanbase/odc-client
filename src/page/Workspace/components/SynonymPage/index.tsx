@@ -27,7 +27,7 @@ import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { AlignLeftOutlined, CloudDownloadOutlined } from '@ant-design/icons';
 import { Layout, message } from 'antd';
 import { inject, observer } from 'mobx-react';

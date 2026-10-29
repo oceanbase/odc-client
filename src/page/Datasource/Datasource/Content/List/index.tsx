@@ -34,7 +34,7 @@ import ListItem from '../ListItem';
 import LoadingItem from '../ListItem/Loading';
 import ConnectionName from './ConnectionNameItem';
 import MoreBtn from './MoreBtn';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { DataSourceEmpty } from '@/component/Empty/DataSourceEmpty';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IPageType } from '@/d.ts/_index';
