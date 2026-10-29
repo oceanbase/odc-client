@@ -380,8 +380,15 @@ export async function getClusterAndTenantList(visibleScope: IConnectionType): Pr
   return results?.data;
 }
 
-export async function deleteConnection(cid: string): Promise<boolean> {
-  const res = await request.delete(`/api/v2/datasource/datasources/${cid}`);
+export async function deleteConnection(
+  cid: string,
+  ignoreError: boolean = false,
+): Promise<boolean> {
+  const res = await request.delete(`/api/v2/datasource/datasources/${cid}`, {
+    params: {
+      ignoreError,
+    },
+  });
   return res?.data;
 }
 

@@ -28,7 +28,7 @@ import { listProjects } from '@/common/network/project';
 import { useParams } from '@umijs/max';
 import { toInteger } from 'lodash';
 import datasourceStatus from '@/store/datasourceStatus';
-import { listDatabases } from '@/common/network/database';
+import { listDatabases, listDatabasesParams } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { DBObjectSyncStatus, DatabaseGroup } from '@/d.ts/database';
 import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
@@ -90,7 +90,7 @@ export default function WorkspaceStore({ children }) {
     manual: true,
   });
 
-  const { run: fetchDatabases, loading: dbLoading } = useRequest(listDatabases, {
+  const { run: fetchDatabases } = useRequest(listDatabases, {
     manual: true,
   });
 
@@ -106,26 +106,31 @@ export default function WorkspaceStore({ children }) {
   }, []);
 
   const reloadDatabaseList = useCallback(async () => {
-    const data = await fetchDatabases(
-      null,
-      null,
-      1,
-      99999,
-      null,
-      null,
-      login.isPrivateSpace(),
-      true,
-      true,
-    );
-    setDatabaseList(data?.contents || []);
-    return data?.contents;
-  }, []);
+    const params: listDatabasesParams = {
+      page: 1,
+      size: 99999,
+      containsUnassigned: true,
+      existed: true,
+      includesPermittedAction: true,
+    };
+    // 个人空间不需要获取数据库的权限
+    if (login?.isPrivateSpace()) {
+      params.includesPermittedAction = false;
+    }
+    const data = await fetchDatabases(params);
+    let list = data?.contents;
+    if (!login?.isPrivateSpace()) {
+      list = data?.contents?.filter((item) => !!item?.authorizedPermissionTypes?.length) || [];
+    }
+    setDatabaseList(list);
+    return list;
+  }, [login?.isPrivateSpace()]);
 
   const { run: pollingDatabase, cancel } = useRequest(
     async () => {
       const databaseList = await reloadDatabaseList();
       const arr = [DBObjectSyncStatus.SYNCING, DBObjectSyncStatus.PENDING];
-      if (!databaseList?.find((item) => arr.includes(item.objectSyncStatus))) {
+      if (!databaseList?.find((item) => arr?.includes(item.objectSyncStatus))) {
         cancel();
       }
     },

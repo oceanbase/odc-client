@@ -18,7 +18,7 @@
  * 后端的API需要的path
  */
 import { ConnectionPropertyType } from '@/d.ts/datasource';
-import { encodeObjName } from '@/util/utils';
+import { encodeObjName } from '@/util/data/string';
 
 export function generateDatabaseSid(databaseName: string = '', sessionId?: string): string {
   return `sid:${sessionId}:d:${encodeObjName(databaseName)}`;

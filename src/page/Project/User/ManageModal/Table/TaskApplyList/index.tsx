@@ -23,8 +23,8 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
-import TaskDetailModal from '@/component/Task/DetailModal';
+import TaskDetailModal from '@/component/Task/modals/DetailModals';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 import type { IResponseData } from '@/d.ts';
 import { TaskType } from '@/d.ts';
 import { ITablePermission, TablePermissionStatus } from '@/d.ts/project';
@@ -294,6 +294,10 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         rowSelecter={
           isOwner || isDBA
             ? {
+                selectAllText: formatMessage({
+                  id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.88383CDB',
+                  defaultMessage: '全选当前页',
+                }),
                 options: [
                   {
                     okText: formatMessage({

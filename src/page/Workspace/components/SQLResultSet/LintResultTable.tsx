@@ -18,7 +18,7 @@ import { formatMessage } from '@/util/intl';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
-import { groupByPropertyName } from '@/util/utils';
+import { groupByPropertyName } from '@/util/data/array';
 import { Button, Table } from 'antd';
 import classNames from 'classnames';
 import { useCallback, useEffect, useState } from 'react';

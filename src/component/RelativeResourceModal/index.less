@@ -1,0 +1,130 @@
+.deleteDataSourceModal {
+  .secondaryText {
+    margin-left: 4px;
+  }
+  .scheduleName {
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    cursor: pointer;
+    .title,
+    .disabledTitle {
+      font-size: 12px;
+      line-height: 20px;
+      font-weight: 600;
+    }
+    .title:hover {
+      color: var(--text-color-link);
+    }
+    .disabledTitle {
+      color: var(--text-color-hint);
+      cursor: not-allowed;
+    }
+  }
+  .recordScheduleName {
+    display: flex;
+    flex-direction: row;
+    .recordId {
+      margin-left: 4px;
+    }
+  }
+
+  .taskName {
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    &:hover {
+      color: var(--text-color-link);
+      cursor: pointer;
+    }
+    .title,
+    .disabledTitle {
+      width: 433px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      .titleText {
+        font-weight: 600;
+      }
+    }
+    .disabledTitle {
+      font-size: 12px;
+      line-height: 20px;
+      cursor: not-allowed;
+      color: var(--text-color-hint);
+    }
+  }
+
+  .statusColumn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 12px;
+    gap: 8px;
+
+    :global {
+      .anticon {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .ant-checkbox-wrapper {
+      font-size: 14px;
+      color: var(--text-color-secondary);
+
+      .ant-checkbox {
+        margin-right: 8px;
+      }
+    }
+
+    .error {
+      color: var(--text-color-error);
+
+      :global {
+        .ant-checkbox {
+          .ant-checkbox-inner {
+            border: 1px solid var(--text-color-error);
+          }
+        }
+      }
+    }
+
+    .confirmText {
+      transition: color 0.3s ease;
+
+      &.error {
+        color: var(--text-color-error);
+        animation: shake 0.5s ease-in-out;
+      }
+    }
+  }
+
+  // 动画定义
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+      transform: translateX(-2px);
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+      transform: translateX(2px);
+    }
+  }
+}

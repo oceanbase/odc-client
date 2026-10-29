@@ -24,7 +24,7 @@ import { InputNumberEditor } from '@/page/Workspace/components/EditableTable/Edi
 import { WrapSelectEditor } from '@/page/Workspace/components/EditableTable/Editors/SelectEditor';
 import { TextEditor } from '@/page/Workspace/components/EditableTable/Editors/TextEditor';
 import SessionStore from '@/store/sessionManager/session';
-import { mergeDataType } from '@/util/dataType';
+import { mergeDataType } from '@/util/database/dataType';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
 import {

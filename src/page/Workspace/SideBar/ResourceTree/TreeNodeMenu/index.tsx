@@ -28,17 +28,12 @@ import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
-import { ReactNode, useContext, useMemo } from 'react';
+import { ReactNode, useContext, useMemo, useState } from 'react';
 import { menuAccessWrap } from './config/database';
 import IconLoadingWrapper from './IconLoadingWrapper';
 import { ItemType } from 'antd/es/menu/interface';
 
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import { SearchOutlined } from '@ant-design/icons';
-import {
-  isSupportQuickOpenGlobalSearchNodes,
-  isGroupNode,
-} from '@/page/Workspace/SideBar/ResourceTree/const';
 import { openGlobalSearch } from '@/page/Workspace/SideBar/ResourceTree/const';
 import login from '@/store/login';
 
@@ -60,10 +55,17 @@ const TreeNodeMenu = (props: IProps) => {
   const { type = '', dbSession, node, pollingDatabase } = props;
   const treeContext = useContext(ResourceTreeContext);
   const { setCurrentObject, groupMode } = treeContext || {};
+  const [hover, setHover] = useState(false);
 
   const showTip = useMemo(() => {
-    return ![DatabaseGroup.dataSource].includes(groupMode);
-  }, [groupMode]);
+    // 外部资源节点不展示 tip
+    const isExternalResourceNode = [
+      ResourceNodeType.ExternalResourceRoot,
+      ResourceNodeType.ExternalResource,
+    ].includes(type as ResourceNodeType);
+
+    return ![DatabaseGroup.dataSource].includes(groupMode) && !isExternalResourceNode;
+  }, [groupMode, type]);
 
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
@@ -72,16 +74,10 @@ const TreeNodeMenu = (props: IProps) => {
   /**
    * 非database的情况下，必须存在session
    */
-  const isSessionValid = type === ResourceNodeType.Database || dbSession;
-
-  let isShowGlobalSearchEntrance = isSupportQuickOpenGlobalSearchNodes(
-    type as ResourceNodeType,
-    node.key,
-  );
-  if (type === ResourceNodeType.Database) {
-    isShowGlobalSearchEntrance =
-      isShowGlobalSearchEntrance && Boolean(node?.data?.authorizedPermissionTypes?.length);
-  }
+  const isSessionValid =
+    [ResourceNodeType.Database, ResourceNodeType.GroupNodeProject].includes(
+      type as ResourceNodeType,
+    ) || dbSession;
 
   /**
    * 只有dbobjecttype的情况下才可以拖动，因为编辑器需要type才能做出对应的响应
@@ -89,6 +85,12 @@ const TreeNodeMenu = (props: IProps) => {
    */
   const titleNode = (
     <span
+      onMouseEnter={() => {
+        setHover(true);
+      }}
+      onMouseLeave={() => {
+        setHover(false);
+      }}
       onDoubleClick={(e) => {
         e.stopPropagation();
         if (!dbSession && type !== ResourceNodeType.Database) {
@@ -96,7 +98,10 @@ const TreeNodeMenu = (props: IProps) => {
         }
         node.doubleClick?.(dbSession, node);
       }}
-      className={classNames('ant-tree-title', styles.fullWidthTitle)}
+      className={classNames('ant-tree-title', styles.fullWidthTitle, {
+        [styles.p12]: !login?.isPrivateSpace() && hover,
+        [styles.p24]: login?.isPrivateSpace() && hover,
+      })}
       onClick={() => {
         setCurrentObject?.({
           value: node.key,
@@ -113,17 +118,6 @@ const TreeNodeMenu = (props: IProps) => {
       {node.tip && showTip ? (
         <span style={{ color: 'var(--text-color-hint)', paddingLeft: 5 }}>{node.tip}</span>
       ) : null}
-      {isGroupNode(type) && isShowGlobalSearchEntrance ? (
-        <SearchOutlined
-          className={treeStyles.menuActions}
-          onClick={(e) => {
-            openGlobalSearch(node);
-            e.stopPropagation();
-          }}
-        />
-      ) : (
-        ''
-      )}
     </span>
   );
 
@@ -230,16 +224,6 @@ const TreeNodeMenu = (props: IProps) => {
     let ellipsisItemsProp: ItemType[] = getMenuItems(ellipsisItems);
     return (
       <div className={treeStyles.menuActions}>
-        {isShowGlobalSearchEntrance ? (
-          <SearchOutlined
-            onClick={(e) => {
-              openGlobalSearch(node);
-              e.stopPropagation();
-            }}
-          />
-        ) : (
-          ''
-        )}
         {menuItems
           .map((item) => {
             const isHideItem = item.isHide ? item.isHide(dbSession, node) : false;
@@ -277,6 +261,8 @@ const TreeNodeMenu = (props: IProps) => {
                 onMenuClick(clickMap[info.key]);
               },
             }}
+            overlayClassName={treeStyles.dropdownMenu}
+            destroyOnHidden
             trigger={['hover']}
           >
             <div className={styles.actionItem}>
@@ -303,6 +289,8 @@ const TreeNodeMenu = (props: IProps) => {
       <Popover
         showArrow={false}
         placement="right"
+        align={{ offset: [30, 0] }}
+        destroyOnHidden
         content={
           node.type === ResourceNodeType.Database ? (
             <ConnectionPopover
@@ -325,6 +313,8 @@ const TreeNodeMenu = (props: IProps) => {
             },
           }}
           trigger={['contextMenu']}
+          overlayClassName={treeStyles.dropdownMenu}
+          destroyOnHidden
         >
           {nodeChild}
         </Dropdown>

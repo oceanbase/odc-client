@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { message } from 'antd';
 import { ODC } from '../odc';
 

@@ -23,7 +23,7 @@ import { ReactComponent as RedoSvg } from '@/svgr/Redo.svg'; // @ts-ignore
 import { IEditor } from '@/component/MonacoEditor';
 import SessionStore from '@/store/sessionManager/session';
 import { ReactComponent as UndoSvg } from '@/svgr/Undo.svg';
-import { textExpaste } from '@/util/sql';
+import { textExpaste } from '@/util/data/sql';
 import type { ToolBarActions } from '..';
 import { getStatus } from './pl';
 

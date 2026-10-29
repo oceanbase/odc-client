@@ -18,7 +18,7 @@ import styles from './index.less';
 import TraceTree from './TraceTree';
 import TraceTable from './TraceTable';
 import { ExpandTraceSpan } from '.';
-import { formatTimeTemplatMicroSeconds } from '@/util/utils';
+import { formatTimeTemplatMicroSeconds } from '@/util/data/dateTime';
 
 const TraceTreeTable: React.FC<{
   innerTreeData: ExpandTraceSpan[];

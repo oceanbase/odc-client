@@ -14,25 +14,138 @@
  * limitations under the License.
  */
 
+import { modifySync } from '@/common/network/ai';
+import { getMaterializedView } from '@/common/network/materializedView';
 import { getTableColumnList, getTableInfo } from '@/common/network/table';
 import { getView } from '@/common/network/view';
 import { ConnectionMode, ITableColumn } from '@/d.ts';
+import { AIQuestionType } from '@/d.ts/ai';
 import { TableColumn } from '@/page/Workspace/components/CreateTable/interface';
 import SessionStore from '@/store/sessionManager/session';
-import { getRealNameInDatabase } from '@/util/sql';
+import setting from '@/store/setting';
+import { getRealNameInDatabase } from '@/util/data/sql';
 import type { IModelOptions } from '@oceanbase-odc/monaco-plugin-ob/dist/type';
 
 function hasConnect(session: SessionStore) {
   return session?.sessionId && session?.database?.dbName;
 }
+let completionToken: number = 0;
 
 export function getModelService(
-  { modelId, delimiter },
+  { modelId, delimiter, editor, enableAICompletion = false },
   sessionFunc: () => SessionStore,
 ): IModelOptions {
   return {
     get delimiter() {
       return delimiter();
+    },
+    llm: {
+      async completions(input, cursorPosition) {
+        if (
+          !enableAICompletion ||
+          !setting.enableAIInlineCompletion ||
+          !setting.AIEnabled ||
+          !input?.trim() ||
+          input?.length > 5000
+        ) {
+          return '';
+        }
+        const selfToken = ++completionToken;
+
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(true);
+          }, 1000);
+        })
+          .then(() => {
+            setting.isAIThinking = true;
+            if (selfToken !== completionToken) {
+              return '';
+            }
+            return modifySync({
+              input,
+              fileName: '',
+              questionType: AIQuestionType.SQL_COMPLETION,
+              model: setting.AIConfig?.defaultLlmModel,
+              sid: sessionFunc()?.sessionId,
+              fileContent: input,
+              databaseId: sessionFunc()?.odcDatabase?.id,
+              cursorPosition,
+            });
+          })
+          .then((v) => {
+            setting.isAIThinking = false;
+
+            if (v && v.trim() && editor) {
+              // 标记有未接受的 AI 补全内容
+              setting.hasUnacceptedAICompletion = true;
+
+              // 监听编辑器事件，用于重置状态
+              const disposables: Array<{ dispose: () => void } | null> = [];
+              let isDisposed = false;
+
+              const resetState = () => {
+                if (isDisposed) return;
+                isDisposed = true;
+
+                setTimeout(() => {
+                  setting.hasUnacceptedAICompletion = false;
+                  // 清理所有事件监听器
+                  disposables.forEach((d) => {
+                    try {
+                      d?.dispose?.();
+                    } catch (e) {
+                      // 忽略清理错误
+                    }
+                  });
+                  disposables.length = 0;
+                }, 100);
+              };
+
+              try {
+                // 监听内容变化（用户接受补全或输入其他内容）
+                const contentChangeDisposable = editor.onDidChangeModelContent(() => {
+                  resetState();
+                });
+                if (contentChangeDisposable) {
+                  disposables.push(contentChangeDisposable);
+                }
+
+                // 监听光标移动（用户可能按 Esc 拒绝或移动到其他位置）
+                const cursorChangeDisposable = editor.onDidChangeCursorPosition(() => {
+                  resetState();
+                });
+                if (cursorChangeDisposable) {
+                  disposables.push(cursorChangeDisposable);
+                }
+
+                // 监听编辑器失焦
+                const blurDisposable = editor.onDidBlurEditorWidget(() => {
+                  resetState();
+                });
+                if (blurDisposable) {
+                  disposables.push(blurDisposable);
+                }
+              } catch (e) {
+                // 如果注册监听器失败，直接重置状态
+                console.error('Failed to register editor listeners:', e);
+                isDisposed = true;
+                setting.hasUnacceptedAICompletion = false;
+              }
+
+              // 10 秒后自动重置（防止状态卡住）
+              setTimeout(() => {
+                resetState();
+              }, 10000);
+            }
+
+            return v;
+          })
+          .catch((e) => {
+            setting.isAIThinking = false;
+            return '';
+          });
+      },
     },
     async getTableList(schemaName: string) {
       const dbName = schemaName || sessionFunc()?.database?.dbName;
@@ -88,6 +201,8 @@ export function getModelService(
          */
         const isVirtualTable = realTableName?.includes('__all_virtual_');
         const isView = db?.views?.includes(realTableName);
+        const isExternalTable = db?.external_table?.includes(realTableName);
+        const isMaterializedView = db?.materialized_view?.includes(realTableName);
         if (isTable) {
           const columns = await getTableColumnList(realTableName, dbName, sessionFunc()?.sessionId);
           // 表
@@ -95,8 +210,7 @@ export function getModelService(
             columnName: column.name,
             columnType: column.type,
           }));
-        }
-        if (isVirtualTable) {
+        } else if (isVirtualTable) {
           const columns = await getTableColumnList(
             realTableName,
             'oceanbase',
@@ -107,13 +221,28 @@ export function getModelService(
             columnName: column.name,
             columnType: column.type,
           }));
-        }
-        if (isView) {
+        } else if (isView) {
           // 视图
           const view = await getView(realTableName, sessionFunc()?.sessionId, dbName);
           return view?.columns?.map((column: ITableColumn) => ({
             columnName: column.columnName,
             columnType: column.dataType,
+          }));
+        } else if (isExternalTable) {
+          const table = await getTableInfo(realTableName, dbName, sessionFunc()?.sessionId, true);
+          return table?.columns?.map((column: TableColumn) => ({
+            columnName: column.name,
+            columnType: column.type,
+          }));
+        } else if (isMaterializedView) {
+          const mView = await getMaterializedView({
+            materializedViewName: realTableName,
+            sessionId: sessionFunc()?.sessionId,
+            dbName,
+          });
+          return mView?.columns?.map((column: TableColumn) => ({
+            columnName: column.name,
+            columnType: column.type,
           }));
         }
       }

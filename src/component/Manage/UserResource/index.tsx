@@ -20,7 +20,11 @@ import DisplayTable from '@/component/DisplayTable';
 import RoleList, { useRoleListByIds } from '@/component/Manage/RoleList';
 import type { IManagerRole } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getSourceAuthLabelString, getSourceAuthOptions, sourceAuthMap } from '@/util/manage';
+import {
+  getSourceAuthLabelString,
+  getSourceAuthOptions,
+  sourceAuthMap,
+} from '@/util/business/manage';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';

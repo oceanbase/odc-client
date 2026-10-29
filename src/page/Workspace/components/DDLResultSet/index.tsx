@@ -42,10 +42,10 @@ import { downloadDataObject, getDataObjectDownloadUrl } from '@/common/network/t
 import SessionStore from '@/store/sessionManager/session';
 import { ReactComponent as MockSvg } from '@/svgr/mock_toolbar.svg';
 import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';
-import { getNlsValueKey, isObjectColumn } from '@/util/column';
+import { getNlsValueKey, isObjectColumn } from '@/util/database/column';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey, getBlobValueKey } from '@/util/utils';
-import { OBCompare, ODC_TRACE_SUPPORT_VERSION } from '@/util/versionUtils';
+import { OBCompare, ODC_TRACE_SUPPORT_VERSION } from '@/util/business/versionUtils';
 import Icon, {
   BarsOutlined,
   CheckOutlined,
@@ -158,6 +158,10 @@ interface IProps {
    * db 查询耗时
    */
   dbTotalDurationMicroseconds?: number;
+  /**
+   * 外部传入的初始limit值，优先级高于session中的queryLimit
+   */
+  initialLimit?: number;
   onRefresh?: (limit: number) => void;
   onSubmitRows?: (
     newRows,
@@ -177,6 +181,7 @@ interface IProps {
   ) => void;
   isExternalTable?: boolean; // 是否为外表
 }
+
 const DDLResultSet: React.FC<IProps> = function (props) {
   const {
     isTableData,
@@ -206,6 +211,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     withFullLinkTrace = false,
     withQueryProfile = false,
     traceEmptyReason = '',
+    initialLimit,
     onUpdateEditing,
     onRefresh,
     onShowExecuteDetail,
@@ -229,7 +235,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   /**
    * 数据量限制
    */
-  const [limit, setLimit] = useState(1000);
+  const [limit, setLimit] = useState(() => {
+    return initialLimit ?? session?.params?.queryLimit;
+  });
   /**
    * 表数据搜索
    */
@@ -402,7 +410,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     gridRef.current?.scrollToRow(0);
   }, [gridRef]);
   const handleExport = useCallback(() => {
-    onExport?.(limit || 1000);
+    onExport?.(limit);
   }, [onExport, limit]);
   const handleEditPropertyInCell = useCallback(
     (newRows) => {
@@ -856,7 +864,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         <SubmitConfirm
           key="modify-submit"
           onConfirm={() => {
-            onSubmitRows?.(editRows, limit || 1000, true, table.columns);
+            (document.activeElement as HTMLElement)?.blur();
+            setTimeout(() => {
+              onSubmitRows?.(gridRef.current.rows, limit || 1000, true, table.columns);
+            }, 0);
           }}
         >
           <ToolbarButton
@@ -883,12 +894,15 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         isShowText
         status={isSubmitting ? IConStatus.RUNNING : IConStatus.INIT}
         onClick={async () => {
-          setIsSubmitting(true);
-          try {
-            await onSubmitRows?.(editRows, limit || 1000, false, table.columns);
-          } finally {
-            setIsSubmitting(false);
-          }
+          (document.activeElement as HTMLElement)?.blur();
+          setTimeout(async () => {
+            setIsSubmitting(true);
+            try {
+              await onSubmitRows?.(gridRef.current.rows, limit || 1000, false, table.columns);
+            } finally {
+              setIsSubmitting(false);
+            }
+          }, 0);
         }}
       />,
     );
@@ -965,7 +979,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             key="commit"
             onConfirm={async () => {
               await sqlStore.commit(props.pageKey, sessionId, session?.database?.dbName);
-              onRefresh(limit || 1000);
+              onRefresh(limit);
             }}
             disabled={isInTransaction}
           >
@@ -981,7 +995,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             key="rollback"
             onConfirm={async () => {
               await sqlStore.rollback(props.pageKey, sessionId, session?.database?.dbName);
-              onRefresh(limit || 1000);
+              onRefresh(limit);
             }}
             isRollback
             disabled={isInTransaction}
@@ -1232,22 +1246,32 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   <InputNumber
                     onInput={(limit) => {
                       if (limit == '' || isNil(limit)) {
-                        setLimit(0);
+                        setLimit(1);
                       }
                     }}
-                    onChange={(limit) => setLimit(limit || 0)}
+                    onChange={(limit) => {
+                      const maxQueryLimit = session?.params?.maxQueryLimit;
+                      if (limit > maxQueryLimit) {
+                        const tips = `${formatMessage({
+                          id: 'src.component.SQLConfig.5E06ED93',
+                          defaultMessage: '不超过查询条数上限',
+                        })} ${maxQueryLimit}`;
+                        message.error(tips);
+                      }
+                      setLimit(limit || 1);
+                    }}
                     min={1}
                     precision={0}
-                    placeholder={formatMessage({
-                      id: 'workspace.window.sql.limit.placeholder',
-                      defaultMessage: '1000',
-                    })}
+                    defaultValue={limit}
                     style={{
                       width: 70,
                       marginLeft: 8,
                     }}
+                    onBlur={() => {
+                      onRefresh(limit);
+                    }}
                     onPressEnter={() => {
-                      onRefresh(limit || 1000);
+                      onRefresh(limit);
                     }}
                   />
                 </>
@@ -1269,7 +1293,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               />
             </span>
             <Popover
-              // visible={true}
               content={
                 <Checkbox.Group
                   value={columnsToDisplay.map((c) => c.key)}
@@ -1285,7 +1308,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     maxHeight: '500px',
                     overflowY: 'auto',
                     overflowX: 'hidden',
-                    padding: 2, // 这个变量在样式上不是必须的，但是加上之后可以避免checkboxgroup高度抖动的问题
+                    padding: 2, // 避免高度抖动
                   }}
                 >
                   <Row>
@@ -1302,10 +1325,31 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   </Row>
                 </Checkbox.Group>
               }
-              title={formatMessage({
-                id: 'workspace.window.sql.button.columnFilter.title',
-                defaultMessage: '请选择要展示的列',
-              })}
+              title={
+                <>
+                  {/* 添加全选/取消全选按钮 */}
+                  <Checkbox
+                    indeterminate={
+                      columnsToDisplay.length > 0 && columnsToDisplay.length < columns.length
+                    }
+                    checked={columnsToDisplay.length === columns.length}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setColumnsToDisplay(columns);
+                      } else {
+                        setColumnsToDisplay([]);
+                      }
+                    }}
+                    className={styles.checkbox}
+                  />
+                  <span>
+                    {formatMessage({
+                      id: 'workspace.window.sql.button.columnFilter.title',
+                      defaultMessage: '请选择要展示的列',
+                    })}
+                  </span>
+                </>
+              }
             >
               <ToolbarButton
                 text={formatMessage({
@@ -1338,7 +1382,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   defaultMessage: '刷新',
                 })}
                 icon={<SyncOutlined />}
-                onClick={onRefresh.bind(this, limit || 1000)}
+                onClick={onRefresh.bind(this, limit)}
               />
             ) : null}
           </div>

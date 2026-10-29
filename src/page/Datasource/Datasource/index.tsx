@@ -32,6 +32,7 @@ const Datasource: React.FC<IProps> = function ({ modalStore }) {
   const [connectType, setConnectType] = useState([]);
   const [editDatasourceId, setEditDatasourceId] = useState(null);
   const [copyDatasourceId, setCopyDatasourceId] = useState<number>(null);
+  const [loading, setLoading] = useState(false);
   const contentRef = useRef<any>();
   const _searchValue = useMemo(() => {
     return {
@@ -52,8 +53,11 @@ const Datasource: React.FC<IProps> = function ({ modalStore }) {
           setSortType,
           connectType,
           setConnectType,
-          reloadTable: () => {
-            return contentRef.current?.reload();
+          loading,
+          reloadTable: async () => {
+            setLoading(true);
+            await contentRef.current?.reload();
+            setLoading(false);
           },
           editDatasource(id: number) {
             setEditDatasourceId(id);

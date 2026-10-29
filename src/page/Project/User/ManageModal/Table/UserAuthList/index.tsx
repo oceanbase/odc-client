@@ -23,7 +23,6 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getExpireTimeLabel } from '@/component/Task/ApplyTablePermission';
 import type { IResponseData } from '@/d.ts';
 import { ITablePermission, TablePermissionStatus } from '@/d.ts/project';
 import { SearchOutlined } from '@ant-design/icons';
@@ -35,6 +34,7 @@ import {
   tablePermissionTypeMap,
 } from '../';
 import StatusLabel from '../Status';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 
 const getColumns = (params: {
   paramOptions: ITableLoadOptions;
@@ -240,6 +240,10 @@ const UserAuthList: React.FC<IProps> = (props) => {
         rowSelecter={
           isOwner || isDBA
             ? {
+                selectAllText: formatMessage({
+                  id: 'src.page.Project.User.ManageModal.Table.UserAuthList.496C6069',
+                  defaultMessage: '全选当前页',
+                }),
                 options: [
                   {
                     okText: formatMessage({

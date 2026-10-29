@@ -27,6 +27,7 @@ import {
   Row,
   Space,
   Tabs,
+  Tooltip,
   Typography,
 } from 'antd';
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -40,7 +41,7 @@ import odcSetting, {
 
 import { ModalStore } from '@/store/modal';
 import setting, { getCurrentOrganizationId } from '@/store/setting';
-import { getODCSetting, saveODCSetting } from '@/util/client';
+import { getODCSetting, saveODCSetting } from '@/util/business/client';
 import { isClient } from '@/util/env';
 import { encrypt, safeParseJson } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
@@ -90,6 +91,35 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   const [spaceType, setSpaceType] = useState(ESpaceType.USER);
   const isAdmin = odc.appConfig.manage.user.isODCOrganizationConfig?.(login.user);
   const [searchValue, setSearchValue] = useState('');
+
+  const spaceTypeOptions = useMemo(() => {
+    const options = [
+      {
+        label: formatMessage({ id: 'src.component.ODCSetting.6BCFD6DD', defaultMessage: '用户' }),
+        value: ESpaceType.USER,
+      },
+    ];
+
+    if (login.isPrivateSpace()) {
+      options.push({
+        label: formatMessage({
+          id: 'src.component.ODCSetting.47586FD4',
+          defaultMessage: '个人空间',
+        }),
+        value: ESpaceType.PERSONAL,
+      });
+    } else if (isAdmin) {
+      options.push({
+        label: formatMessage({
+          id: 'src.component.ODCSetting.AC147B83',
+          defaultMessage: '团队空间',
+        }),
+        value: ESpaceType.GROUP,
+      });
+    }
+
+    return options;
+  }, [isAdmin]);
 
   const getData = useCallback(
     (type: ESpaceType) => {
@@ -455,7 +485,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                   return (
                     <React.Fragment key={group.key}>
                       <Space
-                        style={{ width: '100%', paddingLeft: 8, marginTop: 12 }}
+                        style={{ width: '100%', paddingLeft: 8, paddingRight: 24, marginTop: 12 }}
                         direction="vertical"
                       >
                         {!!group.label && (
@@ -463,10 +493,15 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                             {group.label}
                           </Typography.Text>
                         )}
-                        <Row style={{ paddingLeft: 12 }} gutter={20}>
+                        <Row style={{ paddingLeft: 12 }} gutter={16}>
                           {group.settings.map((set, index) => {
+                            // 如果是奇数个配置项，最后一个占满整行；否则使用设定的 span 或默认 12
+                            const isLastOddItem =
+                              group.settings.length % 2 === 1 &&
+                              index === group.settings.length - 1;
+                            const colSpan = set.span || (isLastOddItem ? 24 : 12);
                             return (
-                              <Col key={index} span={set.span || 10}>
+                              <Col key={index} span={colSpan}>
                                 <Form.Item
                                   label={
                                     <Space direction="vertical" size={2}>
@@ -501,7 +536,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                 })
               ) : (
                 <Space
-                  style={{ width: '100%', paddingLeft: 8, marginTop: 9 }}
+                  style={{ width: '100%', paddingLeft: 8, paddingRight: 24, marginTop: 9 }}
                   direction="vertical"
                   size={'small'}
                 >
@@ -643,26 +678,9 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           className={styles.tabs}
           defaultValue={ESpaceType.USER}
           onChange={(e) => setSpaceType(e.target.value)}
-        >
-          <Radio.Button className={styles.user} value={ESpaceType.USER}>
-            {formatMessage({ id: 'src.component.ODCSetting.6BCFD6DD', defaultMessage: '用户' })}
-          </Radio.Button>
-          {login.isPrivateSpace() ? (
-            <Radio.Button className={styles.space} value={ESpaceType.PERSONAL}>
-              {formatMessage({
-                id: 'src.component.ODCSetting.47586FD4',
-                defaultMessage: '个人空间',
-              })}
-            </Radio.Button>
-          ) : isAdmin ? (
-            <Radio.Button className={styles.space} value={ESpaceType.GROUP}>
-              {formatMessage({
-                id: 'src.component.ODCSetting.AC147B83',
-                defaultMessage: '团队空间',
-              })}
-            </Radio.Button>
-          ) : null}
-        </Radio.Group>
+          optionType="button"
+          options={spaceTypeOptions}
+        />
         <Search
           className={styles.search}
           placeholder={formatMessage({

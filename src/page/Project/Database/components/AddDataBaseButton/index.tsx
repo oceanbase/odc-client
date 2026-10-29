@@ -18,7 +18,7 @@ import { getDataSourceStyleByConnectType, isFileSystemSupport } from '@/common/d
 import { getConnectionDetail, getConnectionList } from '@/common/network/connection';
 import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import ApplyDatabasePermissionButton from '@/component/Task/ApplyDatabasePermission/CreateButton';
+import ApplyDatabasePermissionButton from '@/component/Task/modals/ApplyDatabasePermission/CreateButton';
 import TooltipAction from '@/component/TooltipAction';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
@@ -42,7 +42,7 @@ import {
 } from 'antd';
 import { useContext, useState } from 'react';
 import { IConnection } from '@/d.ts';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import settingStore from '@/store/setting';
 import DatasourceSelectEmpty from '@/component/Empty/DatasourceSelectEmpty';
 interface IProps {
@@ -274,7 +274,13 @@ const AddDataBaseButton: React.FC<IProps> = ({
           onValuesChange={(changedValues) => {
             if (changedValues.hasOwnProperty('dataSourceId')) {
               fetchDataSource(changedValues?.dataSourceId);
-              fetchDatabases(null, changedValues?.dataSourceId, 1, 999999, null, null, true, true);
+              fetchDatabases({
+                dataSourceId: changedValues?.dataSourceId,
+                page: 1,
+                size: 999999,
+                containsUnassigned: true,
+                existed: true,
+              });
             }
           }}
         >

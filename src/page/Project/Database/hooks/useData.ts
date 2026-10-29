@@ -1,7 +1,23 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { IDatabase } from '@/d.ts/database';
 import { listDatabases } from '@/common/network/database';
-import { SearchType } from '../Header/Search';
+import { DatabaseSearchType } from '@/d.ts/database';
 import { IFilterParams } from '../ParamContext';
 import ProjectContext from '../../ProjectContext';
 import datasourceStatus from '@/store/datasourceStatus';
@@ -35,9 +51,9 @@ const useData = (id) => {
   const [openObjectStorage, setOpenObjectStorage] = useState<boolean>(false);
   const [openManageLogicDatabase, setOpenManageLogicDatabase] = useState<boolean>(false);
   const [database, setDatabase] = useState<IDatabase>(null);
-  const [searchValue, setSearchValue] = useState<{ value: string; type: SearchType }>({
+  const [searchValue, setSearchValue] = useState<{ value: string; type: DatabaseSearchType }>({
     value: null,
-    type: SearchType.DATABASE,
+    type: undefined,
   });
 
   const { loading, run: fetchDatabases } = useRequest(listDatabases, {
@@ -51,22 +67,18 @@ const useData = (id) => {
     connectType = filterParams?.connectType,
     type = filterParams.type,
   ) => {
-    const res = await fetchDatabases(
-      parseInt(id),
-      null,
-      1,
-      99999,
-      searchValue.value,
-      environmentId,
-      null,
-      null,
-      true,
+    const res = await fetchDatabases({
+      projectId: parseInt(id),
+      page: 1,
+      size: 99999,
+      fuzzyKeyword: searchValue?.value,
+      environmentId: environmentId,
+      includesPermittedAction: true,
+      includesDbOwner: true,
       type,
       connectType,
-      searchValue.type === SearchType.DATASOURCE ? searchValue.value : null,
-      searchValue.type === SearchType.CLUSTER ? searchValue.value : null,
-      searchValue.type === SearchType.TENANT ? searchValue.value : null,
-    );
+      searchType: searchValue?.type,
+    });
     if (res) {
       datasourceStatus.asyncUpdateStatus(
         res?.contents

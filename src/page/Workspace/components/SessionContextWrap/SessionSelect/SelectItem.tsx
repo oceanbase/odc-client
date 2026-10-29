@@ -24,17 +24,20 @@ import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import Icon, { ArrowDownOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
-import { Divider, Select, Space } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Divider, Flex, Select, Space } from 'antd';
 import SessionContext from '../context';
 import { DEFALT_WIDTH } from './const';
 import { IDatabase } from '@/d.ts/database';
 import styles from './index.less';
 import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
+import { ScheduleType } from '@/d.ts/schedule';
+import { isNumber } from 'lodash';
 
 interface IProps {
   value?: number;
   taskType?: TaskType;
+  scheduleType?: ScheduleType;
   width?: number | string;
   projectId?: number;
   dataSourceId?: number;
@@ -45,11 +48,16 @@ interface IProps {
   datasourceMode?: boolean;
   projectMode?: boolean;
   onChange?: (value: number, database?: IDatabase) => void;
+  showProject?: boolean;
+  popoverWidth?: number;
+  manageLinkVisible?: boolean;
+  onInit?: (database?: IDatabase) => void;
 }
 
 const SelectItem: React.FC<IProps> = ({
   value,
   taskType,
+  scheduleType,
   projectId,
   dataSourceId,
   filters = null,
@@ -63,11 +71,15 @@ const SelectItem: React.FC<IProps> = ({
   isLogicalDatabase = false,
   datasourceMode = false,
   projectMode = isLogicalDatabase,
+  showProject = true,
+  popoverWidth,
+  manageLinkVisible = false,
+  onInit,
 }) => {
   const { data: database, run: runDatabase } = useRequest(getDatabase, {
     manual: true,
   });
-
+  const databaseInfoContainerRef = useRef<HTMLDivElement>(null);
   const { data: dataSource, run: runDataSource } = useRequest(getConnectionDetail, {
     manual: true,
   });
@@ -75,22 +87,40 @@ const SelectItem: React.FC<IProps> = ({
   const { data: logicalDatabase, run: runLogicalDatabase } = useRequest(logicalDatabaseDetail, {
     manual: true,
   });
+
+  const initDatabase = async () => {
+    if (datasourceMode) {
+      runDataSource(value);
+    } else {
+      if (isLogicalDatabase) {
+        runLogicalDatabase(value);
+      } else {
+        const res = await runDatabase(value);
+        onInit?.(res?.data);
+      }
+    }
+  };
+
   useEffect(() => {
     if (value) {
-      if (datasourceMode) {
-        runDataSource(value);
-      } else {
-        if (isLogicalDatabase) {
-          runLogicalDatabase(value);
-          return;
-        }
-        runDatabase(value);
-      }
+      initDatabase();
     }
   }, [value]);
 
   const dbIcon = getDataSourceStyleByConnectType(database?.data?.dataSource?.type)?.dbIcon;
   const dataSourceIcon = getDataSourceStyleByConnectType(dataSource?.type)?.icon;
+
+  const [isDatabaseInfoContainerSingleLine, setIsDatabaseInfoContainerSingleLine] = useState(false);
+
+  useEffect(() => {
+    if (
+      databaseInfoContainerRef?.current &&
+      database?.data &&
+      isNumber(databaseInfoContainerRef?.current?.offsetHeight)
+    ) {
+      setIsDatabaseInfoContainerSingleLine(databaseInfoContainerRef?.current?.offsetHeight < 22);
+    }
+  }, [databaseInfoContainerRef?.current, database?.data]);
 
   const getPlaceholder = () => {
     if (!value) return placeholder;
@@ -139,7 +169,10 @@ const SelectItem: React.FC<IProps> = ({
     }
     if (!datasourceMode && database?.data) {
       return (
-        <Space size={1} style={{ color: 'var(--text-color-primary)', width: '100%' }}>
+        <Flex
+          gap={1}
+          style={{ color: 'var(--text-color-primary)', width: '100%', overflow: 'hidden' }}
+        >
           <>
             <RiskLevelLabel
               content={database?.data?.environment?.name}
@@ -151,8 +184,17 @@ const SelectItem: React.FC<IProps> = ({
               style={{ fontSize: 16, marginRight: 4, verticalAlign: 'textBottom' }}
             />
           </>
-          {database?.data?.name}
-        </Space>
+
+          <div
+            style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+            title={database?.data?.name}
+          >
+            {database?.data?.name}
+          </div>
+        </Flex>
       );
     }
     return placeholder;
@@ -175,9 +217,11 @@ const SelectItem: React.FC<IProps> = ({
           projectId={projectId}
           dataSourceId={dataSourceId}
           filters={filters}
-          width={width || DEFALT_WIDTH}
+          width={popoverWidth || width || DEFALT_WIDTH}
           taskType={taskType}
+          scheduleType={scheduleType}
           disabled={disabled}
+          manageLinkVisible={manageLinkVisible}
         >
           <Select
             disabled={disabled}
@@ -188,29 +232,31 @@ const SelectItem: React.FC<IProps> = ({
           />
         </SessionDropdown>
         {value && database?.data ? (
-          <Space
-            size={2}
-            split={<Divider type="vertical" />}
-            style={{ color: 'var(--text-color-hint)' }}
+          <div
+            ref={databaseInfoContainerRef}
+            className={styles.databaseInfo}
+            style={{
+              width: width || DEFALT_WIDTH,
+            }}
           >
-            {login.isPrivateSpace() ? null : (
-              <span>
+            {login.isPrivateSpace() || !showProject ? null : (
+              <div className={styles.item}>
                 {formatMessage({
                   id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.5AC43B24' /*项目：*/,
                   defaultMessage: '项目：',
                 })}
                 {database?.data?.project?.name}
-              </span>
+              </div>
             )}
-
-            <span>
+            {isDatabaseInfoContainerSingleLine && <Divider type="vertical" />}
+            <div className={styles.item}>
               {formatMessage({
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.7780C356' /*数据源：*/,
                 defaultMessage: '数据源：',
               })}
               {database?.data?.dataSource?.name}
-            </span>
-          </Space>
+            </div>
+          </div>
         ) : null}
       </Space>
     </SessionContext.Provider>

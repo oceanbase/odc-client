@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { ReactComponent as List } from '@/svgr/List.svg';
 import { ReactComponent as Text } from '@/svgr/Text.svg';
 import { ReactComponent as TraceSvg } from '@/svgr/Trace.svg';
@@ -137,3 +153,7 @@ export const DirtyRowActionLabelMap = {
     defaultMessage: '任务失败',
   }),
 };
+
+// 跳过不清理数据不传的时候后端默认值是Long.max: 2^63 - 1, javaScript 的 Number.MAX_SAFE_INTEGER 是 2^53 - 1, 反显的时候会超出
+// 因此采用antd的stringMode属性 + string, 以支持超出 JavaScript 安全整数范围的大数
+export const JAVA_LONG_MAX_VALUE = '9223372036854775807';

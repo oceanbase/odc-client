@@ -14,149 +14,33 @@
  * limitations under the License.
  */
 
-import { TaskExecStrategy, TaskType } from '@/d.ts';
-import login from '@/store/login';
-import { formatMessage } from '@/util/intl';
-import { useSearchParams } from '@umijs/max';
-import { toInteger } from 'lodash';
-import Content from './Content';
-import CreateModals from './CreateModals';
+import Content, { ContentRef } from './layout/Content';
 import styles from './index.less';
-import Sider from './Sider';
-
-export const getTaskExecStrategyMap = (type: TaskType) => {
-  switch (type) {
-    case TaskType.DATA_ARCHIVE:
-    case TaskType.DATA_DELETE:
-    case TaskType.LOGICAL_DATABASE_CHANGE:
-    case TaskType.PARTITION_PLAN:
-      return {
-        [TaskExecStrategy.TIMER]: formatMessage({
-          id: 'odc.src.component.Task.CycleExecution',
-          defaultMessage: '周期执行',
-        }), //'周期执行'
-        [TaskExecStrategy.CRON]: formatMessage({
-          id: 'odc.src.component.Task.CycleExecution.1',
-          defaultMessage: '周期执行',
-        }), //'周期执行'
-        [TaskExecStrategy.DAY]: formatMessage({
-          id: 'odc.src.component.Task.CycleExecution.2',
-          defaultMessage: '周期执行',
-        }), //'周期执行'
-        [TaskExecStrategy.MONTH]: formatMessage({
-          id: 'odc.src.component.Task.CycleExecution.3',
-          defaultMessage: '周期执行',
-        }), //'周期执行'
-        [TaskExecStrategy.WEEK]: formatMessage({
-          id: 'odc.src.component.Task.CycleExecution.4',
-          defaultMessage: '周期执行',
-        }), //'周期执行'
-        [TaskExecStrategy.START_NOW]: formatMessage({
-          id: 'odc.src.component.Task.ExecuteImmediately',
-          defaultMessage: '立即执行',
-        }), //'立即执行'
-        [TaskExecStrategy.START_AT]: formatMessage({
-          id: 'odc.src.component.Task.TimedExecution',
-          defaultMessage: '定时执行',
-        }), //'定时执行'
-      };
-    case TaskType.STRUCTURE_COMPARISON: {
-      return {
-        [TaskExecStrategy.AUTO]: formatMessage({
-          id: 'src.component.Task.9B79BD20',
-          defaultMessage: '自动执行',
-        }), //'自动执行'
-        [TaskExecStrategy.MANUAL]: formatMessage({
-          id: 'src.component.Task.0B2B1D60',
-          defaultMessage: '手动执行',
-        }), //'手动执行'
-      };
-    }
-    default:
-      return {
-        [TaskExecStrategy.AUTO]: formatMessage({
-          id: 'odc.components.TaskManagePage.ExecuteNow',
-          defaultMessage: '立即执行',
-        }),
-        //立即执行
-        [TaskExecStrategy.MANUAL]: formatMessage({
-          id: 'odc.components.TaskManagePage.ManualExecution',
-          defaultMessage: '手动执行',
-        }),
-        //手动执行
-        [TaskExecStrategy.TIMER]: formatMessage({
-          id: 'odc.components.TaskManagePage.ScheduledExecution',
-          defaultMessage: '定时执行',
-        }), //定时执行
-      };
-  }
-};
-export const getTaskExecStrategyTextMap = {
-  [TaskExecStrategy.TIMER]: formatMessage({
-    id: 'odc.src.component.Task.CycleExecution',
-    defaultMessage: '周期执行',
-  }), //'周期执行'
-  [TaskExecStrategy.CRON]: formatMessage({
-    id: 'odc.src.component.Task.CycleExecution.1',
-    defaultMessage: '周期执行',
-  }), //'周期执行'
-  [TaskExecStrategy.DAY]: formatMessage({
-    id: 'odc.src.component.Task.CycleExecution.2',
-    defaultMessage: '周期执行',
-  }), //'周期执行'
-  [TaskExecStrategy.MONTH]: formatMessage({
-    id: 'odc.src.component.Task.CycleExecution.3',
-    defaultMessage: '周期执行',
-  }), //'周期执行'
-  [TaskExecStrategy.WEEK]: formatMessage({
-    id: 'odc.src.component.Task.CycleExecution.4',
-    defaultMessage: '周期执行',
-  }), //'周期执行'
-  [TaskExecStrategy.START_NOW]: formatMessage({
-    id: 'odc.src.component.Task.ExecuteImmediately',
-    defaultMessage: '立即执行',
-  }), //'立即执行'
-  [TaskExecStrategy.START_AT]: formatMessage({
-    id: 'odc.src.component.Task.TimedExecution',
-    defaultMessage: '定时执行',
-  }), //'定时执行'
-  [TaskExecStrategy.AUTO]: formatMessage({
-    id: 'src.component.Task.9B79BD20',
-    defaultMessage: '自动执行',
-  }), //'自动执行'
-  [TaskExecStrategy.MANUAL]: formatMessage({
-    id: 'src.component.Task.0B2B1D60',
-    defaultMessage: '手动执行',
-  }), //'手动执行'
-};
+import Sider from './layout/Sider';
+import { TaskPageMode } from './interface';
+import CreateModals from '@/component/Task/modals/CreateModals';
+import { useRef } from 'react';
 
 interface IProps {
   projectId?: number;
-  inProject?: boolean;
+  mode: TaskPageMode;
 }
-const TaskManaerPage: React.FC<IProps> = (props) => {
-  const { projectId, inProject } = props;
-  const [search] = useSearchParams();
-  const defaultTaskId = search.get('taskId');
-  const defaultTaskType = search.get('taskType') as TaskType;
-  const defaultOrganizationId = search.get('organizationId');
-  const currentOrganizationId = login.organizationId;
-  const isOrganizationMatch = toInteger(defaultOrganizationId) === toInteger(currentOrganizationId);
+const TaskManagerPage: React.FC<IProps> = (props) => {
+  const { projectId, mode } = props;
+  const contentRef = useRef<ContentRef>(null);
+
+  const handleRefreshContent = () => {
+    contentRef.current?.reloadList?.();
+  };
+
   return (
-    <>
-      <div className={styles.task}>
-        <div className={styles.sider}>
-          <Sider inProject={inProject} />
-        </div>
-        <Content
-          projectId={projectId}
-          inProject={inProject}
-          defaultTaskType={defaultTaskType}
-          defaultTaskId={isOrganizationMatch ? toInteger(defaultTaskId) : null}
-        />
-        <CreateModals projectId={projectId} theme="white" />
+    <div className={styles.task}>
+      <div className={styles.sider}>
+        <Sider mode={mode} />
       </div>
-    </>
+      <Content ref={contentRef} mode={mode} projectId={projectId} />
+      <CreateModals projectId={projectId} theme={'white'} reloadList={handleRefreshContent} />
+    </div>
   );
 };
-export default TaskManaerPage;
+export default TaskManagerPage;

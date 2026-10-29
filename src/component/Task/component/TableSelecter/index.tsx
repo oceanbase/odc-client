@@ -21,16 +21,16 @@ import ExportCard from '@/component/ExportCard';
 import { EnvColorMap } from '@/constant';
 import { ReactComponent as TableSvg } from '@/svgr/menuTable.svg';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { Badge, Empty, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
+import { Badge, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
 import { DataNode, EventDataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { isNumber, toNumber } from 'lodash';
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import datasourceStatus from '@/store/datasourceStatus';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { logicalDatabaseDetail } from '@/common/network/logicalDatabase';
 import { DbObjectType } from '@/d.ts';
 
@@ -232,7 +232,11 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     if (!projectId) return;
     setIsLoading(true);
     try {
-      const res = await listDatabases(projectId, null, null, null, null, null, null, true, true);
+      const res = await listDatabases({
+        projectId,
+        existed: true,
+        includesPermittedAction: true,
+      });
       if (res?.contents) {
         datasourceStatus.asyncUpdateStatus(
           res?.contents
@@ -702,8 +706,14 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           return Array.from(new Set([...prevExpandKeys, databaseId]));
         });
       },
+      getAllLoadedTables: () => {
+        return databaseWithTableList.reduce(
+          (pre, cur) => pre.concat(cur.tableList, cur.viewList, cur.materializedViewList),
+          [],
+        );
+      },
     }),
-    [handleLoadTables],
+    [handleLoadTables, databaseWithTableList],
   );
 
   useEffect(() => {

@@ -35,7 +35,7 @@ import { omit } from 'lodash';
 import ScriptPage from '@/component/ScriptPage';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { IEditor } from '@/component/MonacoEditor';
-import { getRealTableName } from '@/util/sql';
+import { getRealTableName } from '@/util/data/sql';
 import { openViewViewPage } from '@/store/helper/page';
 import { PropsTab, TopTab } from '../ViewPage';
 import SessionContext from '../SessionContextWrap/context';
@@ -117,6 +117,11 @@ const CreateViewPage: React.FC<IProps> = inject(
       if (results?.invalid || !results?.executeResult?.length) {
         return;
       }
+
+      if (results?.unauthorizedDBResources && !results?.unauthorizedDBResources?.length) {
+        return;
+      }
+
       const { dbObjectName: viewName, track } = results.executeResult[0];
       if (!track) {
         message.success(

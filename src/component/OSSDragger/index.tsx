@@ -16,11 +16,11 @@
 
 import { getImportFileMeta } from '@/common/network/exportAndImport';
 import setting from '@/store/setting';
-import { uploadFileToOSS } from '@/util/aliyun';
+import { uploadFileToOSS } from '@/common/network/aliyun';
 import { Upload } from 'antd';
 import { DraggerProps } from 'antd/lib/upload';
 import React from 'react';
-import { getImportTypeByFileExtension } from '../Task/ImportTask/CreateModal/ImportForm/helper';
+import { getImportTypeByFileExtension } from '../Task/modals/ImportTask/CreateModal/ImportForm/helper';
 
 interface IProps extends DraggerProps {
   uploadFileOpenAPIName?: string;

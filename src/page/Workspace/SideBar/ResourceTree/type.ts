@@ -101,6 +101,9 @@ export enum ResourceNodeType {
   MaterializedViewPartition,
   MaterializedViewConstraintRoot,
   MaterializedViewConstraint,
+  /** 外部资源 */
+  ExternalResourceRoot,
+  ExternalResource,
 }
 
 interface ExtraData {

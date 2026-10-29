@@ -43,9 +43,11 @@ const Condition = ({
   setShowConditionGroup,
   environmentMap,
   taskTypeIdMap,
+  scheduleTypeIdMap,
   sqlCheckResultIdMap,
   environmentOptions,
   taskTypeOptions,
+  scheduleTypeOptions,
   sqlCheckResultOptions,
 }) => {
   const [condition, setCondition] = useState<any>(
@@ -96,6 +98,11 @@ const Condition = ({
       case Expression.DATABASE_NAME: {
         setIsTags(true);
         setValueOptions([]);
+        return;
+      }
+      case Expression.SCHEDULE_TYPE: {
+        setValueOptions(scheduleTypeOptions);
+        setValueMap(scheduleTypeIdMap);
         return;
       }
       default: {
@@ -218,6 +225,10 @@ const Condition = ({
             {
               label: ExpressionMap[Expression.SQL_CHECK_RESULT],
               value: Expression.SQL_CHECK_RESULT,
+            },
+            {
+              label: ExpressionMap[Expression.SCHEDULE_TYPE],
+              value: Expression.SCHEDULE_TYPE,
             },
           ]}
           onSelect={(_, { value }) => {

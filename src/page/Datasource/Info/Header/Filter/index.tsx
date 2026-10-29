@@ -1,25 +1,38 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { DatabaseAvailableTypeText, DatabaseBelongsToProjectTypeText } from '@/constant/label';
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, FilterOutlined } from '@ant-design/icons';
-import { Popover, Space, Typography } from 'antd';
-import React, { useContext } from 'react';
+import { Popover, Space, Typography, Tooltip } from 'antd';
+import React, { useContext, useMemo, useState } from 'react';
 import ParamContext from '../../ParamContext';
-import FilterIcon from '@/page/Datasource/Datasource/Header/FIlterIcon';
+import FilterIcon from '@/component/Button/FIlterIcon';
 import {
   getIsDBAvailableInDataSourceTypes,
   getIsDBBelongsToProjectsInDataSourceTypes,
 } from '@/common/datasource';
 import RadioTag from '@/component/RadioTag';
-
+import styles from '../index.less';
 interface IProps {}
 
 const Filter: React.FC<IProps> = function ({}) {
+  const [open, setOpen] = useState<boolean>(false);
+  const [hover, setHover] = useState<boolean>(false);
   const context = useContext(ParamContext);
-  let displayDom = (
-    <FilterIcon>
-      <FilterOutlined />
-    </FilterIcon>
-  );
 
   function clear() {
     context.setFilterParams({
@@ -28,38 +41,59 @@ const Filter: React.FC<IProps> = function ({}) {
     });
   }
   const { existed, belongsToProject } = context?.filterParams;
-  let selectedNames = [];
 
-  existed !== undefined && selectedNames.push(DatabaseAvailableTypeText[String(existed)]);
-  belongsToProject !== undefined &&
-    selectedNames.push(DatabaseBelongsToProjectTypeText[String(belongsToProject)]);
-
-  if (selectedNames.length) {
-    displayDom = (
-      <div
-        style={{
-          padding: '4px 8px',
-          lineHeight: '20px',
-          color: 'var(--text-color-secondary)',
-          background: 'var(--hover-color)',
-        }}
-      >
-        {selectedNames.slice(0, 3)?.join(';')}
-        {selectedNames?.length > 3 ? '...' : ''}
-        <span style={{ marginLeft: 3 }}>
-          {formatMessage({ id: 'odc.Header.Filter.Total', defaultMessage: '共' }) /*共*/}
-          {selectedNames?.length}
-          {formatMessage({ id: 'odc.Header.Filter.Item', defaultMessage: '项' }) /*项*/}
+  const tipContent = () => {
+    return (
+      <>
+        {existedTipContent}
+        {belongsToProjectTipContent}
+      </>
+    );
+  };
+  const existedTipContent = useMemo(() => {
+    if (!existed) return null;
+    return (
+      <div>
+        <span>
+          {formatMessage({
+            id: 'src.page.Datasource.Info.Header.Filter.AB1F0599',
+            defaultMessage: '数据库状态',
+          })}
         </span>
-        <CloseOutlined onClick={clear} style={{ cursor: 'pointer', marginLeft: 15 }} />
+        ：<span>{DatabaseAvailableTypeText[String(existed)]}</span>
       </div>
     );
-  }
+  }, [existed]);
+
+  const belongsToProjectTipContent = useMemo(() => {
+    if (!belongsToProject) return null;
+    return (
+      <div>
+        <span>
+          {formatMessage({
+            id: 'src.page.Datasource.Info.Header.Filter.7A10CB43',
+            defaultMessage: '数据库分配',
+          })}
+        </span>
+        ：<span>{DatabaseBelongsToProjectTypeText[String(belongsToProject)]}</span>
+      </div>
+    );
+  }, [belongsToProject]);
+  const isActive = useMemo(() => {
+    return Boolean(existed || belongsToProject);
+  }, [existed, belongsToProject]);
+  const handleOpenChange = (value: boolean) => {
+    setOpen(value);
+  };
 
   return (
     <Popover
       placement="bottomRight"
       overlayStyle={{ width: 300 }}
+      arrow={false}
+      open={open}
+      onOpenChange={handleOpenChange}
+      trigger="click"
       title={
         <div
           style={{
@@ -127,7 +161,17 @@ const Filter: React.FC<IProps> = function ({}) {
         </div>
       }
     >
-      {displayDom}
+      <FilterIcon border isActive={isActive}>
+        <Tooltip
+          title={open ? undefined : tipContent()}
+          open={!open && hover && isActive}
+          overlayClassName={styles.filterTooltip}
+        >
+          <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+            <FilterOutlined />
+          </div>
+        </Tooltip>
+      </FilterIcon>
     </Popover>
   );
 };

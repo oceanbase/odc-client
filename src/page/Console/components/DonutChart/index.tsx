@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useRef, useEffect } from 'react';
 import * as echarts from 'echarts';
 import { ConsoleTextConfig } from '../../const';
@@ -7,17 +23,22 @@ const PieChart = ({ progress }) => {
   const { status, statusType, statusColor } = ConsoleTextConfig.schdules;
 
   const chartRef = useRef(null);
-  const total = statusType.reduce(
-    (sum, key) => sum + (parseInt(progress?.taskStat?.[key]) || 0),
-    0,
-  );
+  const { PENDING, EXECUTING, EXECUTION_INTERRUPTION, EXEC_TIMEOUT, EXECUTION_SUCCESS, OTHER } =
+    progress || {};
+  const total =
+    (PENDING || 0) +
+    (EXECUTING || 0) +
+    (EXECUTION_INTERRUPTION || 0) +
+    (EXEC_TIMEOUT || 0) +
+    (EXECUTION_SUCCESS || 0) +
+    (OTHER || 0);
 
   useEffect(() => {
     if (chartRef.current) {
       const chart = echarts.init(chartRef.current);
 
       const data = status.map((name, i) => {
-        const count = parseInt(progress?.taskStat?.[statusType[i]]) || 0;
+        const count = progress?.[statusType[i]] || 0;
         return {
           name,
           value: count,
@@ -39,17 +60,17 @@ const PieChart = ({ progress }) => {
             const [contentWidth, contentHeight] = contentSize; // Tooltip 的宽高
             const [viewWidth, viewHeight] = viewSize; // 视图宽高
 
-            let x = mouseX + 10; // 在右侧 10px 开始
+            let x = mouseX - contentWidth - 10; // 在左侧 10px 开始
             let y = mouseY - contentHeight - 10; // 在上方 10px 开始
-
-            // 如果 tooltip 会超出屏幕右侧，则调整到左侧
-            if (x + contentWidth > viewWidth) {
-              x = mouseX - contentWidth - 10;
-            }
 
             // 如果 tooltip 会超出屏幕左侧，则调整到右侧
             if (x < 0) {
               x = mouseX + 10;
+            }
+
+            // 如果 tooltip 会超出屏幕右侧，则调整到左侧
+            if (x + contentWidth > viewWidth) {
+              x = mouseX - contentWidth - 10;
             }
 
             // 如果 tooltip 会超出屏幕顶部，则下移
@@ -74,16 +95,18 @@ const PieChart = ({ progress }) => {
               const offsetX = Math.cos(angle) * radius;
               const offsetY = Math.sin(angle) * radius;
 
-              // 计算 tooltip 的位置
-              x = centerX + offsetX + 10;
-              y = centerY + offsetY + 10;
+              // 优先计算左侧位置
+              x = centerX + offsetX - contentWidth - 10;
+              y = centerY + offsetY - contentHeight / 2;
 
               // 检查 tooltip 是否超出视图边界并调整位置
-              if (x + contentWidth > viewWidth) {
-                x = centerX + offsetX - contentWidth - 10;
-              }
               if (x < 0) {
+                // 如果左侧放不下，则放在右侧
                 x = centerX + offsetX + 10;
+              }
+              if (x + contentWidth > viewWidth) {
+                // 如果右侧也放不下，则放在左侧并允许部分超出
+                x = centerX + offsetX - contentWidth - 10;
               }
               if (y + contentHeight > viewHeight) {
                 y = centerY + offsetY - contentHeight - 10;
@@ -142,7 +165,7 @@ const PieChart = ({ progress }) => {
         chart.dispose();
       };
     }
-  }, [progress, total, status, statusType, statusColor]);
+  }, [progress, total]);
 
   return <div ref={chartRef} className="chart-wrapper" />;
 };

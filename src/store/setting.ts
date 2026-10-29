@@ -24,13 +24,19 @@ import type { IUserConfig, ServerSystemInfo } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { isClient } from '@/util/env';
 import request from '@/util/request';
-import { isLinux, isWin64, kbToMb } from '@/util/utils';
+import { isLinux, isWin64 } from '@/util/env';
+import { kbToMb } from '@/util/data/byte';
 import { message } from 'antd';
-import { action, observable } from 'mobx';
+import { action, observable, computed } from 'mobx';
 import login, { sessionKey } from '@/store/login';
+import {
+  EShareableIdentifierType,
+  makeDataShareable,
+} from '@/util/communication/makeDataShareable';
+import { IAIConfig, IModel } from '@/d.ts/llm';
+import { getAIConfig, updateAIConfig } from '@/common/network/largeModel';
 
 export const themeKey = 'odc-theme';
-const SPACE_CONFIG_EXPIRES = 60 * 1000;
 export const getCurrentOrganizationId = () => sessionStorage.getItem(sessionKey);
 
 interface IThemeConfig {
@@ -98,6 +104,38 @@ export class SettingStore {
   public enableDataExport: boolean = false;
 
   /**
+   * NL2SQL
+   */
+  @observable
+  public enableAIInlineCompletion: boolean = true;
+
+  @observable
+  public AIConfig: IAIConfig;
+
+  @computed
+  public get AIEnabled() {
+    return this.AIConfig?.copilotEnabled || this.AIConfig?.completionEnabled || false;
+  }
+
+  @observable
+  public isAIThinking: boolean = false;
+
+  /**
+   * 所有可用的 AI 模型列表
+   */
+  @observable
+  public allModels: IModel[] = [];
+
+  @observable
+  public modelsLoading: boolean = false;
+
+  /**
+   * 是否有未被接受的 AI 补全内容
+   */
+  @observable
+  public hasUnacceptedAICompletion: boolean = false;
+
+  /**
    * 多库变更
    */
   @observable
@@ -114,7 +152,6 @@ export class SettingStore {
    */
   public enableStructureCompare: boolean = false;
 
-  public cacheStorage = new Map();
   /**
    * SQL 计划
    */
@@ -253,10 +290,32 @@ export class SettingStore {
   public configurations: Partial<IUserConfig> = null;
 
   @observable
+  public spaceConfigurations: Partial<IUserConfig> = null;
+
+  @observable
   public headerStyle: any = {
     background: '#1F293D',
     boxShadow: '0px 1px 4px 0px rgba(0,21,41,0.12)',
   };
+
+  constructor() {
+    makeDataShareable(this, 'configurations', {
+      channelName: `user-config`,
+      identifierType: EShareableIdentifierType.USER,
+    });
+    makeDataShareable(this, 'spaceConfigurations', {
+      channelName: `space-config`,
+      identifierType: EShareableIdentifierType.ORGANIZATION,
+    });
+    makeDataShareable(this, 'AIConfig', {
+      channelName: `ai-config`,
+      identifierType: EShareableIdentifierType.ORGANIZATION,
+    });
+    makeDataShareable(this, 'allModels', {
+      channelName: `all-models`,
+      identifierType: EShareableIdentifierType.ORGANIZATION,
+    });
+  }
 
   @action
   public setHeaderStyle(headerStyle: any) {
@@ -268,43 +327,6 @@ export class SettingStore {
     const newTheme = themeConfig[theme] || themeConfig[defaultTheme];
     this.theme = newTheme;
     localStorage.setItem(themeKey, themeConfig[theme] ? theme : defaultTheme);
-  }
-
-  @action
-  public setSpaceConfig(config: Partial<IUserConfig>) {
-    const cacheData = {
-      data: config,
-      timestamp: Date.now(),
-      organizationId: getCurrentOrganizationId(),
-    };
-    localStorage.setItem(`cached-${getCurrentOrganizationId()}`, JSON.stringify(cacheData));
-    this.cacheStorage.set(`cached-${getCurrentOrganizationId()}`, true);
-  }
-
-  @action
-  public clearSpaceConfig() {
-    localStorage.removeItem(`cached-${getCurrentOrganizationId()}`);
-    this.cacheStorage.set(`cached-${getCurrentOrganizationId()}`, false);
-  }
-
-  @action
-  public readCachedSpaceConfig() {
-    const storageSpaceConfigurations = localStorage.getItem(`cached-${getCurrentOrganizationId()}`);
-    const { data, timestamp, organizationId } = JSON.parse(storageSpaceConfigurations) || {};
-
-    const cached = organizationId === getCurrentOrganizationId();
-    const sessionExist = this.cacheStorage.get(`cached-${getCurrentOrganizationId()}`);
-
-    if (cached && sessionExist) {
-      try {
-        if (Date.now() - timestamp < SPACE_CONFIG_EXPIRES) {
-          return data;
-        }
-      } catch (error) {
-        console.error('Failed to parse cached spaceConfig:', error);
-      }
-    }
-    return null;
   }
 
   @action
@@ -334,14 +356,54 @@ export class SettingStore {
   }
 
   @action
-  public async getUserConfig() {
-    const res = await request.get('/api/v2/config/users/me/configurations');
-    if (res?.data) {
-      const config = res?.data?.contents?.reduce((data, item) => {
+  public disableAI() {
+    localStorage.setItem('odc.enableAIInlineCompletion', 'false');
+    this.enableAIInlineCompletion = false;
+  }
+  @action
+  public enableAI() {
+    localStorage.setItem('odc.enableAIInlineCompletion', 'true');
+    this.enableAIInlineCompletion = true;
+  }
+  @action async getAIConfig() {
+    const res = await getAIConfig();
+    this.AIConfig = res;
+  }
+
+  @action async updateAIConfig(data) {
+    try {
+      const res = await updateAIConfig(data);
+      if (res) {
+        this.AIConfig = data;
+      }
+    } catch {
+      console.log('fail to update ai config');
+    }
+  }
+
+  @action
+  public setAllModels(models: IModel[]) {
+    this.allModels = models;
+  }
+
+  @action
+  public setModelsLoading(loading: boolean) {
+    this.modelsLoading = loading;
+  }
+
+  @action
+  public async getUserConfig(initData?: any) {
+    this.enableAIInlineCompletion =
+      !localStorage.getItem('odc.enableAIInlineCompletion') ||
+      localStorage.getItem('odc.enableAIInlineCompletion') === 'true';
+    const data = initData
+      ? initData
+      : (await request.get('/api/v2/config/users/me/configurations'))?.data?.contents;
+    if (data) {
+      this.configurations = data?.reduce((data, item) => {
         data[item.key] = item.value;
         return data;
       }, {});
-      this.configurations = config;
       this.theme = themeConfig[this.configurations['odc.appearance.scheme']];
     } else {
       this.configurations = {};
@@ -349,11 +411,7 @@ export class SettingStore {
   }
 
   @action
-  public async getSpaceConfig(diabledCache?: boolean) {
-    if (!diabledCache) {
-      const cachedSpaceConfig = this.readCachedSpaceConfig();
-      if (cachedSpaceConfig) return cachedSpaceConfig;
-    }
+  public async getSpaceConfig() {
     const res = await request.get('/api/v2/config/organization/configurations');
     if (res?.data) {
       const config = res?.data?.contents?.reduce((data, item) => {
@@ -361,18 +419,11 @@ export class SettingStore {
         return data;
       }, {});
 
-      this.setSpaceConfig(config);
+      this.spaceConfigurations = config;
       return config;
     } else {
-      this.clearSpaceConfig();
+      this.spaceConfigurations = null;
     }
-  }
-
-  @action
-  public getSpaceConfigByKey(key: string) {
-    const storageSpaceConfigurations = localStorage.getItem(`cached-${getCurrentOrganizationId()}`);
-    const { data } = JSON.parse(storageSpaceConfigurations) || {};
-    return data?.[key] || undefined;
   }
 
   @action
@@ -465,7 +516,7 @@ export class SettingStore {
     });
     const data = res?.data?.contents;
     if (data) {
-      this.setSpaceConfig(newData);
+      this.spaceConfigurations = { ...this.spaceConfigurations, ...newData };
     }
     return !!data;
   }
@@ -480,7 +531,7 @@ export class SettingStore {
       });
       const userConfig = res?.data?.contents;
       if (userConfig) {
-        await this.getSpaceConfig(true);
+        await this.getSpaceConfig();
       }
     }
     return !!data;

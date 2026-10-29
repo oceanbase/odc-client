@@ -31,7 +31,7 @@ import type { IAutoAuthRule, IResponseData } from '@/d.ts';
 import { IManagerResourceType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Switch } from 'antd';
 import type { FixedType } from 'rc-table/es/interface';
@@ -40,6 +40,19 @@ import { ResourceContext } from '../context';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
 import styles from './index.less';
+import InputSelect from '@/component/InputSelect';
+
+enum AutoAuthSearchType {
+  name = 'name',
+}
+
+const AutoAuthSearchTypeTextMap = {
+  [AutoAuthSearchType.name]: formatMessage({
+    id: 'odc.components.AutoAuthPage.RuleName',
+    defaultMessage: '规则名称',
+  }),
+};
+
 interface IProps {}
 export const actionLabelMap = {
   BindRole: formatMessage({
@@ -53,6 +66,8 @@ export const actionLabelMap = {
   }), //'授予项目角色'
 };
 interface IState {
+  searchType: AutoAuthSearchType;
+  searchValue: string;
   maskingRules: IResponseData<IAutoAuthRule>;
   editId: number;
   detailId: number;
@@ -63,6 +78,8 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
   private tableRef = React.createRef<ITableInstance>();
   static contextType = ResourceContext;
   readonly state = {
+    searchType: undefined,
+    searchValue: undefined,
     editId: null,
     detailId: null,
     formModalVisible: false,
@@ -361,13 +378,15 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
     }
   };
 
-  private loadData = async (args: ITableLoadOptions) => {
-    const { searchValue = '', filters, sorter, pagination, pageSize } = args ?? {};
+  private loadData = async (args: ITableLoadOptions = {}) => {
+    const { filters, sorter, pagination, pageSize } = args ?? {};
     const { enabled, creatorName } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const data = {
-      name: searchValue,
+      name: [AutoAuthSearchType.name].includes(this.state.searchType)
+        ? this.state.searchValue
+        : undefined,
       enabled: enabled,
       creatorName: creatorName,
       sort: column?.dataIndex,
@@ -393,6 +412,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
     this.openFormModal();
     tracert.click('a3112.b64007.c330920.d367470');
   };
+
   componentDidMount() {
     this.context.loadConnections();
     this.context.loadRoles();
@@ -406,16 +426,41 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
       resourceIdentifier: IManagerResourceType.auto_auth,
       action: actionTypes.create,
     }).accessible;
+    const selectTypeOptions = Object.keys(AutoAuthSearchType).map((item) => ({
+      value: item,
+      label: AutoAuthSearchTypeTextMap[item],
+    }));
     return (
       <>
         <CommonTable
           ref={this.tableRef}
           titleContent={null}
           filterContent={{
-            searchPlaceholder: formatMessage({
-              id: 'odc.components.AutoAuthPage.EnterARuleName',
-              defaultMessage: '请输入规则名称',
-            }), //请输入规则名称
+            enabledSearch: false,
+            filters: [
+              {
+                render: (params) => {
+                  return (
+                    <InputSelect
+                      searchValue={this.state.searchValue}
+                      searchType={this.state.searchType}
+                      selectTypeOptions={selectTypeOptions}
+                      onSelect={({ searchValue, searchType }) => {
+                        this.setState(
+                          {
+                            searchValue,
+                            searchType: searchType as AutoAuthSearchType,
+                          },
+                          () => {
+                            this.loadData(params);
+                          },
+                        );
+                      }}
+                    />
+                  );
+                },
+              },
+            ],
           }}
           operationContent={
             canAcessCreate

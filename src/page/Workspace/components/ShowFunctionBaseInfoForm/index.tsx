@@ -17,7 +17,7 @@
 import ObjectInfoView from '@/component/ObjectInfoView';
 import type { IFunction } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { Component } from 'react';
 
 interface IProps {
@@ -54,6 +54,62 @@ class ShowFunctionBaseInfoForm extends Component<IProps> {
             }), // 创建人
             content: model.definer,
           },
+
+          model.externalResourceProperties?.file
+            ? {
+                label: formatMessage({
+                  id: 'src.page.Workspace.components.ShowFunctionBaseInfoForm.550BBAE9',
+                  defaultMessage: '资源来源',
+                }),
+                content: model.externalResourceProperties.file,
+              }
+            : null,
+          model.externalResourceProperties?.createType
+            ? {
+                label: formatMessage({
+                  id: 'src.page.Workspace.components.ShowFunctionBaseInfoForm.2D7277DB',
+                  defaultMessage: '资源类型',
+                }),
+                content: model.externalResourceProperties.createType,
+              }
+            : null,
+          model.externalResourceProperties?.inner_type
+            ? {
+                label: formatMessage({
+                  id: 'src.page.Workspace.components.ShowFunctionBaseInfoForm.55808BBB',
+                  defaultMessage: '内置类型',
+                }),
+                content: model.externalResourceProperties.inner_type,
+              }
+            : null,
+          model.externalResourceProperties?.language
+            ? {
+                label: formatMessage({
+                  id: 'src.page.Workspace.components.ShowFunctionBaseInfoForm.1C7B985F',
+                  defaultMessage: '语言',
+                }),
+                content: model.externalResourceProperties.language,
+              }
+            : null,
+          model.externalResourceProperties?.symbol
+            ? {
+                label: formatMessage({
+                  id: 'src.page.Workspace.components.ShowFunctionBaseInfoForm.025CEE6A',
+                  defaultMessage: '入口类',
+                }),
+                content: model.externalResourceProperties.symbol,
+              }
+            : null,
+
+          model.externalResourceProperties?.createType
+            ? {
+                label: formatMessage({
+                  id: 'src.page.Workspace.components.ShowFunctionBaseInfoForm.5910949F',
+                  defaultMessage: '资源类型',
+                }),
+                content: model.externalResourceProperties.createType,
+              }
+            : null,
 
           model.createTime > 0
             ? {

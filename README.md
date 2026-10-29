@@ -53,7 +53,7 @@ pnpm run prepack obclient
 #### Install Dependencies
 
 ```shell
-pnpm install
+pnpm run install-odc
 ```
 
 #### Configure ODC Server Address

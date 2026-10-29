@@ -27,8 +27,8 @@ import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
-import { generateSelectSql } from '@/util/sql';
+import notification from '@/util/ui/notification';
+import { generateSelectSql } from '@/util/data/sql';
 import { generateUniqKey } from '@/util/utils';
 import { message, Spin } from 'antd';
 import { isNil } from 'lodash';
@@ -72,6 +72,7 @@ class TableData extends React.Component<
     status: EStatus;
     hasExecuted: boolean;
     allowExport?: boolean;
+    limit: number;
   }
 > {
   constructor(props) {
@@ -88,6 +89,7 @@ class TableData extends React.Component<
       status: null,
       hasExecuted: false,
       allowExport: true,
+      limit: props.session?.params?.queryLimit || 1000,
     };
   }
 
@@ -112,7 +114,7 @@ class TableData extends React.Component<
   public reloadTableData = async (
     tableName: string,
     keepInitialSQL: boolean = false,
-    limit: number = 1000,
+    limit: number = this.state.limit,
   ) => {
     const { table, session } = this.props;
 
@@ -137,6 +139,7 @@ class TableData extends React.Component<
           track: data?.track,
         });
       }
+      this.setState({ limit });
       let resultSet = generateResultSetColumns([data], session?.connection?.dialectType)?.[0];
       if (resultSet) {
         this._resultSetKey = generateUniqKey();
@@ -393,6 +396,7 @@ class TableData extends React.Component<
       lintResultSet,
       status,
       allowExport,
+      limit,
     } = this.state;
 
     return (
@@ -409,6 +413,7 @@ class TableData extends React.Component<
             table={{ ...table, columns: resultSet.resultSetMetaData?.columnList }}
             pageKey={pageKey}
             session={session}
+            initialLimit={limit}
             onUpdateEditing={(editing) => {
               this.setState({
                 isEditing: editing,

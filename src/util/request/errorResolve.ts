@@ -21,8 +21,8 @@ import odc from '@/plugins/odc';
 import loginStore from '@/store/login';
 import { history } from '@umijs/max';
 import { message } from 'antd';
-import { formatMessage } from '../intl';
-import notification from '../notification';
+import { formatMessage } from '@/util/intl';
+import notification from '@/util/ui/notification';
 
 const errorMsgMap = {
   EXECUTE_DDL_FAILED: formatMessage({

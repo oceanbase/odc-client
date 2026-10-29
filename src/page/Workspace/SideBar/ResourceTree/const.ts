@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { ResourceNodeType } from './type';
 import { IDatabase, DatabaseGroup } from '@/d.ts/database';
 import { DbObjectType, PageType, IPage, SynonymType } from '@/d.ts';
@@ -7,35 +23,6 @@ import modalStore from '@/store/modal';
 import { SearchStatus } from '@/page/Workspace/SideBar/ResourceTree/DatabaseSearchModal/constant';
 import { TreeDataNode } from '@/page/Workspace/SideBar/ResourceTree/type';
 import React, { useContext, useEffect } from 'react';
-
-const isSupportQuickOpenGlobalSearchNodes = (type: ResourceNodeType, key) => {
-  let isSupport = false;
-  switch (type) {
-    case ResourceNodeType.Database: {
-      isSupport = true;
-      break;
-    }
-    case ResourceNodeType.GroupNodeDataSource: {
-      const [, , mapId] = key.split('-');
-      if (Number(mapId) !== 0) {
-        isSupport = true;
-      }
-      break;
-    }
-    case ResourceNodeType.GroupNodeProject: {
-      isSupport = true;
-      break;
-    }
-    case ResourceNodeType.SecondGroupNodeDataSource: {
-      const [, , , mapId] = key.split('-');
-      if (Number(mapId) !== 0) {
-        isSupport = true;
-      }
-      break;
-    }
-  }
-  return isSupport;
-};
 
 const isGroupNode = (type) => {
   return [
@@ -107,7 +94,7 @@ const getShouldExpandedGroupKeys = (params: {
     getGroupKey(mapId, groupMode),
     getSecondGroupKey(mapId, secondMapId, groupMode),
   );
-  if ([DatabaseGroup.project, DatabaseGroup.dataSource, DatabaseGroup.tenant].includes(groupMode)) {
+  if ([DatabaseGroup.project, DatabaseGroup.dataSource].includes(groupMode)) {
     shouldExpandedKeys = shouldExpandedKeys.filter((item) => {
       if (isString(item)) {
         return !item.includes(TreeDataSecondGroupKey);
@@ -225,7 +212,7 @@ const getShouldExpandedKeysByObject = (params: {
       break;
     }
   }
-  if ([DatabaseGroup.project, DatabaseGroup.dataSource, DatabaseGroup.tenant].includes(groupMode)) {
+  if ([DatabaseGroup.project, DatabaseGroup.dataSource].includes(groupMode)) {
     shouldExpandedKeys = shouldExpandedKeys.filter((item) => {
       if (isString(item)) {
         return !item?.includes(TreeDataSecondGroupKey);
@@ -337,6 +324,12 @@ const getObjectShouldExpandedKeysByPage = (params: {
       currentResourceNodeType = ResourceNodeType.MaterializedView;
       break;
     }
+    case PageType.EXTERNAL_RESOURCE: {
+      shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-externalResource`);
+      currentKey = `${db.id}-${db.name}-externalResource-${page?.params?.resourceName}`;
+      currentResourceNodeType = ResourceNodeType.ExternalResource;
+      break;
+    }
     case PageType.SEQUENCE: {
       shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-sequence`);
       currentKey = `${db.id}-${db.name}-sequence-${page?.params?.sequenceName}`;
@@ -414,7 +407,7 @@ const getObjectShouldExpandedKeysByPage = (params: {
       break;
     }
   }
-  if ([DatabaseGroup.project, DatabaseGroup.dataSource, DatabaseGroup.tenant].includes(groupMode)) {
+  if ([DatabaseGroup.project, DatabaseGroup.dataSource].includes(groupMode)) {
     shouldExpandedKeys = shouldExpandedKeys.filter((item) => {
       if (isString(item)) {
         return !item?.includes(TreeDataSecondGroupKey);
@@ -484,8 +477,151 @@ const openGlobalSearch = (node: TreeDataNode) => {
       };
       break;
     }
+    // 数据库子节点的Root节点，定位到对应的数据库
+    case ResourceNodeType.TableRoot:
+    case ResourceNodeType.ViewRoot:
+    case ResourceNodeType.FunctionRoot:
+    case ResourceNodeType.ProcedureRoot:
+    case ResourceNodeType.PackageRoot:
+    case ResourceNodeType.TriggerRoot:
+    case ResourceNodeType.TypeRoot:
+    case ResourceNodeType.SequenceRoot:
+    case ResourceNodeType.MaterializedViewRoot:
+    case ResourceNodeType.ExternalTableRoot:
+    case ResourceNodeType.ExternalResourceRoot: {
+      // 从key中解析数据库ID (格式: ${databaseId}-${dbName}-${type})
+      const databaseId = node.data?.id;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+        };
+      }
+      break;
+    }
+    // 同义词Root节点，需要定位到对应的tab
+    case ResourceNodeType.SynonymRoot: {
+      const databaseId = node.data?.id;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          activeKey: DbObjectType.synonym,
+        };
+      }
+      break;
+    }
+    case ResourceNodeType.PublicSynonymRoot: {
+      const databaseId = node.data?.id;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          activeKey: DbObjectType.public_synonym,
+        };
+      }
+      break;
+    }
+    // 具体的资源节点，定位到对应的数据库并预填搜索关键词和activeKey
+    case ResourceNodeType.Table:
+    case ResourceNodeType.ExternalTable: {
+      // 从key中解析数据库ID (格式: ${databaseId}-${dbName}-table-${tableName})
+      const keyParts = (node.key as string).split('-');
+      const databaseId = Number(keyParts[0]);
+      const tableName = node.data?.info?.tableName || node.title;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          initSearchKey: tableName,
+          activeKey:
+            node.type === ResourceNodeType.ExternalTable
+              ? DbObjectType.external_table
+              : DbObjectType.table,
+        };
+      }
+      break;
+    }
+    case ResourceNodeType.View:
+    case ResourceNodeType.MaterializedView: {
+      const keyParts = (node.key as string).split('-');
+      const databaseId = Number(keyParts[0]);
+      const viewName = node.data?.viewName || node.title;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          initSearchKey: viewName,
+          activeKey:
+            node.type === ResourceNodeType.MaterializedView
+              ? DbObjectType.materialized_view
+              : DbObjectType.view,
+        };
+      }
+      break;
+    }
+    case ResourceNodeType.Function: {
+      const keyParts = (node.key as string).split('-');
+      const databaseId = Number(keyParts[0]);
+      const funcName = node.data?.funName || node.title;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          initSearchKey: funcName,
+          activeKey: DbObjectType.function,
+        };
+      }
+      break;
+    }
+    case ResourceNodeType.Procedure: {
+      const keyParts = (node.key as string).split('-');
+      const databaseId = Number(keyParts[0]);
+      const procName = node.data?.proName || node.title;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          initSearchKey: procName,
+          activeKey: DbObjectType.procedure,
+        };
+      }
+      break;
+    }
+    case ResourceNodeType.Package:
+    case ResourceNodeType.Trigger:
+    case ResourceNodeType.Type:
+    case ResourceNodeType.Sequence:
+    case ResourceNodeType.Synonym:
+    case ResourceNodeType.PublicSynonym:
+    case ResourceNodeType.ExternalResource: {
+      const keyParts = (node.key as string).split('-');
+      const databaseId = Number(keyParts[0]);
+      const objectName = node.title;
+      // 根据节点类型映射到DbObjectType
+      const objectTypeMap = {
+        [ResourceNodeType.Package]: DbObjectType.package,
+        [ResourceNodeType.Trigger]: DbObjectType.trigger,
+        [ResourceNodeType.Type]: DbObjectType.type,
+        [ResourceNodeType.Sequence]: DbObjectType.sequence,
+        [ResourceNodeType.Synonym]: DbObjectType.synonym,
+        [ResourceNodeType.PublicSynonym]: DbObjectType.public_synonym,
+        [ResourceNodeType.ExternalResource]: DbObjectType.external_resource,
+      };
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          initSearchKey: objectName,
+          activeKey: objectTypeMap[node.type],
+        };
+      }
+      break;
+    }
   }
-  modalStore.changeDatabaseSearchModalVisible(true, params);
+  if (params) {
+    modalStore.changeDatabaseSearchModalVisible(true, params);
+  }
 };
 
 export {
@@ -495,7 +631,6 @@ export {
   getSecondGroupKey,
   getShouldExpandedGroupKeys,
   getShouldExpandedKeysByObject,
-  isSupportQuickOpenGlobalSearchNodes,
   getShouldExpandedKeysByPage,
   isGroupNode,
   GroupNodeToResourceNodeType,

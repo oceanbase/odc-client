@@ -15,7 +15,8 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { downloadFile, getPrefixCls } from '@/util/utils';
+import { getPrefixCls } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
 import {
   CopyOutlined,
   DownloadOutlined,
@@ -248,7 +249,7 @@ const Log: React.FC<LogProps> = ({
     if (!lineWrapNode) {
       index = copyData.current.scrollDirection === 'up' ? 0 : logData.data.length;
     } else {
-      index = Number(lineWrapNode.firstChild.innerText);
+      index = Number((lineWrapNode.firstChild as HTMLElement)?.innerText);
     }
     return index;
   };

@@ -2,14 +2,18 @@
   margin-top: 16px;
   overflow: auto;
   cursor: default;
-  .action,
-  .disabledAction {
+  .action {
     cursor: pointer;
     font-size: 12px;
     color: var(--text-color-link);
     line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
   .disabledAction {
+    font-size: 12px;
+    line-height: 20px;
     filter: grayscale(1);
     color: #00000040;
   }

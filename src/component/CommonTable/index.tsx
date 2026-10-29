@@ -18,8 +18,8 @@ import { formatMessage } from '@/util/intl';
 import { useControllableValue } from 'ahooks';
 import { Alert, Spin, Table } from 'antd';
 import classNames from 'classnames';
-import { throttle } from 'lodash';
-import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { debounce, throttle } from 'lodash';
+import React, { useEffect, useImperativeHandle, useRef, useState, useMemo } from 'react';
 import { ResizeTitle } from './component/ResizeTitle';
 import {
   DEFAULT_BIG_ROW_HEIGHT,
@@ -89,6 +89,10 @@ interface IProps<RecordType> {
   onLoad: (args: ITableLoadOptions) => Promise<any>;
   // 其他: antd table 支持的 props
   tableProps: TableProps<any>;
+  // 是否为斑马纹 table
+  stripe?: boolean;
+  // 是否在列宽拖拽时，重新计算 pageSize
+  computePageSizeByResize?: boolean;
 }
 
 const CommonTable: <RecordType extends object = any>(
@@ -117,6 +121,8 @@ const CommonTable: <RecordType extends object = any>(
     enableResize = false,
     onLoad,
     onChange,
+    stripe = true,
+    computePageSizeByResize = false,
   } = props;
   const { columns, dataSource, scroll, ...rest } = tableProps;
   const [wrapperHeight, setWrapperHeight] = useState(0);
@@ -137,7 +143,6 @@ const CommonTable: <RecordType extends object = any>(
   const urlStatusValue = getParam('status');
   const [pageSize, setPageSize] = useState(0);
   const [columnWidthMap, setColumnWidthMap] = useState(null);
-  const tableColumns = getFilteredColumns();
   const showInfoBar = rowSelecter && !!selectedRowKeys?.length && showSelectedInfoBar;
   const TOOLBAR_HEIGHT = showToolbar ? TABLE_TOOLBAR_HEIGHT : 0;
   const INFO_BAR_HEIGHT = showInfoBar ? TABLE_INFO_BAR_HEIGHT : 0;
@@ -157,8 +162,9 @@ const CommonTable: <RecordType extends object = any>(
     ? null
     : computeTableScrollHeight();
 
-  const resizeHeight = throttle(() => {
+  const resizeHeight = debounce(() => {
     setWrapperHeight(tableRef?.current?.offsetHeight);
+    computePageSizeByResize && computePageSize();
   }, 500);
 
   useEffect(() => {
@@ -357,15 +363,21 @@ const CommonTable: <RecordType extends object = any>(
     });
   }
 
-  function getFilteredColumns() {
-    return columns.map((item) => {
-      const key = item?.key || (item as any)?.dataIndex;
-      const defaultFilteredValue = item?.defaultFilteredValue || null;
-
-      item.filteredValue = filters?.[key] || defaultFilteredValue || null;
-      return item;
-    });
-  }
+  const tableColumns = useMemo(() => {
+    return enableResize
+      ? columns?.map((oriColumn) => {
+          return {
+            ...oriColumn,
+            width: columnWidthMap?.[oriColumn?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+            onHeaderCell: (column) =>
+              ({
+                width: columnWidthMap?.[column?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+                onResize: handleResize(oriColumn),
+              } as React.HTMLAttributes<HTMLElement>),
+          };
+        })
+      : columns;
+  }, [enableResize, columns, columnWidthMap]);
 
   function handleCloseAlert() {
     setAlertInfoVisible(false);
@@ -478,30 +490,14 @@ const CommonTable: <RecordType extends object = any>(
                 [styles.scrollAble]: !!scrollHeight,
               },
             )}
-            rowClassName={(record, i) =>
-              `${tableProps?.rowClassName} ${i % 2 === 0 ? styles.even : styles.odd}`
-            }
+            rowClassName={(record, i) => {
+              if (stripe) {
+                return `${tableProps?.rowClassName} ${i % 2 === 0 ? styles.even : styles.odd}`;
+              }
+              return `${tableProps?.rowClassName} `;
+            }}
             dataSource={dataSource}
-            //@ts-ignore
-            columns={
-              enableResize
-                ? columns?.map((oriColumn) => {
-                    return {
-                      ...oriColumn,
-                      width:
-                        columnWidthMap?.[oriColumn?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
-                      onHeaderCell: (column) =>
-                        ({
-                          width:
-                            columnWidthMap?.[column?.key] ||
-                            oriColumn.width ||
-                            DEFAULT_COLUMN_WIDTH,
-                          onResize: handleResize(oriColumn),
-                        } as React.HTMLAttributes<HTMLElement>),
-                    };
-                  })
-                : tableColumns
-            }
+            columns={tableColumns}
             components={
               enableResize
                 ? {

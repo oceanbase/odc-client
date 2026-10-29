@@ -29,7 +29,8 @@ import {
 } from '@/d.ts';
 import odc from '@/plugins/odc';
 import request from '@/util/request';
-import { encrypt, stringSeparatorToCRLF } from '@/util/utils';
+import { encrypt } from '@/util/utils';
+import { stringSeparatorToCRLF } from '@/util/data/string';
 import { isNil } from 'lodash';
 
 export async function getExportObjects(

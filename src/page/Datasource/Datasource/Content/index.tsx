@@ -33,10 +33,9 @@ interface IProps {
 
 const Content = function (props: IProps, ref) {
   const listRef = useRef<any>();
-  const context = useContext(ParamContext);
 
-  const reload = () => {
-    return listRef.current?.reload();
+  const reload = async () => {
+    return await listRef.current?.reload();
   };
 
   useImperativeHandle(

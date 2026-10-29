@@ -20,7 +20,7 @@ import { ISSOConfig } from '@/d.ts';
 import { ELDAPMode } from '@/page/ExternalIntegration/SSO/NewSSODrawerButton/SSOForm';
 import { toDefaultProjectPage } from '@/service/projectHistory';
 import { UserStore } from '@/store/login';
-import channel, { ChannelMap } from '@/util/broadcastChannel';
+import channel, { ChannelMap } from '@/util/communication/broadcastChannel';
 import { formatMessage, getLocalImg } from '@/util/intl';
 import logger from '@/util/logger';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';

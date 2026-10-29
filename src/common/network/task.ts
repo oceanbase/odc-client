@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-import { IShadowSyncAnalysisResult } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
+import { IShadowSyncAnalysisResult } from '@/component/Task/modals/ShadowSyncTask/CreateModal/interface';
 import {
   AgainTaskRecord,
   CommonTaskLogType,
   CreateStructureComparisonTaskRecord,
   CreateTaskRecord,
-  CycleTaskDetail,
-  IAsyncTaskResultSet,
-  ICycleSubTaskDetailRecord,
-  ICycleSubTaskRecord,
-  ICycleTaskJobRecord,
-  ICycleTaskRecord,
   IDatasourceUser,
   IFunction,
-  IPartitionPlan,
   IPartitionPlanKeyType,
   IPartitionPlanTable,
   IPartitionTablePreviewConfig,
@@ -43,15 +36,20 @@ import {
   TaskRecordParameters,
   TaskStatus,
   TaskType,
-  ICycleTaskStatRecord,
-  ICycleTaskStatParam,
+  ITaskStatParam,
+  ITodos,
+  IGetFlowScheduleTodoParams,
+  IStat,
+  IAsyncTaskResultSet,
+  IMultipleAsyncExecuteRecord,
+  MultipleAsyncExecuteRecordStats,
+  ICycleTaskRecord,
 } from '@/d.ts';
-import { ISchemaChangeRecord } from '@/d.ts/logicalDatabase';
 import { IProject } from '@/d.ts/project';
 import { EOperationType, IComparisonResultData, IStructrueComparisonDetail } from '@/d.ts/task';
 import setting from '@/store/setting';
 import request from '@/util/request';
-import { downloadFile } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
 import { generateFunctionSid } from './pathUtil';
 import { IDatabase } from '@/d.ts/database';
 import { FileExportResponse, ScheduleExportListView } from '@/d.ts/migrateTask';
@@ -61,9 +59,13 @@ import {
   IImportTaskResult,
   IScheduleTaskImportRequest,
   IScheduleTerminateCmd,
+  ITaskTerminateCmd,
   IScheduleTerminateResult,
 } from '@/d.ts/importTask';
 import odc from '@/plugins/odc';
+import { TaskSearchType } from '@/component/Task/interface';
+import { ScheduleType } from '@/d.ts/schedule';
+import { omit } from 'lodash';
 
 /**
  * 根据函数获取ddl sql
@@ -78,7 +80,7 @@ export async function getFunctionCreateSQL(funName: string, func: Partial<IFunct
 
 /**
  * 新建任务
- * 任务：涵盖 导入，导出，异步，模拟数据，权限申请共计 5 种类型
+ * 任务：涵盖 导入，导出，异步，模拟数据，逻辑库变更，权限申请共计 5 种类型
  */
 export async function createTask(data: Partial<CreateTaskRecord>): Promise<number> {
   const res = await request.post(`/api/v2/flow/flowInstances/`, {
@@ -148,7 +150,8 @@ export async function getTaskList<T>(params: {
   connection?: number;
   fuzzySearchKeyword?: string;
   status?: string[];
-  taskType?: TaskPageType | TaskType;
+  taskTypes?: TaskPageType[] | TaskType[];
+  searchType?: TaskSearchType;
   flowInstanceId?: number;
   startTime?: number;
   endTime?: number;
@@ -202,15 +205,23 @@ export async function getCycleTaskList<T>(params: {
 }
 
 /**
- * 查询周期任务状态
+ * 查询工单任务状态
  */
-export async function getScheduleStat<T>(
-  params: ICycleTaskStatParam,
-): Promise<ICycleTaskStatRecord[]> {
-  const res = await request.get('/api/v2/schedule/schedules/stats', {
+export async function getTaskStat<T>(params: ITaskStatParam): Promise<Record<TaskType, IStat>> {
+  const res = await request.get('/api/v2/collaboration/landingPage/flowInstanceStat', {
     params,
   });
-  return res?.data?.contents;
+  return res?.data;
+}
+
+/**
+ * 查询工单与作业 TODO 统计信息
+ */
+export async function getFlowScheduleTodo<T>(params: IGetFlowScheduleTodoParams): Promise<ITodos> {
+  const res = await request.get('/api/v2/collaboration/landingPage/flowScheduleTodoStat', {
+    params,
+  });
+  return res?.data;
 }
 
 export async function getDatabasesHistories(params: {
@@ -232,27 +243,6 @@ export async function getTaskStatus(ids: number[]): Promise<Record<number, TaskS
       id: ids,
     },
   });
-  return res?.data;
-}
-
-/**
- * 查询周期任务详情
- */
-export async function getCycleTaskDetail<T>(id: number): Promise<CycleTaskDetail<T>> {
-  const res = await request.get(`/api/v2/schedule/scheduleConfigs/${id}`);
-  return res?.data;
-}
-
-/**
- * 查询周期任务详情的子任务详情
- */
-export async function getCycleSubTaskDetail(
-  scheduleId: number,
-  scheduleTaskId: number,
-): Promise<ICycleSubTaskDetailRecord> {
-  const res = await request.get(
-    `/api/v2/schedule/scheduleConfigs/${scheduleId}/scheduleTask/${scheduleTaskId}`,
-  );
   return res?.data;
 }
 
@@ -286,53 +276,6 @@ export async function getTaskLog(id: number, logType: CommonTaskLogType): Promis
       logType,
     },
   });
-  return res?.data;
-}
-
-/**
- * 查询周期任务日志
- */
-export async function getCycleTaskLog(
-  scheduleId: number,
-  taskId: number,
-  logType: CommonTaskLogType,
-): Promise<string> {
-  const res = await request.get(`/api/v2/schedule/schedules/${scheduleId}/tasks/${taskId}/log`, {
-    params: {
-      logType,
-    },
-  });
-  return res?.data;
-}
-
-/**
- * 获取全量日志下载URL
- */
-export async function getDownloadUrl(scheduleId: number, taskId: number) {
-  const res = await request.post(
-    `/api/v2/schedule/schedules/${scheduleId}/tasks/${taskId}/log/getDownloadUrl`,
-  );
-  return res?.data;
-}
-
-/**
- * 操作列表
- */
-export async function getOperationList(scheduleId: number): Promise<IResponseData<Operation>> {
-  const res = await request.get(`/api/v2/schedule/schedules/${scheduleId}/changes`);
-  return res?.data;
-}
-
-/**
- * 操作详情
- */
-export async function getOperationDetail(
-  scheduleId: number,
-  scheduleChangeLogId: number,
-): Promise<Operation> {
-  const res = await request.get(
-    `/api/v2/schedule/schedules/${scheduleId}/changes/${scheduleChangeLogId}`,
-  );
   return res?.data;
 }
 
@@ -373,6 +316,7 @@ export async function stopTask(id: number): Promise<boolean> {
   const res = await request.post(`/api/v2/flow/flowInstances/${id}/cancel`);
   return !!res?.data;
 }
+
 /**
  * 执行任务
  */
@@ -406,9 +350,10 @@ export async function getTaskFlowList(): Promise<any[]> {
  * 获取待我审批的任务流程信息
  */
 export async function getTaskMetaInfo(): Promise<{
-  pendingApprovalInstanceIds: number[];
+  approvingFlowIds: number[];
+  approvingFlowScheduleIds: number[];
 }> {
-  const result = await request.get('/api/v2/flow/flowInstances/getMetaInfo');
+  const result = await request.get('/api/v2/schedule/getMetaInfo');
   return result?.data;
 }
 
@@ -471,11 +416,14 @@ export async function getTaskFile(taskId: number, objectId: string[]): Promise<s
 }
 
 /**
- * 下载文件（周期任务）
+ * 下载文件
  */
-export async function getCycleTaskFile(taskId: number, objectId: string[]): Promise<string[]> {
+export async function getScheduleTaskFile(
+  scheduleId: number,
+  objectId: string[],
+): Promise<string[]> {
   const downloadInfo = await request.post(
-    `/api/v2/schedule/${taskId}/jobs/async/batchGetDownloadUrl`,
+    `/api/v2/schedule/schedules/${scheduleId}/batchGetDownloadUrl`,
     {
       data: objectId,
     },
@@ -536,21 +484,6 @@ export async function getPartitionPlanKeyDataTypes(
         sessionId,
         databaseId,
         tableName,
-      },
-    },
-  );
-  return res?.data;
-}
-
-/**
- * 查询分区策略详情
- */
-export async function getPartitionPlan(taskId: number): Promise<IPartitionPlan> {
-  const res = await request.get(
-    `/api/v2/flow/flowInstances/${taskId}/tasks/partitionPlans/getDetail`,
-    {
-      params: {
-        id: taskId,
       },
     },
   );
@@ -622,53 +555,6 @@ export async function getFlowSQLLintResult(flowId: number, nodeId: number) {
 }
 
 /**
- * 获取调度任务的task列表
- */
-export async function getDataArchiveSubTask(
-  taskId: number,
-  params?: {
-    page?: number;
-    size?: number;
-  },
-): Promise<IResponseData<ICycleSubTaskRecord>> {
-  const res = await request.get(`/api/v2/schedule/schedules/${taskId}/tasks`, {
-    params,
-  });
-  return res?.data;
-}
-
-/**
- * 获取调度任务的task详情
- */
-export async function getScheduleTaskDetail(
-  taskId: number,
-  jobId: number,
-): Promise<ICycleTaskJobRecord<ISchemaChangeRecord[]>> {
-  const res = await request.get(`/api/v2/schedule/schedules/${taskId}/tasks/${jobId}`);
-  return res?.data;
-}
-
-/**
- * 更新分区计划
- */
-export async function rollbackDataArchiveSubTask(taskId: number, subTaskId): Promise<boolean> {
-  const res = await request.put(`/api/v2/schedule/schedules/${taskId}/tasks/${subTaskId}/rollback`);
-  return !!res?.data;
-}
-
-export async function startDataArchiveSubTask(taskId: number, subTaskId): Promise<boolean> {
-  const res = await request.put(`/api/v2/schedule/schedules/${taskId}/tasks/${subTaskId}/start`);
-  return !!res?.data;
-}
-
-export async function stopDataArchiveSubTask(taskId: number, subTaskId): Promise<boolean> {
-  const res = await request.put(
-    `/api/v2/schedule/schedules/${taskId}/tasks/${subTaskId}/interrupt`,
-  );
-  return !!res?.data;
-}
-
-/**
  * 查询无锁结构变更的子任务
  */
 export async function getSubTask(id: number): Promise<IResponseData<ISubTaskRecords>> {
@@ -716,21 +602,6 @@ export async function getLockDatabaseUserRequired(databaseId: number): Promise<{
 }> {
   const res = await request.get(`/api/v2/osc/lockDatabaseUserRequired/${databaseId}`);
   return res?.data;
-}
-/**
- * 更新限流配置
- */
-export async function updateLimiterConfig(
-  taskId: number,
-  data: {
-    rowLimit?: number;
-    dataSizeLimit?: number;
-  },
-): Promise<boolean> {
-  const res = await request.put(`/api/v2/schedule/schedules/${taskId}/dlmRateLimitConfiguration`, {
-    data,
-  });
-  return !!res?.data;
 }
 
 /**
@@ -835,7 +706,7 @@ export async function exportSchedulesTask(params: {
  */
 export async function getExportListView(params: {
   ids: number[];
-  scheduleType: TaskType;
+  scheduleType: ScheduleType;
 }): Promise<ScheduleExportListView[]> {
   const res = await request.post(`/api/v2/export/getExportListView`, {
     data: params,
@@ -921,9 +792,9 @@ export async function getScheduleImportLog(importTaskId: string): Promise<string
 /**
  * 工单任务终止-发起
  */
-export async function cancelFlowInstance(flowInstanceId: number[]): Promise<string> {
+export async function cancelFlowInstance(data: ITaskTerminateCmd): Promise<string> {
   const res = await request.post(`/api/v2/flow/flowInstances/asyncCancel`, {
-    data: flowInstanceId,
+    data,
   });
   return res?.data;
 }
@@ -950,34 +821,31 @@ export async function getBatchCancelLog(terminateId: string): Promise<string> {
   return res?.data;
 }
 
-/**
- * 计划任务终止-发起
- */
-export async function batchTerminateScheduleAndTask(data: IScheduleTerminateCmd): Promise<string> {
-  const res = await request.post(`/api/v2/schedule/schedules/asyncTerminate`, {
-    data,
+export interface IResponseDataWithStats<T, S = any> extends IResponseData<T> {
+  stats: S;
+}
+
+/** 多库变更-执行记录列表 */
+export async function getMultipleAsyncExecuteRecordList(params: {
+  id: number;
+  size: number;
+  page: number;
+  statuses?: string[];
+  keyword?: string;
+}): Promise<IResponseDataWithStats<IMultipleAsyncExecuteRecord, MultipleAsyncExecuteRecordStats>> {
+  const { id } = params;
+  const res = await request.get(`/api/v2/flow/flowInstances/${id}/tasks/multiAsyncResults`, {
+    params: omit(params, 'id'),
   });
   return res?.data;
 }
 
-/**
- * 工单任务终止-查看
- */
-export async function getTerminateScheduleResult(
-  terminateId: string,
-): Promise<IScheduleTerminateResult[]> {
-  const res = await request.get(
-    `/api/v2/schedule/schedules/asyncTerminateResult?terminateId=${terminateId}`,
-  );
-  return res?.data;
-}
-
-/**
- * 工单任务终止-查看日志
- */
-export async function getTerminateScheduleLog(terminateId: string): Promise<string> {
-  const res = await request.get(
-    `/api/v2/schedule/schedules/asyncTerminateLog?terminateId=${terminateId}`,
-  );
+export async function downLoadRollbackPlanFile(id: number, databaseId: number): Promise<string> {
+  const res = await request.get(`/api/v2/flow/flowInstances/${id}/tasks/rollbackPlan/download`, {
+    params: {
+      databaseId,
+      download: true,
+    },
+  });
   return res?.data;
 }

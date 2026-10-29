@@ -23,7 +23,7 @@ import { AccountType, IRemoteCustomConnectionData } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { SpaceType } from '@/d.ts/_index';
 import login from '@/store/login';
-import { resolveUnionDbUser } from '@/util/connection';
+import { resolveUnionDbUser } from '@/util/database/connection';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
@@ -34,7 +34,7 @@ import { Base64 } from 'js-base64';
 import dayjs from 'dayjs';
 
 async function getDefaultSchema(dsId: number, userName: string) {
-  const res = await listDatabases(null, dsId, 1, 999);
+  const res = await listDatabases({ dataSourceId: dsId, page: 1, size: 999 });
   const databases = res?.contents;
   // mysql 模式的默认数据库是 information_schema
   const informationSchema = databases?.find((d) => d.name === 'information_schema');

@@ -18,8 +18,15 @@ import { DragInsertTypeText } from '@/constant/label';
 import { AutoCommitMode, DragInsertType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { IODCSetting, ODCSettingGroup } from '../../config';
-import RadioItem from '../../Item/RadioItem';
+import RadioItem, { RadioWithTooltip } from '../../Item/RadioItem';
 import SelectItem from '../../Item/SelectItem';
+import { Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@@node_modules/@ant-design/icons/lib';
+
+export const EquerySqlResultDisplayMode = {
+  OVERWRITE: 'OVERWRITE',
+  APPEND: 'APPEND',
+};
 
 const databaseGroup: ODCSettingGroup = {
   label: formatMessage({
@@ -191,6 +198,60 @@ const databaseSettings: IODCSetting[] = [
                 defaultMessage: '否',
               }), //'否'
               value: 'false',
+            },
+          ]}
+          value={value}
+          onChange={onChange}
+        />
+      );
+    },
+  },
+  {
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.user.20C5DFB4',
+      defaultMessage: '结果集展示',
+    }),
+    key: 'odc.sqlexecute.querySqlResultDisplayMode',
+    locationKey: 'querySqlResultDisplayMode',
+    group: databaseGroup,
+    secondGroup: databaseResultsetGroup,
+    storeType: 'server',
+    render: (value, onChange) => {
+      return (
+        <RadioItem
+          options={[
+            {
+              label: (
+                <RadioWithTooltip
+                  title={formatMessage({
+                    id: 'src.component.ODCSetting.config.user.2D4F8470',
+                    defaultMessage:
+                      '最近查询结果覆盖上一次查询结果，若要查看多次执行结果需手动固定结果集（在结果集页签右键操作）。',
+                  })}
+                  label={formatMessage({
+                    id: 'src.component.ODCSetting.config.user.C8FE70F6',
+                    defaultMessage: '覆盖',
+                  })}
+                />
+              ),
+
+              value: EquerySqlResultDisplayMode.OVERWRITE,
+            },
+            {
+              label: (
+                <RadioWithTooltip
+                  title={formatMessage({
+                    id: 'src.component.ODCSetting.config.user.FACA6552',
+                    defaultMessage: '多次查询结果追加展示，需手动关闭结果集页签才会关闭。',
+                  })}
+                  label={formatMessage({
+                    id: 'src.component.ODCSetting.config.user.5BCACB4C',
+                    defaultMessage: '追加',
+                  })}
+                />
+              ),
+
+              value: EquerySqlResultDisplayMode.APPEND,
             },
           ]}
           value={value}

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useRequest } from 'ahooks';
 import { getDatabaseObject } from '@/common/network/database';
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -7,12 +23,12 @@ import { IConnection, DbObjectType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import { SEARCH_OBJECT_FROM_ALL_DATABASE } from '../constant';
 import { listDatabases } from '@/common/network/database';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { syncAll } from '@/common/network/database';
 import login from '@/store/login';
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
-import { isPhysicalDatabase } from '@/util/database';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
+import { isPhysicalDatabase } from '@/util/database/database';
 
 const useGlobalSearchData = (params: {
   project: IProject;
@@ -30,17 +46,13 @@ const useGlobalSearchData = (params: {
   });
 
   const loadDatabaseList = useCallback(async () => {
-    const data = await fetchDatabases(
-      null,
-      null,
-      1,
-      99999,
-      null,
-      null,
-      login.isPrivateSpace(),
-      true,
-      true,
-    );
+    const data = await fetchDatabases({
+      page: 1,
+      size: 99999,
+      containsUnassigned: true,
+      existed: true,
+      includesPermittedAction: true,
+    });
     const databases = data?.contents?.filter((db: IDatabase) => {
       const config = getDataSourceModeConfig(db?.dataSource?.type);
       // 隐藏对象存储类型数据库
@@ -72,6 +84,9 @@ const useGlobalSearchData = (params: {
         return null;
       case DbObjectType.table:
         return [DbObjectType.logical_table, DbObjectType.table];
+      case DbObjectType.synonym:
+        // 同义词tab同时查询普通同义词和公共同义词
+        return [DbObjectType.synonym, DbObjectType.public_synonym];
       default:
         return activeKey;
     }

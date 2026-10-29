@@ -20,7 +20,7 @@ import type { IPartitionTableConfig } from '@/d.ts';
 import { PARTITION_KEY_INVOKER, TaskPartitionStrategy } from '@/d.ts';
 import { Button, Descriptions, Drawer, Space } from 'antd';
 import React from 'react';
-import { SimpleTextItem } from '../../component/SimpleTextItem';
+import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import ConfigTable from './ConfigTable';
 import { getStrategyLabelByConfig } from './index';
 import styles from './index.less';
@@ -205,14 +205,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       {!!createKeyConfigs?.length && (
         <div style={{ marginTop: 8 }}>
           <SimpleTextItem
-            showSplit={false}
             label={formatMessage({
               id: 'src.component.Task.component.PartitionPolicyTable.E4B505E8',
               defaultMessage: '命名规则',
             })}
             content={
               config?.partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingPrefix ? (
-                <>
+                <div style={{ marginBottom: 16, marginTop: 8 }}>
                   <Descriptions column={1}>
                     <Descriptions.Item
                       label={formatMessage({
@@ -239,19 +238,32 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       {getNamingSuffixStrategy()}
                     </Descriptions.Item>
                   </Descriptions>
-                </>
+                </div>
               ) : (
-                formatMessage(
-                  {
-                    id: 'src.component.Task.component.PartitionPolicyTable.F6F3B2EC',
-                    defaultMessage:
-                      '自定义：{partitionNameInvokerParametersPartitionNameGeneratorConfigGenerateExpr}',
-                  },
-                  {
-                    partitionNameInvokerParametersPartitionNameGeneratorConfigGenerateExpr:
-                      partitionNameInvokerParameters?.partitionNameGeneratorConfig?.generateExpr,
-                  },
-                )
+                <div style={{ marginBottom: 16, marginTop: 8 }}>
+                  <Descriptions column={1}>
+                    <Descriptions.Item
+                      label={formatMessage({
+                        id: 'odc.component.ColumnSelector.Custom',
+                        defaultMessage: '自定义',
+                      })}
+                    >
+                      {partitionNameInvokerParameters?.partitionNameGeneratorConfig?.generateExpr}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item
+                      label={formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.7BC3752C',
+                        defaultMessage: '命名间隔',
+                      })}
+                    >
+                      {
+                        partitionNameInvokerParameters?.partitionNameGeneratorConfig
+                          ?.intervalGenerateExpr
+                      }
+                    </Descriptions.Item>
+                  </Descriptions>
+                </div>
               )
             }
             direction="column"
