@@ -55,6 +55,7 @@ export const getTaskTypeOptions = () => {
     {
       label: formatMessage({
         id: 'odc.src.page.Secure.RiskLevel.components.AutomaticRunning',
+        defaultMessage: '自动运行',
       }), //'自动运行'
       value: TaskType.ALTER_SCHEDULE,
     },
@@ -75,6 +76,10 @@ export const getTaskTypeOptions = () => {
       value: TaskType.APPLY_DATABASE_PERMISSION,
     },
     {
+      label: TaskTypeMap[TaskType.APPLY_TABLE_PERMISSION],
+      value: TaskType.APPLY_TABLE_PERMISSION,
+    },
+    {
       label: TaskTypeMap[TaskType.STRUCTURE_COMPARISON],
       value: TaskType.STRUCTURE_COMPARISON,
     },
@@ -83,6 +88,7 @@ export const getTaskTypeOptions = () => {
       value: TaskType.MULTIPLE_ASYNC,
     },
   ];
+
   return newTaskTypeOptions;
 };
 export const getSqlCheckResultOptions = () => {
@@ -100,6 +106,7 @@ export const getSqlCheckResultOptions = () => {
       value: '' + RiskLevelEnum.MUST,
     },
   ];
+
   return sqlCheckResultOptions;
 };
 export const initOptions = async ({

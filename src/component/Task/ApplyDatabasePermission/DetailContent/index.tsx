@@ -15,13 +15,19 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import type { IApplyDatabasePermissionTaskParams, TaskDetail } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
-import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import DisplayTable from '@/component/DisplayTable';
-import { Descriptions, Divider } from 'antd';
-import { permissionOptionsMap, getExpireTimeLabel } from '../';
+import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
+import {
+  IConnectionStatus,
+  type IApplyDatabasePermissionTaskParams,
+  type TaskDetail,
+} from '@/d.ts';
+import { getFormatDateTime } from '@/util/utils';
+import { Descriptions, Divider, Alert, Space } from 'antd';
+import { getExpireTimeLabel, permissionOptionsMap } from '../';
 import styles from './index.less';
+import { DBType, IDatabase } from '@/d.ts/database';
+import DatabaseIcon from '@/component/StatusIcon/DatabaseIcon';
 
 const getConnectionColumns = () => {
   return [
@@ -29,17 +35,38 @@ const getConnectionColumns = () => {
       dataIndex: 'name',
       title: formatMessage({
         id: 'src.component.Task.ApplyDatabasePermission.DetailContent.3EE454F2',
+        defaultMessage: '数据库',
       }), //'数据库'
       ellipsis: true,
       width: 339,
+      render(value, record) {
+        const item = {
+          type: record?.type,
+          dataSource: {
+            type: record?.dialectType,
+            name: record?.dataSourceName,
+            status: { status: IConnectionStatus.ACTIVE },
+          },
+        };
+        return (
+          <Space>
+            <DatabaseIcon item={item as IDatabase} />
+            {value}
+          </Space>
+        );
+      },
     },
 
     {
       dataIndex: 'dataSourceName',
       title: formatMessage({
         id: 'src.component.Task.ApplyDatabasePermission.DetailContent.CE83F40A',
+        defaultMessage: '所属数据源',
       }), //'所属数据源'
       ellipsis: true,
+      render(value) {
+        return value || '-';
+      },
     },
   ];
 };
@@ -58,6 +85,7 @@ const TaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'src.component.Task.ApplyDatabasePermission.DetailContent.1FA7FD5C',
+              defaultMessage: '任务编号',
             }) /*"任务编号"*/
           }
         >
@@ -67,12 +95,14 @@ const TaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'src.component.Task.ApplyDatabasePermission.DetailContent.AFAA55EA',
+              defaultMessage: '任务类型',
             }) /*"任务类型"*/
           }
         >
           {
             formatMessage({
               id: 'src.component.Task.ApplyDatabasePermission.DetailContent.176A9CCE' /*申请库权限*/,
+              defaultMessage: '申请库权限',
             }) /* 申请库权限 */
           }
         </Descriptions.Item>
@@ -83,11 +113,23 @@ const TaskContent: React.FC<IProps> = (props) => {
         }}
       />
 
+      {parameters?.databases?.find((_db) => _db?.type === DBType.LOGICAL) && (
+        <Alert
+          message={formatMessage({
+            id: 'src.component.Task.ApplyDatabasePermission.DetailContent.F091144E',
+            defaultMessage: '数据库中包含逻辑库，审批通过后将默认获得其关联物理库的权限。',
+          })}
+          type="info"
+          showIcon
+          style={{ margin: '4px 0px 8px 0px' }}
+        />
+      )}
       <Descriptions column={1}>
         <Descriptions.Item
           label={
             formatMessage({
               id: 'src.component.Task.ApplyDatabasePermission.DetailContent.476FEE55',
+              defaultMessage: '申请项目',
             }) /*"申请项目"*/
           }
         >
@@ -98,6 +140,7 @@ const TaskContent: React.FC<IProps> = (props) => {
         label={
           formatMessage({
             id: 'src.component.Task.ApplyDatabasePermission.DetailContent.281F6779',
+            defaultMessage: '数据库',
           }) /*"数据库"*/
         }
         content={
@@ -126,6 +169,7 @@ const TaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'src.component.Task.ApplyDatabasePermission.DetailContent.CF7D0545',
+              defaultMessage: '权限类型',
             }) /*"权限类型"*/
           }
         >
@@ -135,6 +179,7 @@ const TaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'src.component.Task.ApplyDatabasePermission.DetailContent.8AAD2AC1',
+              defaultMessage: '权限有效期',
             }) /*"权限有效期"*/
           }
         >
@@ -144,6 +189,7 @@ const TaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'src.component.Task.ApplyDatabasePermission.DetailContent.265A918A',
+              defaultMessage: '申请原因',
             }) /*"申请原因"*/
           }
         >
@@ -161,6 +207,7 @@ const TaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'src.component.Task.ApplyDatabasePermission.DetailContent.2C812515',
+              defaultMessage: '创建人',
             }) /*"创建人"*/
           }
         >
@@ -170,6 +217,7 @@ const TaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'src.component.Task.ApplyDatabasePermission.DetailContent.80FC915E',
+              defaultMessage: '创建时间',
             }) /*"创建时间"*/
           }
         >

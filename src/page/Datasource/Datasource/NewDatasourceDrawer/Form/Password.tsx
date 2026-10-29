@@ -41,6 +41,7 @@ export default function Password({ isEditing, value, onChange }: IProps) {
       visibilityToggle={false}
       placeholder={formatMessage({
         id: 'odc.AddConnectionDrawer.AddConnectionForm.Enter',
+        defaultMessage: '请输入',
       })}
     />
   ) : (

@@ -28,12 +28,15 @@ export function useDeferColumn(mode: ConnectionMode) {
   const deferOptions = {
     [TableConstraintDefer.NOT]: formatMessage({
       id: 'odc.CreateTable.TableConstraint.baseColumn.NonDelayed',
+      defaultMessage: '不可延迟',
     }), //不可延迟
     [TableConstraintDefer.DEFERRABLE_DEFER]: formatMessage({
       id: 'odc.CreateTable.TableConstraint.baseColumn.DelayedVerification',
+      defaultMessage: '延迟验证',
     }), //延迟验证
     [TableConstraintDefer.DEFERRABLE_IMMEDIATE]: formatMessage({
       id: 'odc.CreateTable.TableConstraint.baseColumn.VerifyNow',
+      defaultMessage: '立即验证',
     }), //立即验证
   };
   const config = useTableConfig(mode);
@@ -60,6 +63,7 @@ export function useDeferColumn(mode: ConnectionMode) {
     key: 'defer',
     name: formatMessage({
       id: 'odc.CreateTable.TableConstraint.baseColumn.DelayedState',
+      defaultMessage: '可延迟状态',
     }), //可延迟状态
     resizable: true,
     filterable: false,
@@ -79,6 +83,7 @@ export function useEnableColumn(mode: ConnectionMode) {
     key: 'enable',
     name: formatMessage({
       id: 'odc.CreateTable.TableConstraint.baseColumn.WhetherToEnable',
+      defaultMessage: '是否启用',
     }), //是否启用
     resizable: true,
     editable: false,
@@ -98,6 +103,7 @@ export function useEnableColumnForeign(mode: ConnectionMode) {
     key: 'enable',
     name: formatMessage({
       id: 'odc.CreateTable.TableConstraint.baseColumn.WhetherToEnable',
+      defaultMessage: '是否启用',
     }), //是否启用
     resizable: true,
     editable: false,

@@ -22,6 +22,7 @@ export const segmentsMap = {
     {
       label: formatMessage({
         id: 'odc.components.FormMaskDataModal.config.ShowPreviousAndLater',
+        defaultMessage: '展示前一后一',
       }), //展示前一后一
       value: MaskRuleSegmentsType.PRE_1_POST_1,
     },
@@ -29,6 +30,7 @@ export const segmentsMap = {
     {
       label: formatMessage({
         id: 'odc.components.FormMaskDataModal.config.ShowTheFirstThreeAnd',
+        defaultMessage: '展示前三后二',
       }), //展示前三后二
       value: MaskRuleSegmentsType.PRE_3_POST_2,
     },
@@ -36,6 +38,7 @@ export const segmentsMap = {
     {
       label: formatMessage({
         id: 'odc.components.FormMaskDataModal.config.ShowTheFirstThreeAnd.1',
+        defaultMessage: '展示前三后四',
       }), //展示前三后四
       value: MaskRuleSegmentsType.PRE_3_POST_4,
     },
@@ -43,12 +46,14 @@ export const segmentsMap = {
     {
       label: formatMessage({
         id: 'odc.components.FormMaskDataModal.config.CustomSegmentation',
+        defaultMessage: '自定义分段',
       }), //自定义分段
       value: MaskRuleSegmentsType.CUSTOM,
       options: [
         {
           label: formatMessage({
             id: 'odc.components.FormMaskDataModal.config.NotCoveredUp',
+            defaultMessage: '不掩盖',
           }), //不掩盖
           value: false,
         },
@@ -56,6 +61,7 @@ export const segmentsMap = {
         {
           label: formatMessage({
             id: 'odc.components.FormMaskDataModal.config.CoverUp',
+            defaultMessage: '掩盖',
           }), //掩盖
           value: true,
         },
@@ -67,6 +73,7 @@ export const segmentsMap = {
     {
       label: formatMessage({
         id: 'odc.components.FormMaskDataModal.config.ReplaceAll',
+        defaultMessage: '替换全部',
       }), //替换全部
       value: MaskRuleSegmentsType.ALL,
     },
@@ -74,6 +81,7 @@ export const segmentsMap = {
     {
       label: formatMessage({
         id: 'odc.components.FormMaskDataModal.config.ReplaceTheFirstThree',
+        defaultMessage: '替换前三位',
       }), //替换前三位
       value: MaskRuleSegmentsType.PRE_3,
     },
@@ -81,6 +89,7 @@ export const segmentsMap = {
     {
       label: formatMessage({
         id: 'odc.components.FormMaskDataModal.config.ReplaceTheLastFourDigits',
+        defaultMessage: '替换后四位',
       }), //替换后四位
       value: MaskRuleSegmentsType.POST_4,
     },
@@ -88,12 +97,14 @@ export const segmentsMap = {
     {
       label: formatMessage({
         id: 'odc.components.FormMaskDataModal.config.CustomSegmentation',
+        defaultMessage: '自定义分段',
       }), //自定义分段
       value: MaskRuleSegmentsType.CUSTOM,
       options: [
         {
           label: formatMessage({
             id: 'odc.components.FormMaskDataModal.config.NotReplaced',
+            defaultMessage: '不替换',
           }), //不替换
           value: false,
         },
@@ -101,6 +112,7 @@ export const segmentsMap = {
         {
           label: formatMessage({
             id: 'odc.components.FormMaskDataModal.config.Replace',
+            defaultMessage: '替换',
           }), //替换
           value: true,
         },
@@ -113,10 +125,12 @@ export const maskOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.CoverUp',
+      defaultMessage: '掩盖',
     }), //掩盖
     value: MaskRuleType.MASK,
     tips: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.ReplaceTheMaskWithFor',
+      defaultMessage: '对应敏感字符用 * 替换掩盖，保留原始数据长度',
     }), //对应敏感字符用 * 替换掩盖，保留原始数据长度
     segmentOptions: segmentsMap[MaskRuleType.MASK],
   },
@@ -124,10 +138,12 @@ export const maskOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.CharacterReplacement',
+      defaultMessage: '字符替换',
     }), //字符替换
     value: MaskRuleType.SUBSTITUTION,
     tips: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.ReplaceTheCorrespondingSensitiveCharacter',
+      defaultMessage: '对应敏感字符用替换值进行替换，不保留原始数据长度',
     }), //对应敏感字符用替换值进行替换，不保留原始数据长度
     segmentOptions: segmentsMap[MaskRuleType.SUBSTITUTION],
   },
@@ -135,19 +151,23 @@ export const maskOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.ReservedFormat',
+      defaultMessage: '保留格式',
     }), //保留格式
     value: MaskRuleType.PSEUDO,
     tips: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.ReplaceSensitiveCharactersWithCharacters',
+      defaultMessage: '对应敏感字符替换成相同类型的字符，保留原始数据的数据格式',
     }), //对应敏感字符替换成相同类型的字符，保留原始数据的数据格式
   },
   {
     label: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.HashEncryption',
+      defaultMessage: '哈希加密',
     }), //哈希加密
     value: MaskRuleType.HASH,
     tips: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.CalculateTheHashValueTo',
+      defaultMessage: '通过指定算法对数据进行运算，计算出哈希值替代原始数据',
     }), //通过指定算法对数据进行运算，计算出哈希值替代原始数据
     hashOptions: [
       {
@@ -175,19 +195,23 @@ export const maskOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.Rounding',
+      defaultMessage: '取整',
     }), //取整
     value: MaskRuleType.ROUNDING,
     tips: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.ApplicableToNumericTypesYou',
+      defaultMessage: '适用于数值类型，支持保留小数点位数不超过 5 位',
     }), //适用于数值类型，支持保留小数点位数不超过5位
   },
   {
     label: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.Empty',
+      defaultMessage: '置空',
     }), //置空
     value: MaskRuleType.NULL,
     tips: formatMessage({
       id: 'odc.components.FormMaskDataModal.config.TheOriginalDataIsSet',
+      defaultMessage: '原始数据将被置为空字符串',
     }), //原始数据将被置为空字符串
   },
 ];

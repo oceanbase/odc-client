@@ -24,6 +24,7 @@ const TimeStatistics: React.FC<{
     <Card
       title={formatMessage({
         id: 'workspace.window.sql.explain.tab.detail.card.time.title',
+        defaultMessage: '耗时统计 (us)',
       })}
       headStyle={{
         padding: '0 16px',

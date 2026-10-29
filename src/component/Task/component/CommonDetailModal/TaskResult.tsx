@@ -56,6 +56,7 @@ const TaskResult: React.FC<IProps> = (props) => {
               formatMessage(
                 {
                   id: 'odc.AsyncTask.components.PropssuccesscountSqlStatementsAreExecuted',
+                  defaultMessage: '{propsSuccessCount} 条 SQL 执行成功',
                 },
 
                 { propsSuccessCount: successCount },
@@ -71,6 +72,7 @@ const TaskResult: React.FC<IProps> = (props) => {
               formatMessage(
                 {
                   id: 'odc.AsyncTask.components.PropssuccesscountSqlStatementsFailedTo',
+                  defaultMessage: '{propsSuccessCount} 条 SQL 执行失败',
                 },
 
                 { propsSuccessCount: failCount },
@@ -84,6 +86,7 @@ const TaskResult: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.component.CommonTaskDetailModal.TaskResult.ExecutionFailure',
+                defaultMessage: '执行失败记录',
               }) /*执行失败记录*/
             }
           </span>

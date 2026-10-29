@@ -79,6 +79,7 @@ class BaseInfoForm extends Component<IProps> {
               name="triggerName"
               label={formatMessage({
                 id: 'odc.CreateTriggerPage.component.BaseInfoForm.TriggerName',
+                defaultMessage: '请输入触发器名称',
               })}
               /* 触发器名称 */
               rules={[
@@ -86,14 +87,15 @@ class BaseInfoForm extends Component<IProps> {
                   required: true,
                   message: formatMessage({
                     id: 'odc.CreateTriggerPage.component.BaseInfoForm.EnterTheTriggerName',
+                    defaultMessage: '请填写触发器名称',
                   }),
                   // 请填写触发器名称
                 },
                 {
                   max: 128,
                   message: formatMessage({
-                    id:
-                      'odc.CreateTriggerPage.component.BaseInfoForm.TheLengthCannotExceedCharacters',
+                    id: 'odc.CreateTriggerPage.component.BaseInfoForm.TheLengthCannotExceedCharacters',
+                    defaultMessage: '长度不超过 128 个字符',
                   }),
 
                   // 长度不超过 128 个字符
@@ -103,6 +105,7 @@ class BaseInfoForm extends Component<IProps> {
               <Input
                 placeholder={formatMessage({
                   id: 'odc.CreateTriggerPage.component.BaseInfoForm.TriggerName',
+                  defaultMessage: '请输入触发器名称',
                 })}
 
                 /* 触发器名称 */
@@ -118,6 +121,7 @@ class BaseInfoForm extends Component<IProps> {
             name="schemaMode"
             label={formatMessage({
               id: 'odc.CreateTriggerPage.component.BaseInfoForm.ReferenceObjectMode',
+              defaultMessage: '基准对象模式',
             })}
             /* 基准对象模式 */
             rules={[
@@ -125,6 +129,7 @@ class BaseInfoForm extends Component<IProps> {
                 required: true,
                 message: formatMessage({
                   id: 'odc.CreateTriggerPage.component.BaseInfoForm.SelectTheBaseObjectMode',
+                  defaultMessage: '请选择基准对象模式',
                 }),
                 // 请选择基准对象模式
               },
@@ -147,6 +152,7 @@ class BaseInfoForm extends Component<IProps> {
             name="schemaType"
             label={formatMessage({
               id: 'odc.CreateTriggerPage.component.BaseInfoForm.BaseObjectType',
+              defaultMessage: '基准对象类型',
             })}
             /* 基准对象类型 */
             rules={[
@@ -154,6 +160,7 @@ class BaseInfoForm extends Component<IProps> {
                 required: true,
                 message: formatMessage({
                   id: 'odc.CreateTriggerPage.component.BaseInfoForm.SelectABaseObjectType',
+                  defaultMessage: '请选择基准对象类型',
                 }),
                 // 请选择基准对象类型
               },
@@ -170,6 +177,7 @@ class BaseInfoForm extends Component<IProps> {
             name="schemaName"
             label={formatMessage({
               id: 'odc.CreateTriggerPage.component.BaseInfoForm.BaseObjectName',
+              defaultMessage: '基准对象名称',
             })}
             /* 基准对象名称 */
             rules={[
@@ -177,6 +185,7 @@ class BaseInfoForm extends Component<IProps> {
                 required: true,
                 message: formatMessage({
                   id: 'odc.CreateTriggerPage.component.BaseInfoForm.SelectABaseObjectName',
+                  defaultMessage: '请选择基准对象名称',
                 }),
                 // 请选择基准对象名称
               },
@@ -186,6 +195,7 @@ class BaseInfoForm extends Component<IProps> {
               placeholder={
                 formatMessage({
                   id: 'odc.CreateTriggerPage.component.BaseInfoForm.SelectABaseObject',
+                  defaultMessage: '请选择基准对象',
                 }) // 请选择基准对象
               }
               showSearch
@@ -208,6 +218,7 @@ class BaseInfoForm extends Component<IProps> {
               name="enableState"
               label={formatMessage({
                 id: 'odc.CreateTriggerPage.component.BaseInfoForm.TriggerStatus',
+                defaultMessage: '触发器状态',
               })}
               /* 触发器状态 */
               rules={[
@@ -215,6 +226,7 @@ class BaseInfoForm extends Component<IProps> {
                   required: true,
                   message: formatMessage({
                     id: 'odc.CreateTriggerPage.component.BaseInfoForm.SelectTheTriggerStatus',
+                    defaultMessage: '请选择触发器状态',
                   }),
                   // 请选择触发器状态
                 },
@@ -226,6 +238,7 @@ class BaseInfoForm extends Component<IProps> {
                   {
                     formatMessage({
                       id: 'odc.CreateTriggerPage.component.BaseInfoForm.Enable',
+                      defaultMessage: '启用',
                     })
 
                     /* 启用 */
@@ -236,6 +249,7 @@ class BaseInfoForm extends Component<IProps> {
                     {
                       formatMessage({
                         id: 'odc.CreateTriggerPage.component.BaseInfoForm.Disable',
+                        defaultMessage: '禁用',
                       })
 
                       /* 禁用 */
@@ -252,6 +266,7 @@ class BaseInfoForm extends Component<IProps> {
               {
                 formatMessage({
                   id: 'odc.CreateTriggerPage.component.BaseInfoForm.Determine',
+                  defaultMessage: '确定',
                 })
 
                 /* 确定 */

@@ -30,6 +30,7 @@ interface IProps {
   hasSelectAll?: boolean; // 配置开启全选框
   indeterminate?: boolean;
   checkAll?: boolean;
+  selectAllPlacement?: 'title' | 'search';
   onSelectAll?: (e: CheckboxChangeEvent) => void;
 }
 
@@ -42,6 +43,7 @@ const ExportCard: React.FC<IProps> = function ({
   hasSelectAll = false,
   indeterminate,
   checkAll,
+  selectAllPlacement = 'search',
   onSelectAll,
 }) {
   const [searchValue, _setSearchValue] = useState('');
@@ -52,11 +54,21 @@ const ExportCard: React.FC<IProps> = function ({
   return (
     <div className={classnames(styles.card, { [styles.cardDisabled]: disabled })}>
       <div className={styles.header}>
-        <div>{title}</div>
+        <div>
+          {hasSelectAll && selectAllPlacement !== 'search' && (
+            <Checkbox
+              indeterminate={indeterminate}
+              checked={checkAll}
+              onChange={onSelectAll}
+              style={{ marginRight: '8px' }}
+            />
+          )}
+          {title}
+        </div>
         <div>{extra}</div>
       </div>
       <div className={styles.search}>
-        {hasSelectAll && (
+        {hasSelectAll && selectAllPlacement === 'search' && (
           <Checkbox
             indeterminate={indeterminate}
             checked={checkAll}
@@ -64,9 +76,11 @@ const ExportCard: React.FC<IProps> = function ({
             style={{ marginRight: '8px' }}
           />
         )}
+
         <Input.Search
           placeholder={formatMessage({
             id: 'odc.ExportSelecter.ExportCard.SearchKeywords',
+            defaultMessage: '搜索关键字',
           })} /*搜索关键字*/
           style={{ width: '100%' }}
           onSearch={(v) => {

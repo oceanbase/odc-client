@@ -17,7 +17,7 @@
 import { IView } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Form, Input, Select } from 'antd';
-import { Component, useEffect } from 'react';
+import { useEffect } from 'react';
 import styles from './index.less';
 
 enum CheckOption {
@@ -59,12 +59,16 @@ function ShowViewBaseInfoForm({ model }: IProps) {
     <Form form={form} {...formItemLayout} className={styles.form}>
       <Form.Item
         name="viewName"
-        label={formatMessage({ id: 'workspace.window.createView.viewName' })}
+        label={formatMessage({
+          id: 'workspace.window.createView.viewName',
+          defaultMessage: '视图名称',
+        })}
       >
         <Input
           disabled={true}
           placeholder={formatMessage({
             id: 'workspace.window.createView.viewName.placeholder',
+            defaultMessage: '请填写视图名称',
           })}
         />
       </Form.Item>
@@ -72,6 +76,7 @@ function ShowViewBaseInfoForm({ model }: IProps) {
         name="checkOption"
         label={formatMessage({
           id: 'workspace.window.createView.checkOption',
+          defaultMessage: '检查项',
         })}
       >
         <Select disabled={true}>
@@ -80,7 +85,10 @@ function ShowViewBaseInfoForm({ model }: IProps) {
       </Form.Item>
       <Form.Item
         name="definer"
-        label={formatMessage({ id: 'workspace.window.createView.definer' })}
+        label={formatMessage({
+          id: 'workspace.window.createView.definer',
+          defaultMessage: '创建人',
+        })}
       >
         <Input disabled={true} />
       </Form.Item>
@@ -88,6 +96,7 @@ function ShowViewBaseInfoForm({ model }: IProps) {
         name="comment"
         label={formatMessage({
           id: 'src.page.Workspace.components.ShowViewBaseInfoForm.BAFEE497',
+          defaultMessage: '注释',
         })}
       >
         <Input.TextArea autoSize={{ minRows: 3, maxRows: 3 }} disabled={true} />

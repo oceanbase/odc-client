@@ -15,17 +15,35 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Form, InputNumber, Space } from 'antd';
-import React from 'react';
 import HelpDoc from '@/component/helpDoc';
 import setting from '@/store/setting';
-interface IProps {}
+import { Form, InputNumber, Space } from 'antd';
+import React from 'react';
+import { TaskType } from '@/d.ts';
+interface IProps {
+  initialValue?: {
+    rowLimit?: number;
+    dataSizeLimit?: number;
+  };
+  minRowLimit?: number;
+  maxRowLimit?: number;
+  maxDataSizeLimit?: number;
+  isShowDataSizeLimit?: boolean;
+}
 const ThrottleFormItem: React.FC<IProps> = (props) => {
+  const {
+    initialValue,
+    minRowLimit = 0,
+    maxRowLimit = setting.maxSingleTaskRowLimit,
+    maxDataSizeLimit = setting.maxSingleTaskDataSizeLimit,
+    isShowDataSizeLimit,
+  } = props;
   return (
     <Form.Item
       label={
         formatMessage({
           id: 'odc.src.component.Task.component.ThrottleFormItem.StreamingStrategy',
+          defaultMessage: '限流策略',
         }) /* 限流策略 */
       }
       required
@@ -38,6 +56,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.src.component.Task.component.ThrottleFormItem.RestrictedFlow',
+                    defaultMessage: '行限流',
                   }) /* 行限流 */
                 }
               </span>
@@ -52,56 +71,62 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
               style={{
                 marginBottom: 0,
               }}
+              initialValue={initialValue?.rowLimit}
               rules={[
                 {
                   required: true,
                   message: formatMessage({
-                    id:
-                      'odc.src.component.Task.component.ThrottleFormItem.PleaseImportTheBobbyFlow',
+                    id: 'odc.src.component.Task.component.ThrottleFormItem.PleaseImportTheBobbyFlow',
+                    defaultMessage: '请输行限流限流',
                   }), //'请输行限流限流'
                 },
               ]}
             >
-              <InputNumber min={0} precision={1} max={setting.maxSingleTaskRowLimit} />
+              <InputNumber min={minRowLimit} precision={1} max={maxRowLimit} />
             </Form.Item>
             <span>Rows/s</span>
           </Space>
         </Form.Item>
-        <Form.Item
-          label={
-            <Space size={2}>
-              <span>
-                {
-                  formatMessage({
-                    id: 'odc.src.component.Task.component.ThrottleFormItem.DataSizeLimit',
-                  }) /* 数据大小限流 */
-                }
-              </span>
-              <HelpDoc leftText isTip doc="TaskLmitData" />
+        {isShowDataSizeLimit ? (
+          <Form.Item
+            label={
+              <Space size={2}>
+                <span>
+                  {
+                    formatMessage({
+                      id: 'odc.src.component.Task.component.ThrottleFormItem.DataSizeLimit',
+                      defaultMessage: '数据大小限流',
+                    }) /* 数据大小限流 */
+                  }
+                </span>
+                <HelpDoc leftText isTip doc="TaskLmitData" />
+              </Space>
+            }
+            required
+          >
+            <Space size={4} align="center">
+              <Form.Item
+                name="dataSizeLimit"
+                style={{
+                  marginBottom: 0,
+                }}
+                rules={[
+                  {
+                    required: true,
+                    message: formatMessage({
+                      id: 'odc.src.component.Task.component.ThrottleFormItem.PleaseLoseTheDataSize',
+                      defaultMessage: '请输数据大小限流',
+                    }), //'请输数据大小限流'
+                  },
+                ]}
+                initialValue={initialValue?.dataSizeLimit}
+              >
+                <InputNumber min={1} max={maxDataSizeLimit} precision={1} />
+              </Form.Item>
+              <span>MB/s</span>
             </Space>
-          }
-          required
-        >
-          <Space size={4} align="center">
-            <Form.Item
-              name="dataSizeLimit"
-              style={{
-                marginBottom: 0,
-              }}
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({
-                    id: 'odc.src.component.Task.component.ThrottleFormItem.PleaseLoseTheDataSize',
-                  }), //'请输数据大小限流'
-                },
-              ]}
-            >
-              <InputNumber min={1} max={setting.maxSingleTaskDataSizeLimit} precision={1} />
-            </Form.Item>
-            <span>MB/s</span>
-          </Space>
-        </Form.Item>
+          </Form.Item>
+        ) : null}
       </Space>
     </Form.Item>
   );

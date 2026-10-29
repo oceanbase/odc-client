@@ -54,6 +54,7 @@ const DefaultValue: React.FC<IProps> = function ({ column, originColumns, onChan
       <Form.Item
         label={formatMessage({
           id: 'odc.CreateTable.Columns.columns.DefaultValueExpression',
+          defaultMessage: '缺省值/表达式',
         })}
       >
         <Space>
@@ -68,6 +69,7 @@ const DefaultValue: React.FC<IProps> = function ({ column, originColumns, onChan
               });
             }}
           />
+
           <Checkbox
             disabled={!enable}
             onChange={(e) => {

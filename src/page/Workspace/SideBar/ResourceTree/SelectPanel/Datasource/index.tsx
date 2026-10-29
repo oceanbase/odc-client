@@ -14,23 +14,39 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { SQLConsoleResourceType } from '@/common/datasource/interface';
+import { deleteConnection } from '@/common/network/connection';
+import Action from '@/component/Action';
+import ConnectionPopover from '@/component/ConnectionPopover';
+import { SQLConsoleEmpty } from '@/component/Empty/SQLConsoleEmpty';
+import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
+import { EnvColorMap } from '@/constant';
+import { ConnectType, IConnectionStatus } from '@/d.ts';
+import { IDatasource } from '@/d.ts/datasource';
+import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
+import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { DataSourceStatusStore } from '@/store/datasourceStatus';
+import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { PlusOutlined } from '@ant-design/icons';
 import {
   Badge,
   Button,
   Dropdown,
-  Empty,
   Input,
+  Menu,
   message,
   Modal,
   Popover,
-  Space,
-  Spin,
   Tree,
   TreeDataNode,
 } from 'antd';
-import ResourceLayout from '../../Layout';
-import { deleteConnection } from '@/common/network/connection';
+import classNames from 'classnames';
+import { throttle, toInteger, toNumber } from 'lodash';
+import { inject, observer } from 'mobx-react';
 import {
   forwardRef,
   useContext,
@@ -40,22 +56,9 @@ import {
   useRef,
   useState,
 } from 'react';
+import ResourceLayout from '../../Layout';
 import styles from './index.less';
-import Action from '@/component/Action';
-import ConnectionPopover from '@/component/ConnectionPopover';
-import { IDatasource } from '@/d.ts/datasource';
-import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import login from '@/store/login';
-import { toInteger, toNumber, throttle } from 'lodash';
-import { ConnectType, IConnectionStatus } from '@/d.ts';
-import { PlusOutlined } from '@ant-design/icons';
-import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
-import classNames from 'classnames';
-import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
-import { EnvColorMap } from '@/constant';
-import { inject, observer } from 'mobx-react';
-import { DataSourceStatusStore } from '@/store/datasourceStatus';
+
 interface IProps {
   filters: {
     envs: number[];
@@ -64,6 +67,90 @@ interface IProps {
   dataSourceStatusStore?: DataSourceStatusStore;
   closeSelectPanel: () => void;
 }
+
+const CustomDropdown = ({
+  node,
+  login,
+  deleteDataSource,
+  setCopyDatasourceId,
+  setEditDatasourceId,
+  setAddDSVisiable,
+}) => {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    if (login.isPrivateSpace()) {
+      setDropdownVisible(true);
+    }
+  };
+
+  const handleMenuClick = (e, action) => {
+    e.domEvent?.stopPropagation();
+    setDropdownVisible(false);
+    action(e);
+  };
+
+  const menuItems = [
+    {
+      label: formatMessage({
+        id: 'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone',
+        defaultMessage: '克隆',
+      }),
+      key: 'clone',
+      onClick: (e) => handleMenuClick(e, () => setCopyDatasourceId(toInteger(node.key))),
+    },
+    {
+      label: formatMessage({
+        id: 'odc.ResourceTree.Datasource.Edit',
+        defaultMessage: '编辑',
+      }),
+      key: 'edit',
+      onClick: (e) =>
+        handleMenuClick(e, () => {
+          setEditDatasourceId(node.key);
+          setAddDSVisiable(true);
+        }),
+    },
+    {
+      label: formatMessage({
+        id: 'odc.ResourceTree.Datasource.Delete',
+        defaultMessage: '删除',
+      }),
+      key: 'delete',
+      onClick: (e) =>
+        handleMenuClick(e, () => {
+          const name = node.title;
+          deleteDataSource(name as string, node.key as string);
+        }),
+    },
+  ];
+
+  const menu = (
+    <Menu>
+      {menuItems.map((item) => (
+        <Menu.Item key={item.key} onClick={item.onClick}>
+          {item.label}
+        </Menu.Item>
+      ))}
+    </Menu>
+  );
+
+  return (
+    <Dropdown
+      overlay={menu}
+      trigger={['contextMenu']}
+      visible={dropdownVisible}
+      onVisibleChange={setDropdownVisible}
+      placement="bottomLeft"
+    >
+      <span onContextMenu={handleContextMenu} className={styles.fullWidthTitle}>
+        {node.title}
+      </span>
+    </Dropdown>
+  );
+};
+
 export default inject('dataSourceStatusStore')(
   observer(
     forwardRef<{ reload: () => void }, IProps>(function DatasourceTree(
@@ -110,6 +197,23 @@ export default inject('dataSourceStatusStore')(
       const datasource: TreeDataNode[] = useMemo(() => {
         return datasourceList
           ?.map((item) => {
+            const config = getDataSourceModeConfig(item?.type);
+            /**
+             * 团队空间不展示对象存储数据源，
+             * 个人空间展示对象存储数据源并禁用
+             */
+            if (isConnectTypeBeFileSystemGroup(item?.type) && !login.isPrivateSpace()) {
+              return;
+            }
+            /**
+             * feature filter
+             */
+            if (!config?.features?.resourceTree) {
+              return;
+            }
+            /**
+             * search filter
+             */
             if (searchKey && !item.name?.toLowerCase()?.includes(searchKey?.toLowerCase())) {
               return null;
             }
@@ -137,6 +241,7 @@ export default inject('dataSourceStatusStore')(
               selectable: item.status?.status === IConnectionStatus.ACTIVE,
               key: item.id,
               icon: <StatusIcon item={item} />,
+              disabled: isConnectTypeBeFileSystemGroup(item?.type),
             };
           })
           .filter(Boolean);
@@ -159,10 +264,9 @@ export default inject('dataSourceStatusStore')(
           title: formatMessage(
             {
               id: 'odc.ResourceTree.Datasource.AreYouSureYouWant',
+              defaultMessage: '确认删除数据源 {name}?',
             },
-            {
-              name: name,
-            },
+            { name },
           ),
           //`确认删除数据源 ${name}?`
           async onOk() {
@@ -171,6 +275,7 @@ export default inject('dataSourceStatusStore')(
               message.success(
                 formatMessage({
                   id: 'odc.ResourceTree.Datasource.DeletedSuccessfully',
+                  defaultMessage: '删除成功',
                 }), //删除成功
               );
 
@@ -194,6 +299,7 @@ export default inject('dataSourceStatusStore')(
                   allowClear
                   placeholder={formatMessage({
                     id: 'odc.ResourceTree.Datasource.SearchForDataSources',
+                    defaultMessage: '搜索数据源',
                   })}
                   /*搜索数据源*/ style={{
                     width: '100%',
@@ -217,6 +323,7 @@ export default inject('dataSourceStatusStore')(
                   </NewDatasourceButton>
                 ) : null}
               </div>
+
               <div className={styles.list} ref={treeWrapperRef}>
                 {datasource?.length ? (
                   <Tree
@@ -245,50 +352,14 @@ export default inject('dataSourceStatusStore')(
                                 justifyContent: 'space-between',
                               }}
                             >
-                              <Dropdown
-                                trigger={login.isPrivateSpace() ? ['contextMenu'] : []}
-                                menu={{
-                                  items: [
-                                    {
-                                      label: formatMessage({
-                                        id:
-                                          'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone',
-                                      }), //'克隆'
-                                      key: 'clone',
-                                      onClick: (e) => {
-                                        e.domEvent?.stopPropagation();
-                                        setCopyDatasourceId(toInteger(node.key));
-                                      },
-                                    },
-                                    {
-                                      label: formatMessage({
-                                        id: 'odc.ResourceTree.Datasource.Edit',
-                                      }),
-                                      //编辑
-                                      key: 'edit',
-                                      onClick: (e) => {
-                                        e.domEvent?.stopPropagation();
-                                        setEditDatasourceId(node.key);
-                                        setAddDSVisiable(true);
-                                      },
-                                    },
-                                    {
-                                      label: formatMessage({
-                                        id: 'odc.ResourceTree.Datasource.Delete',
-                                      }),
-                                      //删除
-                                      key: 'delete',
-                                      onClick: (e) => {
-                                        e.domEvent?.stopPropagation();
-                                        const name = node.title;
-                                        deleteDataSource(name as string, node.key as string);
-                                      },
-                                    },
-                                  ],
-                                }}
-                              >
-                                <span className={styles.fullWidthTitle}>{node.title}</span>
-                              </Dropdown>
+                              <CustomDropdown
+                                node={node}
+                                login={login}
+                                deleteDataSource={deleteDataSource}
+                                setCopyDatasourceId={setCopyDatasourceId}
+                                setEditDatasourceId={setEditDatasourceId}
+                                setAddDSVisiable={setAddDSVisiable}
+                              />
                               <div
                                 className={classNames(styles.envTip, {
                                   [styles.envTipPersonal]: login.isPrivateSpace(),
@@ -312,13 +383,15 @@ export default inject('dataSourceStatusStore')(
                                     >
                                       {
                                         formatMessage({
-                                          id:
-                                            'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone.1',
+                                          id: 'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone.1',
+                                          defaultMessage:
+                                            '\n                                  克隆\n                                ',
                                         }) /* 
-                                    克隆
-                                   */
+                                克隆
+                                */
                                       }
                                     </Action.Link>
+
                                     <Action.Link
                                       onClick={() => {
                                         setEditDatasourceId(node.key);
@@ -328,8 +401,10 @@ export default inject('dataSourceStatusStore')(
                                     >
                                       {formatMessage({
                                         id: 'odc.ResourceTree.Datasource.Edit',
+                                        defaultMessage: '编辑',
                                       })}
                                     </Action.Link>
+
                                     <Action.Link
                                       onClick={() =>
                                         deleteDataSource(node.title as string, node.key as string)
@@ -338,6 +413,7 @@ export default inject('dataSourceStatusStore')(
                                     >
                                       {formatMessage({
                                         id: 'odc.ResourceTree.Datasource.Delete',
+                                        defaultMessage: '删除',
                                       })}
                                     </Action.Link>
                                   </Action.Group>
@@ -364,17 +440,13 @@ export default inject('dataSourceStatusStore')(
                     multiple={false}
                     treeData={datasource}
                   />
+                ) : searchKey ? (
+                  <SQLConsoleEmpty />
                 ) : (
-                  <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description={
-                      login.isPrivateSpace() ? (
-                        <NewDatasourceButton onSuccess={() => context?.reloadDatasourceList()} />
-                      ) : null
-                    }
-                  />
+                  <SQLConsoleEmpty type={SQLConsoleResourceType.DataSource} />
                 )}
               </div>
+
               <NewDatasourceDrawer
                 isEdit={!!editDatasourceId}
                 visible={addDSVisiable}
@@ -387,6 +459,7 @@ export default inject('dataSourceStatusStore')(
                   context?.reloadDatasourceList();
                 }}
               />
+
               <NewDatasourceDrawer
                 isEdit={false}
                 isCopy={true}

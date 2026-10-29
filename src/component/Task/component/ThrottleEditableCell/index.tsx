@@ -15,19 +15,20 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { InputNumber, Space, message } from 'antd';
-import React, { useState } from 'react';
-import { EditOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import Action from '@/component/Action';
+import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
+import { InputNumber, message, Space } from 'antd';
+import React, { useState } from 'react';
 interface IProps {
   defaultValue: number | string;
   suffix: React.ReactNode;
   min: number;
   max: number;
   onOk: (value: number, onClose: () => void) => void;
+  readlOnly?: boolean;
 }
 const ThrottleEditableCell: React.FC<IProps> = (props) => {
-  const { defaultValue = 10, min, max, suffix, onOk } = props;
+  const { defaultValue = 10, min, max, suffix, onOk, readlOnly = false } = props;
   const [isLmitRowEdit, setIsLmitRowEdit] = useState(false);
   const [lmitValue, setLmitValue] = useState(Number(defaultValue));
   const [status, setStatus] = useState(null);
@@ -45,6 +46,7 @@ const ThrottleEditableCell: React.FC<IProps> = (props) => {
       message.error(
         formatMessage({
           id: 'odc.src.component.Task.component.ThrottleEditableCell.CanNotBeEmpty',
+          defaultMessage: '不能为空!',
         }), //'不能为空!'
       );
     }
@@ -63,6 +65,7 @@ const ThrottleEditableCell: React.FC<IProps> = (props) => {
             value={lmitValue}
             onChange={handleChange}
           />
+
           <Action.Link onClick={handleOk}>
             <CheckOutlined
               style={{
@@ -82,13 +85,15 @@ const ThrottleEditableCell: React.FC<IProps> = (props) => {
         <Space>
           <span>{lmitValue}</span>
           <span>{suffix}</span>
-          <Action.Link
-            onClick={() => {
-              setIsLmitRowEdit(true);
-            }}
-          >
-            <EditOutlined />
-          </Action.Link>
+          {!readlOnly ? (
+            <Action.Link
+              onClick={() => {
+                setIsLmitRowEdit(true);
+              }}
+            >
+              <EditOutlined />
+            </Action.Link>
+          ) : null}
         </Space>
       )}
     </>

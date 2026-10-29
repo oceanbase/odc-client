@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import Icon, { DatabaseOutlined, TableOutlined } from '@ant-design/icons';
-import { PureComponent } from 'react';
-// @ts-ignore
+import React, { useEffect, useState } from 'react';
 import { ReactComponent as ViewSvg } from '@/svgr/View.svg';
+import Icon, { DatabaseOutlined, TableOutlined } from '@ant-design/icons';
 
+export const ICON_DATABASE = <DatabaseOutlined style={{ color: ' #9d7ac7' }} />;
+export const ICON_TABLE = <TableOutlined style={{ color: '#3FA3FF' }} />;
+export const ICON_VIEW = <Icon type="view" component={ViewSvg} style={{ color: '#FA8C15' }} />;
 interface IProps {
   title: any;
   type: EnumObjectType;
@@ -29,29 +31,22 @@ export enum EnumObjectType {
   VIEW = 'VIEW',
 }
 
-export const ICON_DATABASE = <DatabaseOutlined style={{ color: ' #9d7ac7' }} />;
-
-export const ICON_TABLE = <TableOutlined style={{ color: '#3FA3FF' }} />;
-
-export const ICON_VIEW = <Icon type="view" component={ViewSvg} style={{ color: '#FA8C15' }} />;
-
-export default class ObjectName extends PureComponent<IProps> {
-  render() {
-    const { title, type } = this.props;
-    if (type === EnumObjectType.TABLE) {
-      return (
-        <span>
-          {ICON_TABLE}&nbsp;&nbsp;{title}
-        </span>
-      );
-    }
-    if (type === EnumObjectType.VIEW) {
-      return (
-        <span>
-          {ICON_VIEW}&nbsp;&nbsp;{title}
-        </span>
-      );
-    }
-    return <span>{title}</span>;
+const EditableText: React.FC<IProps> = React.memo((props) => {
+  if (props.type === EnumObjectType.TABLE) {
+    return (
+      <span>
+        {ICON_TABLE}&nbsp;&nbsp;{props.title}
+      </span>
+    );
   }
-}
+  if (props.type === EnumObjectType.VIEW) {
+    return (
+      <span>
+        {ICON_VIEW}&nbsp;&nbsp;{props.title}
+      </span>
+    );
+  }
+  return <span>{props.title}</span>;
+});
+
+export default EditableText;

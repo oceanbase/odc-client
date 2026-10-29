@@ -22,7 +22,9 @@ export const handleExecuteTableDMLV2 = async (sql: string, tableName: string) =>
   try {
     const isSuccess = await tableModify(sql, tableName);
     if (isSuccess) {
-      message.success(formatMessage({ id: 'portal.connection.form.save.success' }));
+      message.success(
+        formatMessage({ id: 'portal.connection.form.save.success', defaultMessage: '保存成功' }),
+      );
       return true;
     }
   } catch (e) {

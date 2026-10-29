@@ -41,6 +41,7 @@ const RollbackNode: React.FC<IProps> = function (props) {
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.CommonDetailModal.Nodes.RollbackNode.Handler',
+            defaultMessage: '处理人',
           })} /*处理人*/
         >
           <Space>
@@ -55,6 +56,7 @@ const RollbackNode: React.FC<IProps> = function (props) {
                 {
                   formatMessage({
                     id: 'odc.CommonDetailModal.Nodes.RollbackNode.AutomaticApproval',
+                    defaultMessage: '(自动审批)',
                   }) /*(自动审批)*/
                 }
               </span>
@@ -66,6 +68,7 @@ const RollbackNode: React.FC<IProps> = function (props) {
             <Descriptions.Item
               label={formatMessage({
                 id: 'odc.CommonDetailModal.Nodes.RollbackNode.ProcessingStatus',
+                defaultMessage: '处理状态',
               })} /*处理状态*/
             >
               -
@@ -73,6 +76,7 @@ const RollbackNode: React.FC<IProps> = function (props) {
             <Descriptions.Item
               label={formatMessage({
                 id: 'odc.CommonDetailModal.Nodes.RollbackNode.ProcessingResult',
+                defaultMessage: '处理结果',
               })} /*处理结果*/
             >
               -
@@ -83,18 +87,26 @@ const RollbackNode: React.FC<IProps> = function (props) {
             <Descriptions.Item
               label={formatMessage({
                 id: 'odc.CommonDetailModal.Nodes.RollbackNode.ProcessingStatus',
+                defaultMessage: '处理状态',
               })} /*处理状态*/
             >
               {
                 resultData?.success
-                  ? formatMessage({ id: 'odc.CommonDetailModal.Nodes.RollbackNode.Success' }) //成功
-                  : formatMessage({ id: 'odc.CommonDetailModal.Nodes.RollbackNode.Failed' }) //失败
+                  ? formatMessage({
+                      id: 'odc.CommonDetailModal.Nodes.RollbackNode.Success',
+                      defaultMessage: '成功',
+                    }) //成功
+                  : formatMessage({
+                      id: 'odc.CommonDetailModal.Nodes.RollbackNode.Failed',
+                      defaultMessage: '失败',
+                    }) //失败
               }
             </Descriptions.Item>
             {resultData?.success ? (
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.CommonDetailModal.Nodes.RollbackNode.ProcessingResult',
+                  defaultMessage: '处理结果',
                 })} /*处理结果*/
               >
                 {resultData?.resultFileDownloadUrl ? (
@@ -103,6 +115,7 @@ const RollbackNode: React.FC<IProps> = function (props) {
                       {
                         formatMessage({
                           id: 'odc.CommonDetailModal.Nodes.RollbackNode.ARollbackSchemeIsSuccessfully',
+                          defaultMessage: '成功生成回滚方案',
                         }) /*成功生成回滚方案*/
                       }
                     </span>
@@ -113,6 +126,7 @@ const RollbackNode: React.FC<IProps> = function (props) {
                     {
                       formatMessage({
                         id: 'odc.CommonDetailModal.Nodes.RollbackNode.UnableToGenerateRollbackScheme',
+                        defaultMessage: '无法生成回滚方案',
                       }) /*无法生成回滚方案*/
                     }
                   </span>
@@ -122,6 +136,7 @@ const RollbackNode: React.FC<IProps> = function (props) {
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.CommonDetailModal.Nodes.RollbackNode.ErrorMessage',
+                  defaultMessage: '错误信息',
                 })} /*错误信息*/
               >
                 {resultData?.error}

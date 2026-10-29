@@ -17,7 +17,7 @@
 import { ConnectionMode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { MenuOutlined } from '@ant-design/icons';
-import { Dropdown, Input, Menu } from 'antd';
+import { Dropdown, Input } from 'antd';
 import React, { useMemo } from 'react';
 
 interface IProps {
@@ -70,18 +70,21 @@ const ValueInput: React.FC<IProps> = function ({ value, connectionMode, onChange
               key: ValueList.DEFAULT,
               label: formatMessage({
                 id: 'odc.component.EditPLParamsModal.ValueInput.SetToNull',
+                defaultMessage: '设置为 NULL',
               }),
             },
             {
               key: ValueList.NULL,
               label: formatMessage({
                 id: 'odc.component.EditPLParamsModal.ValueInput.SetToNull',
+                defaultMessage: '设置为 NULL',
               }),
             },
             !isOracle && {
               key: 'empty',
               label: formatMessage({
                 id: 'odc.component.EditPLParamsModal.ValueInput.SetToAnEmptyString',
+                defaultMessage: '设置为空字符串',
               }),
             },
           ].filter(Boolean),

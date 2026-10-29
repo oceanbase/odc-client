@@ -21,16 +21,21 @@ import OracleDate from './date';
 import OracleInterval from './interval';
 import OracleNumber from './number';
 import OracleString from './string';
-import OracleTimestamp from './timestamp';
+import OracleTimestamp, { convertTimestamp } from './timestamp';
 import OracleTimestampLZ from './timestampLocalZone';
 import OracleTimestampTZ from './timestampTimeZone';
 
-export default function convertValueToSQLString(value: string | null, dataType: string) {
+export default function convertValueToSQLString(
+  value: string | null,
+  dataType: string,
+  timestamp: number,
+) {
   const isNls = isNlsColumn(dataType, ConnectionMode.OB_ORACLE);
-  if (isNls) {
-    return 'NULL';
-  }
   dataType = convertColumnType(dataType);
+  if (isNls) {
+    return convertTimestamp(timestamp);
+  }
+
   switch (dataType) {
     case 'INTEGER':
     case 'NUMBER': {

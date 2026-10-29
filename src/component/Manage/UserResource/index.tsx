@@ -35,7 +35,10 @@ const getDefaultColumns = (roles: IManagerRole[]) => {
   return [
     {
       dataIndex: 'name',
-      title: formatMessage({ id: 'odc.components.CommonUserResource.Name' }), // 姓名
+      title: formatMessage({
+        id: 'odc.components.CommonUserResource.Name',
+        defaultMessage: '姓名',
+      }), // 姓名
       ellipsis: true,
       width: 120,
       render: (name, record) => (
@@ -50,6 +53,7 @@ const getDefaultColumns = (roles: IManagerRole[]) => {
                   formatMessage(
                     {
                       id: 'odc.components.CommonUserResource.NameName',
+                      defaultMessage: '姓名：{name}',
                     },
                     { name },
                   ) /* 姓名：{name} */
@@ -60,6 +64,7 @@ const getDefaultColumns = (roles: IManagerRole[]) => {
                   formatMessage(
                     {
                       id: 'odc.components.CommonUserResource.AccountRecordaccountname',
+                      defaultMessage: '账号：{recordAccountName}',
                     },
                     { recordAccountName: record.accountName },
                   ) /* 账号：{recordAccountName} */
@@ -76,7 +81,10 @@ const getDefaultColumns = (roles: IManagerRole[]) => {
 
     {
       dataIndex: 'roleIds',
-      title: formatMessage({ id: 'odc.components.CommonUserResource.Role' }), // 角色
+      title: formatMessage({
+        id: 'odc.components.CommonUserResource.Role',
+        defaultMessage: '角色',
+      }), // 角色
       ellipsis: true,
       filters: roles.map(({ name, id }) => {
         return {
@@ -97,6 +105,7 @@ const getDefaultColumns = (roles: IManagerRole[]) => {
       dataIndex: 'authorizedActions',
       title: formatMessage({
         id: 'odc.components.CommonUserResource.Permissions',
+        defaultMessage: '权限',
       }),
       // 权限
       width: 108,

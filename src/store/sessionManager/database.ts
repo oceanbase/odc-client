@@ -17,13 +17,15 @@
 import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
 import {
   generateDatabaseSid,
+  generateDatabaseSidByDataBaseId,
   generatePackageSid,
   generateViewSid,
 } from '@/common/network/pathUtil';
 import { getSynonymList } from '@/common/network/synonym';
-import { getTableInfo } from '@/common/network/table';
+import { getTableInfo, getLogicTableInfo } from '@/common/network/table';
 import { getType, getTypeList } from '@/common/network/type';
 import {
+  DbObjectType,
   IFunction,
   IPackage,
   IProcedure,
@@ -35,14 +37,23 @@ import {
   IView,
   SynonymType,
 } from '@/d.ts';
-import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
+import { ITableModel, TableInfo } from '@/page/Workspace/components/CreateTable/interface';
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
 import { action, observable, runInAction } from 'mobx';
+import { DBType } from '@/d.ts/database';
+import { logicalDatabaseDetail } from '@/common/network/logicalDatabase';
+import { message } from 'antd';
 
 class DatabaseStore {
+  static a() {
+    throw new Error('Method not implemented.');
+  }
   @observable.shallow
   public tables: Array<Partial<ITableModel>> = [];
+
+  @observable.shallow
+  public externalTableTables: Array<Partial<ITableModel>> = [];
 
   @observable.shallow
   public views: Array<Partial<IView>> = [];
@@ -77,6 +88,7 @@ class DatabaseStore {
    */
 
   public tableVersion: number = 0;
+  public externalTableTableVersion: number = 0;
   public viewVersion: number = 0;
   public functionVersion: number = 0;
   public procedureVersion: number = 0;
@@ -90,29 +102,48 @@ class DatabaseStore {
   public readonly sessionId: string = null;
 
   public readonly dbName: string = null;
+  public readonly databaseIdType: DBType = null;
 
   public readonly databaseId: number = null;
 
-  static async createInstance(sessionId: string, dbName: string, databaseId: number) {
-    const db = new DatabaseStore(sessionId, dbName, databaseId);
+  static async createInstance(sessionId: string, dbName: string, databaseId: number, type: DBType) {
+    const db = new DatabaseStore(sessionId, dbName, databaseId, type);
     return db;
   }
 
-  constructor(sessionId, dbName, databaseId) {
+  constructor(sessionId, dbName, databaseId, type) {
     this.sessionId = sessionId;
     this.dbName = dbName;
     this.databaseId = databaseId;
+    this.databaseIdType = type;
   }
 
   @action
-  public async getTableList() {
-    const sid = generateDatabaseSid(this.dbName, this.sessionId);
-    const data = await request.get(`/api/v1/table/list/${sid}`);
+  /**
+   * isExternalTable 表示是否为外表
+   *
+   */
+  public async getTableList(isExternalTable?: boolean) {
+    const sid = generateDatabaseSidByDataBaseId(this.databaseId, this.sessionId);
+
+    const params: { databaseId: number; includePermittedAction: boolean; type?: string } = {
+      databaseId: this.databaseId,
+      includePermittedAction: true,
+    };
+
+    if (isExternalTable) {
+      params.type = 'EXTERNAL_TABLE';
+    }
+
+    const data = await request.get(`/api/v2/databaseSchema/tables`, {
+      params,
+    });
+
     runInAction(() => {
-      this.tables =
-        data?.data?.map((table: ITable) => ({
+      const tablesValue: Partial<ITableModel>[] =
+        data?.data?.contents?.map((table: ITable) => ({
           info: {
-            tableName: table.tableName,
+            tableName: table.name,
             character: table.character,
             collation: table.collation,
             comment: table.comment,
@@ -120,6 +151,39 @@ class DatabaseStore {
             updateTime: table.gmtModified,
             createTime: table.gmtCreated,
             tableSize: table.tableSize,
+            authorizedPermissionTypes: table.authorizedPermissionTypes || [],
+            tableId: table.id,
+          },
+        })) || [];
+
+      isExternalTable ? (this.externalTableTables = tablesValue) : (this.tables = tablesValue);
+
+      this.tableVersion = Date.now();
+      this.externalTableTableVersion = Date.now();
+    });
+  }
+
+  @action
+  public async getLogicTableList() {
+    const data = await request.get(
+      `/api/v2/connect/logicaldatabase/logicalDatabases/${this.databaseId}`,
+    );
+    runInAction(() => {
+      this.tables =
+        data?.data?.logicalTables?.map((table: ITable) => ({
+          info: {
+            tableName: table.name,
+            character: table?.character,
+            collation: table?.collation,
+            comment: table?.comment,
+            DDL: table?.ddlSql,
+            updateTime: table?.gmtModified,
+            createTime: table?.gmtCreated,
+            tableSize: table?.tableSize,
+            authorizedPermissionTypes: table?.authorizedPermissionTypes || [],
+            isLogicalTable: true,
+            tableId: table?.id,
+            databaseId: this?.databaseId,
           },
         })) || [];
       this.tableVersion = Date.now();
@@ -127,12 +191,36 @@ class DatabaseStore {
   }
 
   @action
-  public async loadTable(tableName: string) {
-    const table = await getTableInfo(tableName, this.dbName, this.sessionId);
+  public async loadTable(tableInfo: TableInfo, isExternalTable?: boolean) {
+    const { tableName, authorizedPermissionTypes, isLogicalTable, tableId, databaseId } = tableInfo;
+    let table;
+    if (isLogicalTable) {
+      table = await getLogicTableInfo(databaseId, tableId);
+    } else {
+      table = await getTableInfo(tableName, this.dbName, this.sessionId, isExternalTable);
+    }
     if (!table) {
       return;
     }
+    // 保持权限字段不被覆盖
+    if (table.info) {
+      table.info.authorizedPermissionTypes = authorizedPermissionTypes;
+    }
+
     const idx = this.tables.findIndex((t) => t.info.tableName === tableName);
+
+    // 外表数据
+    const externalTableIdx = this.externalTableTables.findIndex(
+      (t) => t.info.tableName === tableName,
+    );
+
+    if (externalTableIdx > -1 && isExternalTable) {
+      const newExternalTable = [...this.externalTableTables];
+      newExternalTable[externalTableIdx] = table;
+      runInAction(() => {
+        this.externalTableTables = newExternalTable;
+      });
+    }
     if (idx > -1) {
       const newTables = [...this.tables];
       newTables[idx] = table;
@@ -144,11 +232,27 @@ class DatabaseStore {
 
   @action
   public async getViewList() {
-    const sid = generateDatabaseSid(this.dbName, this.sessionId);
-    const ret = await request.get(`/api/v1/view/list/${sid}`);
+    const params: { databaseId: number; includePermittedAction: boolean; type?: string } = {
+      databaseId: this.databaseId,
+      includePermittedAction: true,
+      type: DbObjectType.view,
+    };
+    const res = await request.get(`/api/v2/databaseSchema/tables`, {
+      params,
+    });
     runInAction(() => {
       this.viewVersion = Date.now();
-      this.views = ret?.data || [];
+      this.views =
+        res?.data?.contents?.map((t) => {
+          return {
+            ...t,
+            viewName: t.name,
+            schemaName: t?.database?.name,
+            info: {
+              authorizedPermissionTypes: t.authorizedPermissionTypes,
+            },
+          };
+        }) || [];
     });
   }
 
@@ -343,8 +447,11 @@ class DatabaseStore {
 
     if (!packageHead && !packageBody) {
       throw new Error(
-        formatMessage({ id: 'odc.src.store.schema.TheHeaderOfTheObtained' }), //获取包体包头为空
-      );
+        formatMessage({
+          id: 'odc.src.store.schema.TheHeaderOfTheObtained',
+          defaultMessage: '获取包体包头为空',
+        }),
+      ); //获取包体包头为空
     }
     const idx = this.packages.findIndex((t) => t.packageName === packageName);
     if (idx !== -1) {

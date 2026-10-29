@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+import {
+  getScanningResults,
+  ScannResultType,
+  startScanning,
+} from '@/common/network/sensitiveColumn';
+import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
+import ProjectContext from '@/page/Project/ProjectContext';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
+import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { formatMessage } from '@/util/intl';
 import Icon, { CheckCircleFilled, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import {
@@ -30,25 +40,21 @@ import {
   Table,
   Tooltip,
 } from 'antd';
+import classnames from 'classnames';
+import React, {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import { PopoverContainer } from '..';
 import { ScanTableData, ScanTableDataItem } from '../../../interface';
+import SensitiveContext, { ISensitiveContext } from '../../../SensitiveContext';
+import { checkResult, defaultScanTableData } from './FormSensitiveColumnDrawer';
 import styles from './index.less';
 import ScanRule from './SacnRule';
-import classnames from 'classnames';
-import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
-import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
-import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
-import { PopoverContainer } from '..';
-import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import SensitiveContext, { ISensitiveContext } from '../../../SensitiveContext';
-import {
-  ScannResultType,
-  getScanningResults,
-  startScanning,
-} from '@/common/network/sensitiveColumn';
-import ProjectContext from '@/page/Project/ProjectContext';
-import { checkResult, defaultScanTableData } from './FormSensitiveColumnDrawer';
-import React from 'react';
-import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 interface IScanFormProps {
   formRef: FormInstance<any>;
   _formRef: FormInstance<any>;
@@ -57,13 +63,8 @@ interface IScanFormProps {
   setManageSensitiveRuleDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const ScanForm = (props: IScanFormProps, ref) => {
-  const {
-    formRef,
-    _formRef,
-    setFormData,
-    setSensitiveColumns,
-    setManageSensitiveRuleDrawerOpen,
-  } = props;
+  const { formRef, _formRef, setFormData, setSensitiveColumns, setManageSensitiveRuleDrawerOpen } =
+    props;
   const projectContext = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const timer = useRef(null);
@@ -206,15 +207,14 @@ const ScanForm = (props: IScanFormProps, ref) => {
         scanTableData[database][type][tableName] = {};
         dataSource?.forEach(({ columnName, maskingAlgorithmId }) => {
           scanTableData[database][type][tableName][columnName] = maskingAlgorithmId;
-          newScanTableDataMap[
-            `${database}_${type}_${tableName}_${columnName}`
-          ] = sensitiveColumns?.find(
-            (item) =>
-              item?.database?.databaseId === databaseId &&
-              item.type === type &&
-              item.tableName === tableName &&
-              item.columnName === columnName,
-          );
+          newScanTableDataMap[`${database}_${type}_${tableName}_${columnName}`] =
+            sensitiveColumns?.find(
+              (item) =>
+                item?.database?.databaseId === databaseId &&
+                item.type === type &&
+                item.tableName === tableName &&
+                item.columnName === columnName,
+            );
         });
       });
       setFormData(scanTableData);
@@ -351,6 +351,7 @@ const ScanForm = (props: IScanFormProps, ref) => {
           formRef={formRef}
           reset={reset}
         />
+
         <ScanButton
           scanLoading={scanLoading}
           successful={successful}
@@ -365,6 +366,7 @@ const ScanForm = (props: IScanFormProps, ref) => {
         resetSearch={resetSearch}
         handleSearchChange={handleSearchChange}
       />
+
       <div
         style={{
           height: 'calc(100% - 150px)',
@@ -412,23 +414,25 @@ const EmptyOrSpin: React.FC<{
   const gentDescription = () => {
     if (hasScan && isSearch && isSearch) {
       return formatMessage({
-        id:
-          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TheSensitiveColumnsInThe',
+        id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TheSensitiveColumnsInThe',
+        defaultMessage: '扫描结果中的敏感列不包含搜索内容',
       }); //'扫描结果中的敏感列不包含搜索内容'
     }
     if (hasScan && successful && empty) {
       return formatMessage({
-        id:
-          'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SelectingTheDatabaseIsCurrently',
+        id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.SelectingTheDatabaseIsCurrently',
+        defaultMessage: '选中数据库目前暂无可选敏感列',
       }); //'选中数据库目前暂无可选敏感列'
     }
     if (hasScan && !successful) {
       return formatMessage({
         id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ScanFailure',
+        defaultMessage: '扫描失败',
       }); //'扫描失败'
     }
     return formatMessage({
       id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.NoData',
+      defaultMessage: '暂无数据',
     }); //'暂无数据'
   };
   return (
@@ -450,6 +454,7 @@ const EmptyOrSpin: React.FC<{
             {
               formatMessage({
                 id: 'odc.SensitiveColumn.components.ScanForm.ScanningTheScanningTimeMay',
+                defaultMessage: '正在扫描中。扫描时间可能较长请耐心等待…',
               }) /*正在扫描中。扫描时间可能较长请耐心等待…*/
             }
           </div>
@@ -483,9 +488,11 @@ const ScanButton: React.FC<{
           scanLoading
             ? formatMessage({
                 id: 'odc.SensitiveColumn.components.ScanForm.Scanning',
+                defaultMessage: '正在扫描',
               }) //正在扫描
             : formatMessage({
                 id: 'odc.SensitiveColumn.components.ScanForm.StartScanning',
+                defaultMessage: '开始扫描',
               }) //开始扫描
         }
       </Button>
@@ -496,10 +503,12 @@ const ScanButton: React.FC<{
               color: '#52c41a',
             }}
           />
+
           <div>
             {
               formatMessage({
                 id: 'odc.SensitiveColumn.components.ScanForm.ScanCompleted',
+                defaultMessage: '扫描完成',
               }) /*扫描完成*/
             }
           </div>
@@ -524,6 +533,7 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.SensitiveColumn.components.ScanForm.Column',
+        defaultMessage: '列',
       }),
       //列
       width: 146,
@@ -533,6 +543,7 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.SensitiveColumn.components.ScanForm.IdentificationRules',
+        defaultMessage: '识别规则',
       }),
       //识别规则
       width: 126,
@@ -543,6 +554,7 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.SensitiveColumn.components.ScanForm.DesensitizationAlgorithm',
+        defaultMessage: '脱敏算法',
       }),
       //脱敏算法
       width: 180,
@@ -578,22 +590,22 @@ const getColumns = (
                       descriptionsData={[
                         {
                           label: formatMessage({
-                            id:
-                              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
+                            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
+                            defaultMessage: '脱敏方式',
                           }) /* 脱敏方式 */,
                           value: maskRuleTypeMap?.[target?.type],
                         },
                         {
                           label: formatMessage({
-                            id:
-                              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
+                            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
+                            defaultMessage: '测试数据',
                           }) /* 测试数据 */,
                           value: target?.sampleContent,
                         },
                         {
                           label: formatMessage({
-                            id:
-                              'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
+                            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
+                            defaultMessage: '结果预览',
                           }) /* 结果预览 */,
                           value: target?.maskedContent,
                         },
@@ -611,6 +623,7 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.SensitiveColumn.components.ScanForm.Operation',
+        defaultMessage: '操作',
       }),
       //操作
       width: 88,
@@ -630,6 +643,7 @@ const getColumns = (
             {
               formatMessage({
                 id: 'odc.SensitiveColumn.components.ScanForm.Delete',
+                defaultMessage: '删除',
               }) /*删除*/
             }
           </a>
@@ -663,6 +677,7 @@ const PreviewHeader: React.FC<{
       {
         formatMessage({
           id: 'odc.SensitiveColumn.components.ScanForm.PreviewOfScanResults',
+          defaultMessage: '扫描结果预览',
         }) /*扫描结果预览*/
       }
     </div>
@@ -672,6 +687,7 @@ const PreviewHeader: React.FC<{
           value={searchText}
           placeholder={formatMessage({
             id: 'odc.SensitiveColumn.components.ScanForm.EnterAColumnName',
+            defaultMessage: '请输入列名',
           })}
           /*请输入列名*/ width={240}
           style={{
@@ -680,10 +696,12 @@ const PreviewHeader: React.FC<{
           onChange={handleSearchChange}
           onSearch={onSearch}
         />
+
         <Button onClick={resetSearch}>
           {
             formatMessage({
               id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Repossess',
+              defaultMessage: '重置',
             }) /* 重置 */
           }
         </Button>
@@ -694,6 +712,7 @@ const PreviewHeader: React.FC<{
           value={searchText}
           placeholder={formatMessage({
             id: 'odc.SensitiveColumn.components.ScanForm.EnterAColumnName',
+            defaultMessage: '请输入列名',
           })}
           /*请输入列名*/ width={240}
           style={{
@@ -706,6 +725,7 @@ const PreviewHeader: React.FC<{
     )}
   </div>
 );
+
 const CollapseHeader: React.FC<{
   database: string;
   type: ESensitiveColumnType;
@@ -717,6 +737,7 @@ const CollapseHeader: React.FC<{
       label={
         formatMessage({
           id: 'odc.SensitiveColumn.components.ScanForm.Database',
+          defaultMessage: '数据库',
         }) //数据库
       }
     >
@@ -726,6 +747,7 @@ const CollapseHeader: React.FC<{
       label={
         formatMessage({
           id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TableView.1',
+          defaultMessage: '表/视图',
         }) //'表/视图'
       }
     >
@@ -764,6 +786,7 @@ const CollapseHeader: React.FC<{
           title={
             formatMessage({
               id: 'odc.SensitiveColumn.components.ScanForm.Delete',
+              defaultMessage: '删除',
             }) //删除
           }
         >
@@ -780,6 +803,7 @@ const CollapseHeader: React.FC<{
     </Descriptions.Item>
   </Descriptions>
 );
+
 const EmptyCollapse: React.FC<{
   empty?: boolean;
   isSearch?: boolean;
@@ -798,6 +822,7 @@ const EmptyCollapse: React.FC<{
               label={
                 formatMessage({
                   id: 'odc.SensitiveColumn.components.ScanForm.Database',
+                  defaultMessage: '数据库',
                 }) //数据库
               }
             >
@@ -806,8 +831,8 @@ const EmptyCollapse: React.FC<{
             <Descriptions.Item
               label={
                 formatMessage({
-                  id:
-                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TableView',
+                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TableView',
+                  defaultMessage: '表/视图',
                 }) //'表/视图'
               }
             >

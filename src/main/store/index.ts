@@ -21,7 +21,7 @@ import log from '../utils/log';
 export class PathnameStore {
   public static PROTOCOL = 'http';
   private static defaultPathname: string = 'index.html';
-  private static hostname: string = 'localhost';
+  private static hostname: string = '127.0.0.1';
   public static pathname: string = PathnameStore.defaultPathname;
   public static hash: string = '';
 

@@ -53,6 +53,7 @@ export const SimpleTextItem: React.FC<{
           ? formatMessage(
               {
                 id: 'odc.component.TaskDetailDrawer.TaskInfo.Label',
+                defaultMessage: '{label}：',
               },
 
               { label },

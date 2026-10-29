@@ -1,4 +1,5 @@
 {
     "client.jvm.params": "-Xms512m\n-Xmx2048m",
-    "client.start.params": ""
+    "client.start.params": "",
+    "client.electron.params": "disable-http-cache\ndisable-gpu-sandbox"
 }

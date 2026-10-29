@@ -40,7 +40,10 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
         <Form.Item label={label} name={name} tooltip={description}>
           <Input
             placeholder={
-              formatMessage({ id: 'odc.src.page.Secure.Env.components.PleaseEnter' }) /* 请输入 */
+              formatMessage({
+                id: 'odc.src.page.Secure.Env.components.PleaseEnter',
+                defaultMessage: '请输入',
+              }) /* 请输入 */
             }
           />
         </Form.Item>
@@ -57,10 +60,9 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
               message: formatMessage(
                 {
                   id: 'odc.Env.components.EditPropertyComponent.EnterLabel',
+                  defaultMessage: '请输入{label}',
                 },
-                {
-                  label: label,
-                },
+                { label },
               ), //`请输入${label}`
             },
           ]}
@@ -70,7 +72,10 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
             defaultValue={defaultValue}
             min={0}
             placeholder={
-              formatMessage({ id: 'odc.src.page.Secure.Env.components.PleaseEnter.1' }) /* 请输入 */
+              formatMessage({
+                id: 'odc.src.page.Secure.Env.components.PleaseEnter.1',
+                defaultMessage: '请输入',
+              }) /* 请输入 */
             }
           />
         </Form.Item>
@@ -87,10 +92,9 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
               message: formatMessage(
                 {
                   id: 'odc.Env.components.EditPropertyComponent.SelectLabel',
+                  defaultMessage: '请选择{label}',
                 },
-                {
-                  label: label,
-                },
+                { label },
               ), //`请选择${label}`
             },
           ]}
@@ -114,7 +118,10 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
           <Select
             options={initData?.[option] || []}
             placeholder={
-              formatMessage({ id: 'odc.src.page.Secure.Env.components.PleaseChoose' }) /* 请选择 */
+              formatMessage({
+                id: 'odc.src.page.Secure.Env.components.PleaseChoose',
+                defaultMessage: '请选择',
+              }) /* 请选择 */
             }
           />
         </Form.Item>
@@ -131,6 +138,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Secure.Env.components.PleaseChoose.1',
+                defaultMessage: '请选择',
               }) /* 请选择 */
             }
           />
@@ -148,6 +156,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Secure.Env.components.PleaseChoose.2',
+                defaultMessage: '请选择',
               }) /* 请选择 */
             }
           />

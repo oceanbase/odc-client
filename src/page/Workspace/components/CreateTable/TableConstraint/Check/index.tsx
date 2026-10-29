@@ -17,11 +17,11 @@
 import Toolbar from '@/component/Toolbar';
 import { TableConstraintDefer } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
+import { generateUniqKey } from '@/util/utils';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { clone } from 'lodash';
-import React, { useContext, useMemo, useRef, useState, useEffect } from 'react';
-import { generateUniqKey } from '@/util/utils';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import EditableTable from '../../../EditableTable';
 import EditToolbar from '../../EditToolbar';
 import { removeGridParams } from '../../helper';
@@ -69,7 +69,7 @@ const CheckConstraint: React.FC<IProps> = function ({ modified }) {
         <EditToolbar modified={modified}>
           <Toolbar>
             <Toolbar.Button
-              text={formatMessage({ id: 'workspace.header.create' })}
+              text={formatMessage({ id: 'workspace.header.create', defaultMessage: '新建' })}
               icon={PlusOutlined}
               onClick={() => {
                 const row = {
@@ -79,8 +79,12 @@ const CheckConstraint: React.FC<IProps> = function ({ modified }) {
                 gridRef.current?.addRows([row]);
               }}
             />
+
             <Toolbar.Button
-              text={formatMessage({ id: 'odc.TableConstraint.Primary.Delete' })}
+              text={formatMessage({
+                id: 'odc.TableConstraint.Primary.Delete',
+                defaultMessage: '删除',
+              })}
               icon={DeleteOutlined}
               disabled={!selectedRowsIdx?.length}
               onClick={() => {

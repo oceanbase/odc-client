@@ -23,6 +23,9 @@ import { encodeObjName } from '@/util/utils';
 export function generateDatabaseSid(databaseName: string = '', sessionId?: string): string {
   return `sid:${sessionId}:d:${encodeObjName(databaseName)}`;
 }
+export function generateDatabaseSidByDataBaseId(databaseId: number, sessionId?: string): string {
+  return `sid:${sessionId}:did:${databaseId}`;
+}
 export function generateSessionSid(sessionId?: string): string {
   return `sid:${sessionId}`;
 }

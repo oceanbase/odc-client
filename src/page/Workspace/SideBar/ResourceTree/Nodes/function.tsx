@@ -17,19 +17,13 @@
 import { DbObjectType, IFunction, IPackage } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-
 import Icon, { InfoOutlined, NumberOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
-
+import { TopTab } from '@/page/Workspace/components/PackagePage';
 import { ReactComponent as ParameterSvg } from '@/svgr/Parameter.svg';
-
 import { IDatabase } from '@/d.ts/database';
+import { openFunctionViewPage, openPackageViewPage } from '@/store/helper/page';
 import { ReactComponent as FunctionSvg } from '@/svgr/menuFunc.svg';
-import {
-  openFunctionViewPage,
-  openPackageHeadPage,
-  openPackageViewPage,
-} from '@/store/helper/page';
 
 const THEME = 'var(--icon-color-2)';
 
@@ -51,7 +45,10 @@ export function FunctionTreeNodeData(
 
   if (func.params?.length) {
     paramRoot = {
-      title: formatMessage({ id: 'odc.ResourceTree.Nodes.function.Parameter' }), //参数
+      title: formatMessage({
+        id: 'odc.ResourceTree.Nodes.function.Parameter',
+        defaultMessage: '参数',
+      }), //参数
       key: `${funcKey}-param`,
       type: ResourceNodeType.FunctionParamRoot,
       icon: (
@@ -76,7 +73,10 @@ export function FunctionTreeNodeData(
 
   if (func.returnType) {
     returnroot = {
-      title: formatMessage({ id: 'odc.ResourceTree.Nodes.function.ReturnType' }), //返回类型
+      title: formatMessage({
+        id: 'odc.ResourceTree.Nodes.function.ReturnType',
+        defaultMessage: '返回类型',
+      }), //返回类型
       key: `${funcKey}-returnType`,
       type: ResourceNodeType.FunctionReturnTypeRoot,
       icon: (
@@ -100,7 +100,10 @@ export function FunctionTreeNodeData(
 
   if (func.variables?.length) {
     variableRoot = {
-      title: formatMessage({ id: 'odc.ResourceTree.Nodes.function.Variable' }), //变量
+      title: formatMessage({
+        id: 'odc.ResourceTree.Nodes.function.Variable',
+        defaultMessage: '变量',
+      }), //变量
       key: `${funcKey}-variable`,
       icon: (
         <InfoOutlined
@@ -121,7 +124,6 @@ export function FunctionTreeNodeData(
       }),
     };
   }
-
   return {
     title: func.funName,
     key: funcKey,
@@ -139,15 +141,26 @@ export function FunctionTreeNodeData(
       />
     ),
     doubleClick(session, node, databaseFrom) {
-      pkg
-        ? openPackageViewPage(pkg?.packageName, null, false, session?.database?.databaseId)
-        : openFunctionViewPage(
+      // 程序包中的子程序 双击直接打开所在的程序包详情
+      switch (menuKey) {
+        case ResourceNodeType.PackageHeadFunction: {
+          openPackageViewPage(pkg.packageName, TopTab.HEAD, false, session?.database?.databaseId);
+          break;
+        }
+        case ResourceNodeType.PackageBodyFunction: {
+          openPackageViewPage(pkg.packageName, TopTab.BODY, false, session?.database?.databaseId);
+          break;
+        }
+        default: {
+          openFunctionViewPage(
             func.funName,
             undefined,
             undefined,
             session?.database?.databaseId,
             null,
           );
+        }
+      }
     },
     sessionId: dbSession?.sessionId,
     packageName: packageName,
@@ -165,7 +178,10 @@ export function FunctionTreeData(
   const dbName = database.name;
   const functions = dbSession?.database?.functions;
   const treeData: TreeDataNode = {
-    title: formatMessage({ id: 'odc.ResourceTree.Nodes.function.Function' }), //函数
+    title: formatMessage({
+      id: 'odc.ResourceTree.Nodes.function.Function',
+      defaultMessage: '函数',
+    }), //函数
     key: `${database.id}-${packageName}-pkg-${dbName}-function`,
     type: ResourceNodeType.FunctionRoot,
     data: database,

@@ -41,6 +41,7 @@ const Precision: React.FC<IProps> = function ({
         <Form.Item
           label={formatMessage({
             id: 'odc.Columns.ColumnExtraInfo.Precision.SecondPrecision',
+            defaultMessage: '秒精度',
           })} /*秒精度*/
         >
           <InputBigNumber
@@ -60,6 +61,7 @@ const Precision: React.FC<IProps> = function ({
         <Form.Item
           label={formatMessage({
             id: 'odc.Columns.ColumnExtraInfo.Precision.DayPrecision',
+            defaultMessage: '天精度',
           })} /*天精度*/
         >
           <InputBigNumber
@@ -79,6 +81,7 @@ const Precision: React.FC<IProps> = function ({
         <Form.Item
           label={formatMessage({
             id: 'odc.Columns.ColumnExtraInfo.Precision.AnnualAccuracy',
+            defaultMessage: '年精度',
           })} /*年精度*/
         >
           <InputBigNumber

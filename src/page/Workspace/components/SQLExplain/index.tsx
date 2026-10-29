@@ -22,10 +22,10 @@ import { Checkbox, Empty, Modal, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
+import { randomUUID } from '../Trace';
 import { getSqlExplainColumns } from './column';
 import styles from './index.less';
 import { SQLExplainProps, SQLExplainState } from './interface';
-import { randomUUID } from '../Trace';
 @inject('sqlStore', 'userStore', 'pageStore')
 @observer
 export default class SQLExplain extends Component<SQLExplainProps, SQLExplainState> {
@@ -45,28 +45,6 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
       });
     }
   }
-  public handleShowOutputFilter = (filterContent: string) => {
-    Modal.info({
-      width: 720,
-      title: formatMessage({
-        id: 'workspace.window.sql.explain.tab.summary.columns.output',
-      }),
-      content: (
-        <div
-          style={{
-            maxHeight: 'calc(100vh - 300px)',
-            overflowY: 'auto',
-          }}
-        >
-          {filterContent}
-        </div>
-      ),
-      maskClosable: true,
-      okText: formatMessage({
-        id: 'app.button.ok',
-      }),
-    });
-  };
   public render() {
     const { explain, sql, haveText, traceId, session } = this.props;
     function injectKey2TreeData(root) {
@@ -90,7 +68,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
     }
     const { onlyText, tableHeight, showExplainText } = this.state;
     const columns = getSqlExplainColumns({
-      handleShowOutputFilter: this.handleShowOutputFilter,
+      handleShowOutputFilter: handleShowOutputFilter,
     });
     return (
       <>
@@ -154,6 +132,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
                   {
                     formatMessage({
                       id: 'odc.src.page.Workspace.components.SQLExplain.PlanStatistics',
+                      defaultMessage: '计划统计',
                     }) /* 计划统计 */
                   }
                 </div>
@@ -169,6 +148,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
                     {
                       formatMessage({
                         id: 'odc.components.SQLExplain.ViewOnlyTextFormats',
+                        defaultMessage: '仅查看文本格式',
                       }) /*仅查看文本格式*/
                     }
                   </Checkbox>
@@ -219,6 +199,7 @@ const ViewPlanText: React.FC<{
       {
         formatMessage({
           id: 'odc.components.SQLExplain.ViewPlanText',
+          defaultMessage: '查看计划文本',
         }) /*查看计划文本*/
       }
     </a>
@@ -233,8 +214,36 @@ const ViewFormattingInformation: React.FC<{
       {
         formatMessage({
           id: 'odc.components.SQLExplain.ViewFormattingInformation',
+          defaultMessage: '查看格式化信息',
         }) /*查看格式化信息*/
       }
     </a>
   );
+};
+
+export const handleShowOutputFilter = (filterContent: string) => {
+  Modal.info({
+    width: 720,
+    zIndex: 2000,
+    title: formatMessage({
+      id: 'workspace.window.sql.explain.tab.summary.columns.output',
+      defaultMessage: '输出过滤',
+    }),
+    content: (
+      <div
+        style={{
+          maxHeight: 'calc(100vh - 300px)',
+          overflowY: 'auto',
+        }}
+      >
+        {filterContent}
+      </div>
+    ),
+
+    maskClosable: true,
+    okText: formatMessage({
+      id: 'app.button.ok',
+      defaultMessage: '确定',
+    }),
+  });
 };

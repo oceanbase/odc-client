@@ -31,7 +31,7 @@ import { isNil } from 'lodash';
 import moment from 'moment';
 import { isSqlEmpty } from './parser/sql';
 import { encodeIdentifiers, splitSql } from './sql';
-
+import type { RangePickerProps } from 'antd/es/date-picker';
 export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
 
 /**
@@ -363,37 +363,37 @@ export function transformOBConfigTimeStringToText(timeString: string) {
       switch (unit.toLowerCase()) {
         case 'us': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Microseconds' }) //微秒
+            num + formatMessage({ id: 'odc.src.util.utils.Microseconds', defaultMessage: '微秒' }) //微秒
           );
         }
 
         case 'ms': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Milliseconds' }) //毫秒
+            num + formatMessage({ id: 'odc.src.util.utils.Milliseconds', defaultMessage: '毫秒' }) //毫秒
           );
         }
 
         case 's': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Seconds' }) //秒
+            num + formatMessage({ id: 'odc.src.util.utils.Seconds', defaultMessage: '秒' }) //秒
           );
         }
 
         case 'm': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Minutes' }) //分钟
+            num + formatMessage({ id: 'odc.src.util.utils.Minutes', defaultMessage: '分钟' }) //分钟
           );
         }
 
         case 'h': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Hours' }) //小时
+            num + formatMessage({ id: 'odc.src.util.utils.Hours', defaultMessage: '小时' }) //小时
           );
         }
 
         case 'd': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Days' }) //天
+            num + formatMessage({ id: 'odc.src.util.utils.Days', defaultMessage: '天' }) //天
           );
         }
       }
@@ -609,6 +609,16 @@ export const kbToMb = (value: number) => {
   return value / 1024;
 };
 
+// MB -> B
+export const mbToB = (value: number) => {
+  return value * 1024 * 1024;
+};
+
+// B -> MB
+export const bToMb = (value: number) => {
+  return value / 1024 / 1024;
+};
+
 /**
  * https://tc39.es/proposal-array-grouping/#sec-object.groupby
  * @param array object array => [{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}, { level: 3, name: 'test3'}]
@@ -627,3 +637,44 @@ export function groupByPropertyName(array: any[], property: string): Object {
     return group;
   }, {});
 }
+
+export const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+  return current && current < moment().subtract(1, 'days').endOf('day');
+};
+
+const range = (start: number, end: number) => {
+  const result = [];
+  for (let i = start; i < end; i++) {
+    result.push(i);
+  }
+  return result;
+};
+
+export const disabledTime = (selectedDate) => {
+  const now = moment();
+  if (!selectedDate) {
+    return {
+      disabledHours: () => range(0, 24),
+      disabledMinutes: () => range(0, 60),
+      disabledSeconds: () => range(0, 60),
+    };
+  }
+  if (selectedDate && selectedDate.isSame(now, 'day')) {
+    return {
+      disabledHours: () => Array.from({ length: now.hours() }, (_, i) => i),
+      disabledMinutes: (selectedHour) => {
+        if (selectedHour === now.hours()) {
+          return Array.from({ length: now.minutes() }, (_, i) => i);
+        }
+        return [];
+      },
+      disabledSeconds: (selectedHour, selectedMinute) => {
+        if (selectedHour === now.hours() && selectedMinute === now.minutes()) {
+          return Array.from({ length: now.seconds() }, (_, i) => i);
+        }
+        return [];
+      },
+    };
+  }
+  return {};
+};

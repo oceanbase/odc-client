@@ -37,7 +37,11 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
     users: number[];
   }>();
 
-  const { data: userList, run, loading } = useRequest(getUserSummaryList, {
+  const {
+    data: userList,
+    run,
+    loading,
+  } = useRequest(getUserSummaryList, {
     manual: true,
   });
   const addedUsers = new Set(project?.members?.map((m) => m.id) || []);
@@ -78,7 +82,10 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
     });
     if (isSuccess) {
       message.success(
-        formatMessage({ id: 'odc.User.AddUserModal.AddedSuccessfully' }), //添加成功
+        formatMessage({
+          id: 'odc.User.AddUserModal.AddedSuccessfully',
+          defaultMessage: '添加成功',
+        }), //添加成功
       );
       close();
       onSuccess();
@@ -87,7 +94,7 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
 
   return (
     <Modal
-      title={formatMessage({ id: 'odc.User.AddUserModal.AddMembers' })}
+      title={formatMessage({ id: 'odc.User.AddUserModal.AddMembers', defaultMessage: '添加成员' })}
       /*添加成员*/ onCancel={() => close()}
       onOk={submit}
       open={visible}
@@ -97,7 +104,10 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
         <Form.Item
           rules={[{ required: true }]}
           name={'roles'}
-          label={formatMessage({ id: 'odc.User.AddUserModal.ProjectRole' })} /*项目角色*/
+          label={formatMessage({
+            id: 'odc.User.AddUserModal.ProjectRole',
+            defaultMessage: '项目角色',
+          })} /*项目角色*/
         >
           <Checkbox.Group
             options={[
@@ -156,17 +166,17 @@ export default function AddUserModal({ close, onSuccess, visible, project }: IPr
           trigger="onCheck"
         >
           {/* <Transfer
-             className={styles.transfer}
-             showSearch
-             filterOption={filterOption}
-             dataSource={userList?.contents?.map((item) => {
-               return {
-                 key: item.id,
-                 ...item,
-               };
-             })}
-             render={(item) => `${item.name}(${item.accountName})`}
-            /> */}
+              className={styles.transfer}
+              showSearch
+              filterOption={filterOption}
+              dataSource={userList?.contents?.map((item) => {
+                return {
+                  key: item.id,
+                  ...item,
+                };
+              })}
+              render={(item) => `${item.name}(${item.accountName})`}
+             /> */}
           <SelectTransfer
             treeData={userList?.contents
               ?.map((item) => {

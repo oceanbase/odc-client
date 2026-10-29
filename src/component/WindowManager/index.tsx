@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import { PureComponent, ReactNode, useContext, useState } from 'react';
-import { CloseOutlined, DownOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
 import { IPage, PageType } from '@/d.ts';
-import { Badge, Dropdown, Menu, MenuProps, Space, Tabs, Tooltip } from 'antd';
-import { MenuInfo } from 'rc-menu/lib/interface';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { movePagePostion, openNewDefaultPLPage } from '@/store/helper/page';
 import { SQLStore } from '@/store/sql';
+import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
+import { CloseOutlined, DownOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
+import { Badge, Dropdown, MenuProps, Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
+import { MenuInfo } from 'rc-menu/lib/interface';
+import { ReactNode, useContext, useState } from 'react';
 import { pageMap } from './config';
 import DefaultPage from './DefaultPage';
 import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
 import styles from './index.less';
-import tracert from '@/util/tracert';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { isLogicalDatabase } from '@/util/database';
 
 interface IProps {
   pages: IPage[];
@@ -149,18 +150,21 @@ const WindowManager: React.FC<IProps> = function (props) {
               key: 'closePage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.CloseThisWindow',
+                defaultMessage: '关闭该窗口',
               }),
             },
             {
               key: 'closeOtherPage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.CloseOtherWindows',
+                defaultMessage: '关闭其它窗口',
               }),
             },
             !isDocked && {
               key: 'closeAllPage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.CloseAllWindows',
+                defaultMessage: '关闭所有窗口',
               }),
             },
             {
@@ -170,12 +174,14 @@ const WindowManager: React.FC<IProps> = function (props) {
               key: 'copyPage',
               label: formatMessage({
                 id: 'odc.src.component.WindowManager.CopyTheSQLWindow',
+                defaultMessage: '复制 SQL 窗口',
               }),
             },
             {
               key: 'openNewPage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.OpenANewSqlWindow',
+                defaultMessage: '打开新的 SQL 窗口',
               }),
             },
           ].filter(Boolean) as MenuProps['items'],
@@ -193,6 +199,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                     status={'default'}
                     text={formatMessage({
                       id: 'odc.component.WindowManager.NotSaved',
+                      defaultMessage: '未保存',
                     })} /*未保存*/
                   />
                 </div>
@@ -203,6 +210,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                     status={'processing'}
                     text={formatMessage({
                       id: 'odc.component.WindowManager.Running',
+                      defaultMessage: '运行中',
                     })} /*运行中*/
                   />
                 </div>
@@ -322,6 +330,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                   {
                     label: formatMessage({
                       id: 'odc.src.component.WindowManager.NewSQLWindow',
+                      defaultMessage: '新建 SQL 窗口',
                     }), //'新建 SQL 窗口'
                     key: 'newSQL',
                     onClick: (e) => {
@@ -332,11 +341,19 @@ const WindowManager: React.FC<IProps> = function (props) {
                   {
                     label: formatMessage({
                       id: 'odc.src.component.WindowManager.CreateAnonymousBlockWindow',
+                      defaultMessage: '新建匿名块窗口',
                     }), //'新建匿名块窗口'
                     key: 'newPL',
                     onClick(e) {
                       e.domEvent.stopPropagation();
-                      openNewDefaultPLPage(undefined, treeContext?.currentDatabaseId);
+                      const db = treeContext.currentDatabaseId;
+                      const isLogicalDb = isLogicalDatabase(
+                        treeContext?.databaseList?.find((_db) => _db?.id === db),
+                      );
+                      openNewDefaultPLPage(
+                        undefined,
+                        isLogicalDb ? null : treeContext?.currentDatabaseId,
+                      );
                     },
                   },
                 ],
@@ -396,6 +413,7 @@ const WindowManager: React.FC<IProps> = function (props) {
           })
           .filter(Boolean)}
       />
+
       {(!activeKey || !pages?.length) && <DefaultPage />}
     </>
   );

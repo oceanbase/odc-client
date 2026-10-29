@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import classnames from 'classnames';
-import styles from './index.less';
-import { useState } from 'react';
-import _ from 'lodash';
 import { Form, Input } from 'antd';
+import classnames from 'classnames';
+import { useState } from 'react';
+import styles from './index.less';
 import { BooleanOperatorMap, EBooleanOperator } from './InnerRiskLevel';
 
 const TreeTitle = ({ formRef, booleanOperator, index, fieldName, updateFields }) => {
   const [isHover, setIsHover] = useState<boolean>(false);
-  const [localBooleanOperator, setlocalBooleanOperator] = useState<EBooleanOperator>(
-    booleanOperator,
-  );
+  const [localBooleanOperator, setlocalBooleanOperator] =
+    useState<EBooleanOperator>(booleanOperator);
 
   return (
     <div

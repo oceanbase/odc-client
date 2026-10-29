@@ -111,6 +111,7 @@ export function useColumns(
       dataIndex: 'originTableName',
       title: formatMessage({
         id: 'odc.StructConfigPanel.StructAnalysisResult.column.SourceTable',
+        defaultMessage: '源表',
       }), //源表
       width: 115,
       render(a) {
@@ -123,6 +124,7 @@ export function useColumns(
       dataIndex: 'destTableName',
       title: formatMessage({
         id: 'odc.StructConfigPanel.StructAnalysisResult.column.ShadowTable',
+        defaultMessage: '影子表',
       }), //影子表
       render(a) {
         return <span style={{ wordBreak: 'break-all' }}>{a}</span>;
@@ -134,6 +136,7 @@ export function useColumns(
       dataIndex: 'comparingResult',
       title: formatMessage({
         id: 'odc.StructConfigPanel.StructAnalysisResult.column.AnalysisResults',
+        defaultMessage: '分析结果',
       }), //分析结果
       width: 115,
       filters: isSync
@@ -184,6 +187,7 @@ export function useColumns(
           dataIndex: 'executeResult',
           title: formatMessage({
             id: 'odc.StructConfigPanel.StructAnalysisResult.column.ExecutionResult',
+            defaultMessage: '执行结果',
           }), //执行结果
           width: 115,
           filters: [
@@ -230,6 +234,7 @@ export function useColumns(
       dataIndex: 'actions',
       title: formatMessage({
         id: 'odc.StructConfigPanel.StructAnalysisResult.column.Operation',
+        defaultMessage: '操作',
       }), //操作
       width: 110,
       render(_, row) {
@@ -242,6 +247,7 @@ export function useColumns(
             {
               formatMessage({
                 id: 'odc.StructConfigPanel.StructAnalysisResult.column.View',
+                defaultMessage: '查看',
               }) /*查看*/
             }
           </a>
@@ -257,6 +263,7 @@ export function useColumns(
               {
                 formatMessage({
                   id: 'odc.StructConfigPanel.StructAnalysisResult.column.Skip',
+                  defaultMessage: '跳过',
                 }) /*跳过*/
               }
             </a>
@@ -271,6 +278,7 @@ export function useColumns(
               {
                 formatMessage({
                   id: 'odc.StructConfigPanel.StructAnalysisResult.column.CancelSkip',
+                  defaultMessage: '取消跳过',
                 }) /*取消跳过*/
               }
             </a>

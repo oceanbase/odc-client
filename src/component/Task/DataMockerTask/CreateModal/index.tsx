@@ -17,11 +17,11 @@
 import { createTask } from '@/common/network/task';
 import {
   ConnectionMode,
+  IServerMockTable,
   TaskExecStrategy,
   TaskPageScope,
   TaskPageType,
   TaskType,
-  IServerMockTable,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
@@ -30,9 +30,12 @@ import { Button, Drawer, message, Modal, Space } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
 import { FormInstance } from 'antd/es/form/Form';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DataMockerForm, { converFormToServerData } from './form';
 import { IMockFormData } from './type';
+import moment from 'moment';
+import { columnTypeToRuleMap, RuleItem } from './type';
+import { getDefaultRuleByGenerator } from './RuleContent';
 
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
@@ -46,20 +49,43 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [dbMode, setDbMode] = useState<ConnectionMode>(null);
     const formRef = useRef<FormInstance<IMockFormData>>(null);
+    const [ruleConfigList, setRuleConfigList] = useState([]);
 
     const loadEditData = async () => {
       const { task } = dataMockerData;
-      const {
-        parameters: { taskDetail },
-        database: { id: databaseId },
-        description,
-        executionStrategy,
-      } = task;
+
+      const { description, executionStrategy } = task;
+      const taskDetail = task?.parameters?.taskDetail ?? null;
+      const databaseId = task?.database?.id ?? null;
       const taskDetailObj: {
         tables: IServerMockTable;
       } = JSON.parse(taskDetail);
-      const { tableName, whetherTruncate, totalCount, strategy, batchSize } =
+      const { tableName, whetherTruncate, totalCount, strategy, batchSize, columns } =
         taskDetailObj?.tables?.[0] ?? {};
+      setRuleConfigList(
+        columns?.map((item) => {
+          const { typeConfig } = item;
+          let range = [typeConfig.lowValue, typeConfig.highValue];
+          let rule = getDefaultRuleByGenerator(
+            typeConfig?.generator,
+            typeConfig?.columnType,
+            task.database.dialectType,
+          );
+          const ruleItem = columnTypeToRuleMap[task.database.dialectType][typeConfig?.columnType];
+          switch (ruleItem) {
+            case RuleItem.DATE: {
+              range = [moment(typeConfig.lowValue), moment(typeConfig.highValue)];
+              break;
+            }
+          }
+          return {
+            ...item,
+            range,
+            rule,
+          };
+        }) || [],
+      );
+
       const formData = {
         databaseId,
         tableName,
@@ -69,6 +95,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         batchSize,
         executionStrategy,
         description,
+        columns,
       };
       formRef.current?.setFieldsValue(formData);
     };
@@ -81,6 +108,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       Modal.confirm({
         title: formatMessage({
           id: 'odc.component.DataMockerDrawer.AreYouSureYouWant',
+          defaultMessage: '是否确定取消模拟数据？',
         }),
         // 确认取消模拟数据吗？
         centered: true,
@@ -107,13 +135,17 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         destroyOnClose
         width={960}
         className="o-adaptive-drawer"
-        title={formatMessage({ id: 'src.component.Task.DataMockerTask.CreateModal.2C3DF5A5' })}
+        title={formatMessage({
+          id: 'src.component.Task.DataMockerTask.CreateModal.2C3DF5A5',
+          defaultMessage: '新建模拟数据',
+        })}
         footer={
           <Space style={{ float: 'right' }}>
             <Button onClick={closeWithConfirm}>
               {
                 formatMessage({
                   id: 'odc.component.DataMockerDrawer.Cancel',
+                  defaultMessage: '取消',
                 })
                 /* 取消 */
               }
@@ -124,6 +156,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               onClick={async () => {
                 try {
                   const values = await formRef.current.validateFields();
+
                   const editingColumn = values?.columns?.find((c) => {
                     return c.typeConfig?._isEditing;
                   });
@@ -132,6 +165,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                       formatMessage(
                         {
                           id: 'odc.component.DataMockerDrawer.TheFieldEditingcolumncolumnnameIsBeing',
+                          defaultMessage: '字段{editingColumnColumnName}正在编辑中',
                         },
 
                         { editingColumnColumnName: editingColumn.columnName },
@@ -171,6 +205,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     message.success(
                       formatMessage({
                         id: 'src.component.Task.DataMockerTask.CreateModal.753EA4C0' /*'工单创建成功'*/,
+                        defaultMessage: '工单创建成功',
                       }),
                     );
                     onClose();
@@ -184,6 +219,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               {
                 formatMessage({
                   id: 'odc.component.DataMockerDrawer.Submitted',
+                  defaultMessage: '提交',
                 })
                 /* 提交 */
               }
@@ -197,6 +233,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           projectId={projectId}
           onDbModeChange={handleDbModeChange}
           ref={formRef}
+          ruleConfigList={ruleConfigList}
         />
       </Drawer>
     );

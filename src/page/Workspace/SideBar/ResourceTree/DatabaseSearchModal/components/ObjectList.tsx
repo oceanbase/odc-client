@@ -1,47 +1,85 @@
-import { formatMessage } from '@/util/intl';
-import {
-  objectTypeConfig,
-  DbObjectTypeMap,
-  SEARCH_OBJECT_FROM_ALL_DATABASE,
-  MAX_OBJECT_LENGTH,
-} from '../constant';
-import { Tabs, Divider, Button, Empty, Tooltip, Spin } from 'antd';
-import styles from '../index.less';
-import { DbObjectType } from '@/d.ts';
-import { DbObjsIcon } from '@/constant';
-import Icon from '@ant-design/icons';
-import { useState } from 'react';
-import { IDatabase, IDatabaseObject } from '@/d.ts/database';
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import { ModalStore } from '@/store/modal';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { DbObjsIcon } from '@/constant';
+import { ConnectionMode, DbObjectType } from '@/d.ts';
+import { IDatabase, IDatabaseObject } from '@/d.ts/database';
+import { openNewSQLPage } from '@/store/helper/page';
+import { ModalStore } from '@/store/modal';
+import { formatMessage } from '@/util/intl';
+import Icon from '@ant-design/icons';
+import { Button, Divider, Empty, Spin, Tabs, Tooltip } from 'antd';
+import { useState } from 'react';
+import {
+  DbObjectTypeMap,
+  MAX_OBJECT_LENGTH,
+  objectTypeConfig,
+  SEARCH_OBJECT_FROM_ALL_DATABASE,
+} from '../constant';
+import styles from '../index.less';
 interface Iprops {
   database: IDatabase;
   objectlist: IDatabaseObject;
+  setDatabase: React.Dispatch<React.SetStateAction<IDatabase>>;
+  setSearchKey: React.Dispatch<React.SetStateAction<string>>;
   activeKey: string;
   setActiveKey: React.Dispatch<React.SetStateAction<string>>;
   modalStore: ModalStore;
   loading: boolean;
+  selectProjectId: number;
+  currentDataSourceType: ConnectionMode;
 }
 
 const ObjectList = ({
   database,
+  setDatabase,
   objectlist,
   activeKey,
   setActiveKey,
+  setSearchKey,
   modalStore,
   loading,
+  selectProjectId,
+  currentDataSourceType,
 }: Iprops) => {
   const [activeDatabase, setActiveDatabase] = useState<IDatabase>();
   const ALL_TAB_MAX_LENGTH = 3;
-  const dbType = database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE;
+  const dbType =
+    currentDataSourceType || database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE;
   const getTyepBlock = () => {
     const typeList = objectTypeConfig[dbType];
     const typeObjectTree = typeList?.map((i) => {
-      if (i === DbObjectType.column) {
-        return { key: i, data: objectlist?.dbColumns };
-      } else {
-        return { key: i, data: objectlist?.dbObjects?.filter((obj) => obj.type === i) };
+      switch (i) {
+        case DbObjectType.column:
+          return { key: i, data: objectlist?.dbColumns };
+        case DbObjectType.database:
+          return { key: i, data: objectlist?.databases };
+        case DbObjectType.table:
+          return {
+            key: i,
+            data: objectlist?.dbObjects?.filter((obj) =>
+              [DbObjectType.table, DbObjectType.logical_table].includes(obj.type),
+            ),
+          };
+        default:
+          return {
+            key: i,
+            data: objectlist?.dbObjects?.filter((obj) => obj.type === i),
+          };
       }
     });
     return typeObjectTree;
@@ -87,10 +125,8 @@ const ObjectList = ({
             {datasourceIcon(dialectTypeIcon?.component)}
             <Tooltip title={dataSourceName}>{dataSourceName}</Tooltip>
             {divider}
-            {commonIcon(dbIcon?.component)}
             <Tooltip title={databaseName}>{databaseName}</Tooltip>
             {divider}
-            {commonIcon(DbObjsIcon[type])}
 
             <Tooltip title={tableName}>
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -100,18 +136,29 @@ const ObjectList = ({
           </>
         );
 
+      case DbObjectType.database: {
+        const { dataSource } = item;
+        if (!dataSource) return;
+        const { name: dataSourceName, dialectType } = dataSource;
+        const dialectTypeIcon = getDataSourceStyleByConnectType(dialectType)?.icon;
+        return (
+          <>
+            {datasourceIcon(dialectTypeIcon?.component)}
+            <Tooltip title={dataSourceName}>{dataSourceName}</Tooltip>
+          </>
+        );
+      }
       default: {
         const { database } = item;
         const { name: databaseName, dataSource } = database;
+        if (!dataSource) return;
         const { name: dataSourceName, dialectType } = dataSource;
         const dialectTypeIcon = getDataSourceStyleByConnectType(dialectType)?.icon;
-        const dbIcon = getDataSourceStyleByConnectType(dialectType)?.dbIcon;
         return (
           <>
             {datasourceIcon(dialectTypeIcon?.component)}
             <Tooltip title={dataSourceName}>{dataSourceName}</Tooltip>
             {divider}
-            {commonIcon(dbIcon?.component)}
             <Tooltip title={databaseName}>
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {databaseName}
@@ -126,36 +173,79 @@ const ObjectList = ({
   const renderAllTab = () => {
     return (
       <Spin spinning={loading}>
-        {!objectlist?.dbColumns?.length && !objectlist?.dbObjects?.length ? (
+        {!objectlist?.dbColumns?.length &&
+        !objectlist?.dbObjects?.length &&
+        !objectlist?.databases?.length ? (
           <div className={styles.objectlistBoxEmpty}>
-            <Empty />
+            <Empty
+              description={formatMessage({
+                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.939E5208',
+                defaultMessage: '如果检索不到已存在的数据库对象，请先同步元数据',
+              })}
+            />
           </div>
         ) : (
           <div className={styles.objectlistBox}>
             {typeObjectTree?.map((i) => {
+              const isDatabase = i.key === DbObjectType.database;
+              /* 在选择了库之后检索, 会检索到数据库本身(若数据库名包含searchkey), 需要前端屏蔽掉 */
+              if (isDatabase && database) return;
               if (i?.data?.length) {
                 return (
                   <div className={styles.objectTypeBox}>
-                    <div className={styles.objectTypeTitle}>{DbObjectTypeMap[i.key].label}</div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div className={styles.objectTypeTitle}>{DbObjectTypeMap[i.key].label}</div>
+                      {i.data.length > ALL_TAB_MAX_LENGTH ? (
+                        <Button
+                          className={styles.objectTypeItemMore}
+                          type="link"
+                          onClick={() => setActiveKey(i.key)}
+                        >
+                          {formatMessage({
+                            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.5DDBC7F0',
+                            defaultMessage: '全部搜索结果',
+                          })}
+                        </Button>
+                      ) : null}
+                    </div>
                     <div>
                       {i.data.map((object, index) => {
                         if (index < ALL_TAB_MAX_LENGTH) {
                           return (
                             <div
                               className={styles.objectTypeItem}
-                              onClick={(e) => openTree(e, object)}
+                              onClick={(e) =>
+                                isDatabase ? openSql(e, object) : openTree(e, object)
+                              }
                               onMouseEnter={() => setActiveDatabase(object)}
                               onMouseLeave={() => setActiveDatabase(null)}
                             >
                               <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
-                                <Icon
-                                  component={DbObjsIcon[i?.key]}
-                                  style={{
-                                    color: 'var(--brand-blue6-color)',
-                                    paddingRight: 4,
-                                    fontSize: 14,
-                                  }}
-                                />
+                                {isDatabase ? (
+                                  <Icon
+                                    component={
+                                      getDataSourceStyleByConnectType(
+                                        object?.dataSource?.dialectType,
+                                      )?.dbIcon?.component
+                                    }
+                                    style={{ fontSize: 14, marginRight: 4 }}
+                                  />
+                                ) : (
+                                  <Icon
+                                    component={DbObjsIcon[i?.key]}
+                                    style={{
+                                      color: 'var(--brand-blue6-color)',
+                                      paddingRight: 4,
+                                      fontSize: 14,
+                                    }}
+                                  />
+                                )}
 
                                 <span style={{ paddingRight: 4 }}>{object?.name}</span>
                                 <span
@@ -170,27 +260,15 @@ const ObjectList = ({
                                   {getSubTitle(object, i?.key)}
                                 </span>
                               </div>
-                              {permissionBtn(object)}
+                              {isDatabase ? selectDbBtn(object) : permissionBtn(object, i.key)}
                             </div>
                           );
                         }
                       })}
                     </div>
-                    {i.data.length > ALL_TAB_MAX_LENGTH ? (
-                      <Button
-                        className={styles.objectTypeItemMore}
-                        type="link"
-                        onClick={() => setActiveKey(i.key)}
-                      >
-                        {formatMessage({
-                          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.0D1BC60D',
-                          defaultMessage: '查看更多',
-                        })}
-                      </Button>
-                    ) : null}
                     <Divider
                       style={{
-                        margin: '12px 0',
+                        margin: '8px 0',
                       }}
                     />
                   </div>
@@ -203,11 +281,21 @@ const ObjectList = ({
     );
   };
 
-  const applyPermission = (e, object) => {
+  const applyTablePermission = (e, object, type) => {
     e.stopPropagation();
-    modalStore.changeApplyDatabasePermissionModal(true, {
-      projectId: object?.dbObject?.database?.project?.id || object?.database?.project?.id,
-      databaseId: object?.dbObject?.database?.id || object?.database?.id,
+    const dbObj = [DbObjectType.table, DbObjectType.external_table, DbObjectType.view]?.includes(
+      type,
+    )
+      ? object
+      : object?.dbObject;
+    const params = {
+      projectId: dbObj?.database?.project?.id,
+      databaseId: dbObj?.database?.id,
+      tableName: dbObj?.name,
+      tableId: dbObj?.id,
+    };
+    modalStore.changeApplyTablePermissionModal(true, {
+      ...params,
     });
     modalStore.changeDatabaseSearchModalVisible(false);
   };
@@ -219,18 +307,89 @@ const ObjectList = ({
     );
   };
 
-  const permissionBtn = (object) => {
+  const permissionBtn = (object, type: DbObjectType) => {
     if (activeDatabase?.id !== object.id) return;
     if (hasPermission(object)) return;
+    const isTableColumn =
+      [DbObjectType.table, DbObjectType.view, DbObjectType.external_table]?.includes(
+        object?.dbObject?.type,
+      ) ||
+      [DbObjectType.table, DbObjectType.view, DbObjectType.external_table]?.includes(object?.type);
+    if (
+      [
+        DbObjectType.column,
+        DbObjectType.table,
+        DbObjectType.view,
+        DbObjectType.external_table,
+      ].includes(type) &&
+      isTableColumn
+    ) {
+      return (
+        <Button
+          type="link"
+          style={{ padding: 0, height: 18, display: 'inline-block' }}
+          onClick={(e) => applyTablePermission(e, object, type)}
+        >
+          {formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.4DE0929F',
+            defaultMessage: '申请表/视图权限',
+          })}
+        </Button>
+      );
+    }
     return (
       <Button
         type="link"
-        style={{ padding: 0, height: 18, display: 'inline-block' }}
-        onClick={(e) => applyPermission(e, object)}
+        style={{ padding: 0, height: 18 }}
+        onClick={(e) => applyDbPermission(e, object)}
       >
         {formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.E2C1F722',
-          defaultMessage: '申请表权限',
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.DB7526F7',
+          defaultMessage: '申请库权限',
+        })}
+      </Button>
+    );
+  };
+
+  const applyDbPermission = (e, db) => {
+    e.stopPropagation();
+    const dbObj = db?.dbObject?.database || db?.database || db;
+    modalStore.changeApplyDatabasePermissionModal(true, {
+      projectId: dbObj?.project?.id,
+      databaseId: dbObj?.id,
+    });
+    modalStore.changeDatabaseSearchModalVisible(false);
+  };
+
+  const selectDbBtn = (object) => {
+    if (activeDatabase?.id !== object.id) return null;
+    if (!!object?.authorizedPermissionTypes?.length) {
+      return (
+        <Button
+          type="link"
+          style={{ padding: 0, height: 18, display: 'inline-block' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setDatabase(object);
+            setSearchKey('');
+          }}
+        >
+          {formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.E74A1569',
+            defaultMessage: '继续搜索',
+          })}
+        </Button>
+      );
+    }
+    return (
+      <Button
+        type="link"
+        style={{ padding: 0, height: 18 }}
+        onClick={(e) => applyDbPermission(e, object)}
+      >
+        {formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.64F32480',
+          defaultMessage: '申请库权限',
         })}
       </Button>
     );
@@ -241,6 +400,10 @@ const ObjectList = ({
     const type = object?.type || DbObjectType.column;
     e.stopPropagation();
     const databaseId = object?.dbObject?.database?.id || object?.database?.id;
+
+    if (type === DbObjectType.external_table) {
+      object.isExternalTable = true;
+    }
     DbObjectTypeMap?.[type]?.openPage(object)(
       ...DbObjectTypeMap?.[type]?.getOpenTab(object, databaseId),
     );
@@ -248,13 +411,36 @@ const ObjectList = ({
     modalStore?.databaseSearchsSetExpandedKeysFunction?.(databaseId);
   };
 
+  const openSql = (e, db) => {
+    e.stopPropagation();
+    modalStore?.databaseSearchsSetExpandedKeysFunction?.(db.id);
+    modalStore?.changeDatabaseSearchModalVisible(false);
+    db.id && openNewSQLPage(db.id, selectProjectId ? 'project' : 'datasource');
+  };
+
   const renderObjectTypeTabs = (type) => {
     const currentObjectList = typeObjectTree?.find((i) => i.key === type);
+    const isDatabasetab = currentObjectList.key === DbObjectType.database;
     return (
       <Spin spinning={loading}>
         {!currentObjectList?.data?.length ? (
           <div className={styles.objectlistBoxEmpty}>
-            <Empty />
+            <Empty
+              description={
+                <>
+                  <div>
+                    {formatMessage({
+                      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6656C471',
+                      defaultMessage: '暂无数据',
+                    })}
+                  </div>
+                  {formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.657DE57E',
+                    defaultMessage: '如果检索不到已存在的数据库对象，请先同步元数据',
+                  })}
+                </>
+              }
+            />
           </div>
         ) : (
           <div className={styles.objectlistBox}>
@@ -262,15 +448,27 @@ const ObjectList = ({
               return (
                 <div
                   className={styles.objectItem}
-                  onClick={(e) => openTree(e, object)}
+                  onClick={(e) => {
+                    isDatabasetab ? openSql(e, object) : openTree(e, object);
+                  }}
                   onMouseEnter={() => setActiveDatabase(object)}
                   onMouseLeave={() => setActiveDatabase(null)}
                 >
                   <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
-                    <Icon
-                      component={DbObjsIcon[type]}
-                      style={{ color: 'var(--brand-blue6-color)', paddingRight: 4, fontSize: 14 }}
-                    />
+                    {isDatabasetab ? (
+                      <Icon
+                        component={
+                          getDataSourceStyleByConnectType(object?.dataSource?.dialectType)?.dbIcon
+                            ?.component
+                        }
+                        style={{ fontSize: 14, marginRight: 4 }}
+                      />
+                    ) : (
+                      <Icon
+                        component={DbObjsIcon[type]}
+                        style={{ color: 'var(--brand-blue6-color)', paddingRight: 4, fontSize: 14 }}
+                      />
+                    )}
 
                     <span style={{ paddingRight: 4 }}>{object?.name}</span>
                     <span
@@ -285,7 +483,9 @@ const ObjectList = ({
                       {getSubTitle(object, type)}
                     </span>
                   </div>
-                  {permissionBtn(object)}
+                  {isDatabasetab
+                    ? selectDbBtn(object)
+                    : permissionBtn(object, currentObjectList.key)}
                 </div>
               );
             })}
@@ -323,6 +523,7 @@ const ObjectList = ({
     },
   ].concat(
     objectTypeConfig[dbType]?.map((i) => {
+      if (i === DbObjectType.database && database) return;
       return {
         key: i,
         label: <span style={{ padding: '0 6px', margin: 0 }}>{DbObjectTypeMap?.[i]?.label}</span>,

@@ -1,3 +1,21 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
+import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import {
   IFlowTaskType,
@@ -7,21 +25,19 @@ import {
   TaskNodeStatus,
   type ITaskResult,
 } from '@/d.ts';
-import { formatMessage } from '@/util/intl';
-import { Descriptions, Divider, Drawer, Space, Steps } from 'antd';
-import { SimpleTextItem } from '../../component/SimpleTextItem';
-import { useState } from 'react';
-import styles from './index.less';
-import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
 import { ModalStore } from '@/store/modal';
-import { inject, observer } from 'mobx-react';
-import { TaskTypeMap } from '../../helper';
-import Icon from '@ant-design/icons';
-import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
+import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import Icon from '@ant-design/icons';
+import { Descriptions, Divider, Drawer, Space, Steps } from 'antd';
+import classNames from 'classnames';
+import { inject, observer } from 'mobx-react';
+import { useState } from 'react';
 import { getTaskExecStrategyMap } from '../..';
 import { ErrorStrategy } from '../../AsyncTask/DetailContent';
-import classNames from 'classnames';
+import { SimpleTextItem } from '../../component/SimpleTextItem';
+import { TaskTypeMap } from '../../helper';
+import styles from './index.less';
 const { Step } = Steps;
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
@@ -58,6 +74,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.152888BE',
+                defaultMessage: '任务编号',
               }) /*"任务编号"*/
             }
           >
@@ -68,6 +85,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.5E3A8702',
+                defaultMessage: '任务类型',
               }) /*"任务类型"*/
             }
           >
@@ -202,7 +220,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             span={2}
             label={formatMessage({
               id: 'src.component.Task.MutipleAsyncTask.DetailContent.DAFF4C62',
-              defaultMessage: 'SQL 执行处理',
+              defaultMessage: 'SQL 执行错误处理',
             })}
           >
             {AutoErrorStrategy?.[task?.parameters?.errorStrategy]}
@@ -231,7 +249,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
               span={4}
               label={formatMessage({
                 id: 'src.component.Task.MutipleAsyncTask.DetailContent.E2E22162',
-                defaultMessage: '手动执行超时时间',
+                defaultMessage: '手动确认超时时间',
               })}
             >
               {milliSecondsToHour(task?.parameters?.manualTimeoutMillis)}
@@ -347,7 +365,7 @@ const DetailDrawer: React.FC<{
                   {formatMessage(
                     {
                       id: 'src.component.Task.MutipleAsyncTask.DetailContent.6F7DA268',
-                      defaultMessage: '执行节点${index + 1}',
+                      defaultMessage: '执行节点{ BinaryExpression0 }',
                     },
                     { BinaryExpression0: index + 1 },
                   )}

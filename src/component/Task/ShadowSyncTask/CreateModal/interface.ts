@@ -107,17 +107,22 @@ export enum SchemaSyncExecuteStatus {
 export const SchemaSyncExecuteStatusText = {
   [SchemaSyncExecuteStatus.SUCCESS]: formatMessage({
     id: 'odc.components.CreateShadowSyncModal.interface.SuccessfulExecution',
+    defaultMessage: '执行成功',
   }), //执行成功
   [SchemaSyncExecuteStatus.FAILED]: formatMessage({
     id: 'odc.components.CreateShadowSyncModal.interface.ExecutionFailed',
+    defaultMessage: '执行失败',
   }), //执行失败
   [SchemaSyncExecuteStatus.WAITING]: formatMessage({
     id: 'odc.components.CreateShadowSyncModal.interface.PendingExecution',
+    defaultMessage: '待执行',
   }), //待执行
   [SchemaSyncExecuteStatus.EXECUTING]: formatMessage({
     id: 'odc.components.CreateShadowSyncModal.interface.Running',
+    defaultMessage: '执行中',
   }), //执行中
   [SchemaSyncExecuteStatus.SKIP]: formatMessage({
     id: 'odc.components.CreateShadowSyncModal.interface.SkipExecution',
+    defaultMessage: '跳过执行',
   }), //跳过执行
 };
