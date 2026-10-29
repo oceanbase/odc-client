@@ -22,7 +22,7 @@ import {
   type IApplyDatabasePermissionTaskParams,
   type TaskDetail,
 } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Divider, Alert, Space } from 'antd';
 import { permissionOptionsMap } from '../';
 import { getExpireTimeLabel } from '@/component/Task/helper';
@@ -30,6 +30,7 @@ import styles from './index.less';
 import { DBType, IDatabase } from '@/d.ts/database';
 import DatabaseIcon from '@/component/StatusIcon/DatabaseIcon';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import EllipsisText from '@/component/EllipsisText';
 
 const getConnectionColumns = () => {
@@ -84,24 +85,13 @@ const TaskContent: React.FC<IProps> = (props) => {
 
   return (
     <>
-      <Descriptions column={1}>
+      <Descriptions column={2}>
+        <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
         <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'src.component.Task.ApplyDatabasePermission.DetailContent.1FA7FD5C',
-              defaultMessage: '任务编号',
-            }) /*"任务编号"*/
-          }
-        >
-          {task?.id}
-        </Descriptions.Item>
-        <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'src.component.Task.ApplyDatabasePermission.DetailContent.AFAA55EA',
-              defaultMessage: '任务类型',
-            }) /*"任务类型"*/
-          }
+          label={formatMessage({
+            id: 'src.component.Task.modals.ApplyDatabasePermission.DetailContent.5C73581C',
+            defaultMessage: '类型',
+          })}
         >
           {
             formatMessage({
@@ -117,7 +107,7 @@ const TaskContent: React.FC<IProps> = (props) => {
               defaultMessage: '风险等级',
             })} /*风险等级*/
           >
-            <RiskLevelLabel level={task?.riskLevel?.level} color={task?.riskLevel?.style} />
+            <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
           </Descriptions.Item>
         )}
       </Descriptions>
@@ -138,7 +128,7 @@ const TaskContent: React.FC<IProps> = (props) => {
           style={{ margin: '4px 0px 8px 0px' }}
         />
       )}
-      <Descriptions column={1}>
+      <Descriptions column={1} style={{ marginBottom: '12px' }}>
         <Descriptions.Item
           label={
             formatMessage({
@@ -178,7 +168,7 @@ const TaskContent: React.FC<IProps> = (props) => {
         }}
       />
 
-      <Descriptions column={1}>
+      <Descriptions column={2}>
         <Descriptions.Item
           label={
             formatMessage({
@@ -216,7 +206,7 @@ const TaskContent: React.FC<IProps> = (props) => {
         }}
       />
 
-      <Descriptions column={1}>
+      <Descriptions column={2}>
         <Descriptions.Item
           label={
             formatMessage({

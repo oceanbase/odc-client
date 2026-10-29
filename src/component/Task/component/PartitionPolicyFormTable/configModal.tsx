@@ -35,8 +35,8 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
-import { ITableConfig } from '@/component/Task/modals/PartitionTask/CreateModal';
+import React, { useEffect, useState } from 'react';
+import { ITableConfig } from '@/component/Schedule/modals/PartitionPlan/Create';
 import {
   getPartitionKeyInvokerByIncrementFieldType,
   INCREAMENT_FIELD_TYPE,
@@ -357,52 +357,19 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       defaultMessage:
         '当前预创建分区数量过小，若调度失败恐影响业务运行，建议调整预创建分区数量至2个及以上。',
     });
-
-    const isBatchMessage = formatMessage({
-      id: 'odc.components.PartitionPolicyTable.configModal.BatchSettingWillOverwriteThe',
-      defaultMessage: '批量设置将覆盖原有的策略，是否确定设置？',
-    });
-
-    if (isBatch) {
+    const renderConfirmButton = () => {
       return (
-        <Popconfirm
-          styles={{
-            root: {
-              width: '216px',
-            },
-          }}
-          title={
-            isSingleGenerateCount ? (
-              <>
-                <div>{isSingleGenerateCountMessage}</div>
-                <div>{isBatchMessage}</div>
-              </>
-            ) : (
-              isBatchMessage
-            )
-          } /*批量设置将覆盖原有的策略，是否确定设置？*/
-          onConfirm={handleOk}
-          okText={formatMessage({
-            id: 'odc.components.PartitionPolicyTable.configModal.Ok',
-            defaultMessage: '确定',
-          })} /*确定*/
-          cancelText={formatMessage({
-            id: 'odc.components.PartitionPolicyTable.configModal.Return',
-            defaultMessage: '返回',
-          })} /*返回*/
-        >
-          <Button type="primary">
-            {' '}
-            {
-              formatMessage({
-                id: 'odc.components.PartitionPolicyTable.configModal.Ok',
-                defaultMessage: '确定',
-              }) /*确定*/
-            }
-          </Button>
-        </Popconfirm>
+        <Button type="primary" onClick={handleOk}>
+          {
+            formatMessage({
+              id: 'odc.components.PartitionPolicyTable.configModal.Ok',
+              defaultMessage: '确定',
+            }) /*确定*/
+          }
+        </Button>
       );
-    }
+    };
+
     if (isSingleGenerateCount) {
       return (
         <Popconfirm
@@ -411,7 +378,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               width: '216px',
             },
           }}
-          title={isSingleGenerateCountMessage}
+          title={<div>{isSingleGenerateCountMessage}</div>}
           onConfirm={handleOk}
           okText={formatMessage({
             id: 'odc.components.PartitionPolicyTable.configModal.Ok',
@@ -421,10 +388,8 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             id: 'odc.components.PartitionPolicyTable.configModal.Return',
             defaultMessage: '返回',
           })} /*返回*/
-          placement="topRight"
         >
-          {' '}
-          <Button type="primary">
+          <Button type="primary" onClick={handleOk}>
             {
               formatMessage({
                 id: 'odc.components.PartitionPolicyTable.configModal.Ok',
@@ -435,16 +400,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         </Popconfirm>
       );
     }
-    return (
-      <Button type="primary" onClick={handleOk}>
-        {
-          formatMessage({
-            id: 'odc.components.PartitionPolicyTable.configModal.Ok',
-            defaultMessage: '确定',
-          }) /*确定*/
-        }
-      </Button>
-    );
+    return renderConfirmButton();
   };
 
   return (
@@ -462,7 +418,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       }
       open={visible}
       destroyOnClose
-      width={720}
+      width={750}
       rootClassName={styles.configDrawer}
       onClose={handleClose}
       footer={

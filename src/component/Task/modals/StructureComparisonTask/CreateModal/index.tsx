@@ -38,19 +38,21 @@ import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '@/component/Task/component/DatabaseSelect';
 import { comparisonScopeMap } from './interface';
 import TableSelector from './TableSelector';
-import { getTaskExecStrategyMap } from '@/component/Task/const';
 import { rules } from './const';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
+import dayjs from 'dayjs';
+
 interface IProps {
   projectId?: number;
   modalStore?: ModalStore;
+  reloadList?: () => void;
 }
 
-const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) => {
+const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore, reloadList }) => {
   const { structureComparisonVisible, structureComparisonTaskData } = modalStore;
 
   const [form] = useForm<CreateStructureComparisonTaskRecord>();
-  const taskExecStrategyMap = getTaskExecStrategyMap(TaskType.STRUCTURE_COMPARISON);
   const sourceDatabaseId = Form.useWatch(['parameters', 'sourceDatabaseId'], form);
   const targetDatabaseId = Form.useWatch(['parameters', 'targetDatabaseId'], form);
   const [hasEdit, setHasEdit] = useState(false);
@@ -59,6 +61,11 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
   async function handleSubmit() {
     const rawData = await form.validateFields().catch();
     setConfirmLoading(true);
+    if (rawData?.executionStrategy === TaskExecStrategy.TIMER) {
+      rawData.executionTime = rawData?.executionTime?.valueOf();
+    } else {
+      rawData.executionTime = undefined;
+    }
     rawData.taskType = TaskType.STRUCTURE_COMPARISON;
     const result = await createStructureComparisonTask(rawData);
     setConfirmLoading(false);
@@ -70,6 +77,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
         }),
       );
       modalStore.changeStructureComparisonModal(false);
+      reloadList?.();
       openTasksPage(TaskPageType.STRUCTURE_COMPARISON);
       return;
     }
@@ -142,9 +150,14 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
     form.setFieldValue('description', detailRes?.description);
     form.setFieldValue('executionStrategy', detailRes?.executionStrategy);
     form.setFieldValue(
+      'executionTime',
+      detailRes?.executionTime && new Date().getTime() ? dayjs(detailRes?.executionTime) : null,
+    );
+    form.setFieldValue(
       ['parameters', 'tableNamesToBeCompared'],
       detailRes?.parameters?.tableNamesToBeCompared,
     );
+    form.setFieldValue(['parameters', 'comparisonScope'], detailRes?.parameters?.comparisonScope);
   };
 
   return (
@@ -189,7 +202,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
           parameters: {
             comparisonScope: EComparisonScope.PART,
           },
-          executionStrategy: TaskExecStrategy.AUTO,
+          executionStrategy: TaskExecStrategy.MANUAL,
         }}
         onFieldsChange={handleFieldsChange}
       >
@@ -294,29 +307,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
           }
           keepExpand
         >
-          <Form.Item
-            label={
-              formatMessage({
-                id: 'src.component.Task.StructureComparisonTask.CreateModal.EE50E3DC',
-                defaultMessage: '执行方式',
-              }) /*"执行方式"*/
-            }
-            required
-            name="executionStrategy"
-          >
-            <Radio.Group
-              options={[
-                {
-                  label: taskExecStrategyMap?.[TaskExecStrategy.AUTO],
-                  value: TaskExecStrategy.AUTO,
-                },
-                {
-                  label: taskExecStrategyMap?.[TaskExecStrategy.MANUAL],
-                  value: TaskExecStrategy.MANUAL,
-                },
-              ]}
-            />
-          </Form.Item>
+          <TaskExecutionMethodForm taskType={TaskType.STRUCTURE_COMPARISON} />
         </FormItemPanel>
         <DescriptionInput />
       </Form>

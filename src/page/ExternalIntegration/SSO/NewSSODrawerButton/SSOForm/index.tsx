@@ -28,7 +28,7 @@ import {
   SAMLType,
 } from '@/d.ts';
 import { UserStore } from '@/store/login';
-import channel, { ChannelMap } from '@/util/broadcastChannel';
+import channel, { ChannelMap } from '@/util/communication/broadcastChannel';
 import { formatMessage } from '@/util/intl';
 import logger from '@/util/logger';
 import { encrypt } from '@/util/utils';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import editorUtils from '@/util/editor';
+import editorUtils from '@/util/ui/editor';
 import React, { useRef, useState } from 'react';
 import { SQLPage } from '../SQLPage';
 

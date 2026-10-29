@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
@@ -11,7 +27,7 @@ import { useWatch } from 'antd/lib/form/Form';
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { flatArray } from '@/util/utils';
+import { flatArray } from '@/util/data/array';
 import styles from './index.less';
 import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
 import { IDatabase } from '@/d.ts/database';
@@ -35,8 +51,18 @@ const InnerSelect: React.FC<{
   innerIndex: number;
   disabled: boolean;
   databaseOptions: DatabaseOption[];
+  innerFields: FormListFieldData[];
   innerRemove: (value: number) => void;
-}> = ({ rootName, innerName, outerName, innerIndex, disabled, databaseOptions, innerRemove }) => {
+}> = ({
+  rootName,
+  innerName,
+  outerName,
+  innerIndex,
+  disabled,
+  databaseOptions,
+  innerRemove,
+  innerFields,
+}) => {
   const ref = useRef(null);
   const form = Form.useFormInstance();
   const [searchValue, setSearchValue] = useState<string>();
@@ -288,14 +314,17 @@ const InnerSelect: React.FC<{
       }}
     >
       <Form.Item>
-        <Space>
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
           <Icon
             component={DragSvg}
             className={styles.dragIcon}
-            style={{ cursor: 'move !important' }}
+            style={{ cursor: 'move !important', marginRight: 4 }}
           />
-
-          <Form.Item name={[innerName]} rules={rules.innerName({ databaseOptionMap })} noStyle>
+          <Form.Item
+            name={[innerName]}
+            rules={rules.innerName({ databaseOptionMap })}
+            style={{ flex: 1, padding: 0 }}
+          >
             <Popover
               trigger="click"
               placement="bottom"
@@ -329,7 +358,7 @@ const InnerSelect: React.FC<{
               <Select
                 showSearch
                 optionFilterProp="title"
-                style={{ width: 390 }}
+                style={{ flex: 1 }}
                 searchValue={searchValue}
                 onSearch={(searchValue) => setSearchValue(searchValue)}
                 placeholder={getPlaceholder()}
@@ -339,8 +368,10 @@ const InnerSelect: React.FC<{
               />
             </Popover>
           </Form.Item>
-          <DeleteOutlined onClick={() => innerRemove(innerName)} />
-        </Space>
+          {innerFields?.length > 1 && (
+            <DeleteOutlined onClick={() => innerRemove(innerName)} style={{ marginLeft: 4 }} />
+          )}
+        </div>
       </Form.Item>
     </div>
   );
@@ -393,6 +424,7 @@ const InnerSelecter: React.FC<{
           disabled={disabled}
           databaseOptions={databaseOptions}
           innerIndex={innerIndex}
+          innerFields={innerFields}
           outerName={outerName}
           innerName={innerName}
           innerRemove={innerRemove}

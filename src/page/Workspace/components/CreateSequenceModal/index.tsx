@@ -16,7 +16,7 @@
 
 import InputBigNumber from '@/component/InputBigNumber';
 import type { ModalStore } from '@/store/modal';
-import { compareNumber } from '@/util/bigNumber';
+import { compareNumber } from '@/util/data/bigNumber';
 import { formatMessage } from '@/util/intl';
 import { Col, Form, Input, InputNumber, Modal, Radio, Row, Space } from 'antd';
 import { isNil } from 'lodash';

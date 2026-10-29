@@ -16,7 +16,7 @@ import { formatMessage } from '@/util/intl';
  */
 import DisplayTable from '@/component/DisplayTable';
 import { IPartitionKeyConfig, PARTITION_KEY_INVOKER } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Tooltip } from 'antd';
 import React from 'react';
 import styles from './index.less';

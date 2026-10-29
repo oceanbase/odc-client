@@ -60,7 +60,8 @@ export default inject(
 
     const resolveParams = async () => {
       const databaseId = searchParams.get('databaseId');
-      if (databaseId) {
+      const projectId = searchParams.get('projectId');
+      if (databaseId && !projectId) {
         // 打开sql窗口
         openNewSQLPage(parseInt(databaseId));
         const newSearchParams = new URLSearchParams(searchParams);

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { createBatchExportTask } from '@/common/network';
 import HelpDoc from '@/component/helpDoc';
 import {
@@ -7,13 +23,12 @@ import {
   EXPORT_TYPE,
   IMPORT_ENCODING,
   TaskExecStrategy,
-  TaskPageScope,
   TaskPageType,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
 import { ModalStore } from '@/store/modal';
-import { selectFolder } from '@/util/client';
+import { selectFolder } from '@/util/business/client';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { safeParseJson } from '@/util/utils';
@@ -49,6 +64,7 @@ const steps: {
 export interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
 
 export interface IState {
@@ -59,7 +75,7 @@ export interface IState {
 }
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId } = props;
+  const { modalStore, projectId, reloadList } = props;
   const _formRef = React.useRef<any>();
   const [defaultConfig, setDefaultConfig] = useState<ExportFormData>(null);
   const [state, setState] = useState<IState>({
@@ -73,7 +89,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     const formData = {
       databaseId: modalStore.exportModalData?.databaseId,
       taskId: modalStore.exportModalData?.taskId,
-      executionStrategy: defaultConfig?.executionStrategy ?? TaskExecStrategy.AUTO,
+      executionStrategy: defaultConfig?.executionStrategy ?? TaskExecStrategy.MANUAL,
       taskName: null,
       dataTransferFormat: defaultConfig?.dataTransferFormat ?? EXPORT_TYPE.CSV,
       exportContent: defaultConfig?.exportContent ?? EXPORT_CONTENT.DATA_AND_STRUCT,
@@ -289,7 +305,8 @@ const CreateModal: React.FC<IProps> = (props) => {
               initDefaultConfig();
             }
             handleClose();
-            openTasksPage(TaskPageType.EXPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
+            reloadList?.();
+            openTasksPage(TaskPageType.EXPORT);
           }
         } finally {
           setState((prev) => ({
@@ -363,7 +380,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         }) //导出
       }
       open={modalStore.exportModalVisible}
-      destroyOnHidden
+      destroyOnClose
       width={720}
       onClose={handleConfirmClose}
     >

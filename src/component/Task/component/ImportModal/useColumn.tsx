@@ -1,8 +1,24 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import { IImportDatabaseView, IImportScheduleTaskView } from '@/d.ts/importTask';
 import { Tooltip, Typography, Flex } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { TaskStatus, TaskType } from '@/d.ts';
+import { TaskStatus } from '@/d.ts';
 import Icon, { InfoCircleOutlined } from '@ant-design/icons';
 import StatusLabel from '../Status';
 import DatabaseChangeItem from './DatabaseChangeItem';
@@ -11,9 +27,11 @@ import { ReactComponent as SourceDatabase } from '@/svgr/source_database.svg';
 import { ReactComponent as TargetDatabase } from '@/svgr/target_database.svg';
 import styles from './index.less';
 import { TaskTypeMap } from '../TaskTable/const';
+import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
+import ScheduleStatusLabel from '@/component/Schedule/components/ScheduleStatusLabel';
 
 export const useColumns = (
-  taskType: TaskType,
+  taskType: ScheduleType,
   projectId: number,
   handleDatabaseChange: (
     originId: string,
@@ -155,10 +173,10 @@ export const useColumns = (
       dataIndex: 'originStatus',
       key: 'originStatus',
       width: 120,
-      render: (status, record) => (
+      render: (status: ScheduleStatus, record) => (
         <Flex gap={4}>
-          <StatusLabel status={status} type={record?.type} />
-          {status !== TaskStatus.ENABLED && (
+          <ScheduleStatusLabel status={status} />
+          {status !== ScheduleStatus.ENABLED && (
             <Tooltip
               title={formatMessage({
                 id: 'src.component.Task.component.ImportModal.DFCD4ABB',
@@ -203,7 +221,6 @@ export const useColumns = (
         return (
           <DatabaseChangeItem
             defaultDatabaseId={record.databaseView?.matchedDatabaseId}
-            taskType={taskType}
             projectId={projectId}
             onChange={(databaseId) =>
               handleDatabaseChange(record.originId, 'databaseId', databaseId)
@@ -225,7 +242,6 @@ export const useColumns = (
         return (
           <DatabaseChangeItem
             defaultDatabaseId={record.targetDatabaseView?.matchedDatabaseId}
-            taskType={taskType}
             projectId={projectId}
             onChange={(databaseId) =>
               handleDatabaseChange(record.originId, 'targetDatabaseId', databaseId)
@@ -250,7 +266,6 @@ export const useColumns = (
         return (
           <DatabaseChangeItem
             defaultDatabaseId={_?.matchedDatabaseId}
-            taskType={taskType}
             projectId={projectId}
             onChange={(databaseId) =>
               handleDatabaseChange(record.originId, 'databaseId', databaseId)
@@ -269,10 +284,10 @@ export const useColumns = (
 
   const alreadyExistColumns = [
     ...baseInfoColumns,
-    ...([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(taskType)
+    ...([ScheduleType.DATA_ARCHIVE, ScheduleType.DATA_DELETE]?.includes(taskType)
       ? originDatabaseWithTargetColumns
       : []),
-    ...([TaskType.SQL_PLAN, TaskType.PARTITION_PLAN]?.includes(taskType)
+    ...([ScheduleType.SQL_PLAN, ScheduleType.PARTITION_PLAN]?.includes(taskType)
       ? originDatabaseColumns
       : []),
   ];
@@ -281,8 +296,10 @@ export const useColumns = (
     ...baseInfoColumns,
     ...originStatusColumns,
     // 数据清理/归档有源端目标端, 分区计划和sql计划只有数据库
-    ...([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(taskType) ? dlmColumns : []),
-    ...([TaskType.SQL_PLAN, TaskType.PARTITION_PLAN]?.includes(taskType)
+    ...([ScheduleType.DATA_ARCHIVE, ScheduleType.DATA_DELETE]?.includes(taskType)
+      ? dlmColumns
+      : []),
+    ...([ScheduleType.SQL_PLAN, ScheduleType.PARTITION_PLAN]?.includes(taskType)
       ? otherScheduleColumns
       : []),
   ]?.filter(Boolean);

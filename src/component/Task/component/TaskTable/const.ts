@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 
@@ -23,13 +39,6 @@ export const TaskTypeMap = {
     defaultMessage: '数据库变更',
   }),
   // 数据库变更
-
-  [TaskType.PARTITION_PLAN]: formatMessage({
-    id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
-    defaultMessage: '分区计划',
-  }),
-  //分区计划
-
   [TaskType.SHADOW]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',
     defaultMessage: '影子表同步',
@@ -46,24 +55,9 @@ export const TaskTypeMap = {
     defaultMessage: '导出结果集',
   }),
   //'导出结果集'
-  [TaskType.SQL_PLAN]: formatMessage({
-    id: 'odc.component.TaskTable.SqlPlan',
-    defaultMessage: 'SQL 计划',
-  }),
-  //SQL 计划
-  [TaskType.DATA_ARCHIVE]: formatMessage({
-    id: 'odc.component.TaskTable.DataArchiving',
-    defaultMessage: '数据归档',
-  }),
-  //数据归档
   [TaskType.ONLINE_SCHEMA_CHANGE]: formatMessage({
     id: 'odc.component.TaskTable.LockFreeStructureChange',
     defaultMessage: '无锁结构变更',
-  }),
-  //无锁结构变更
-  [TaskType.DATA_DELETE]: formatMessage({
-    id: 'odc.component.TaskTable.DataCleansing',
-    defaultMessage: '数据清理',
   }),
   //数据清理
   [TaskType.APPLY_PROJECT_PERMISSION]: formatMessage({
@@ -91,6 +85,3 @@ export const TaskTypeMap = {
     defaultMessage: '逻辑库变更',
   }),
 };
-
-export const TASK_EXECUTE_TIME_KEY = 'task:executeTime';
-export const TASK_EXECUTE_DATE_KEY = 'task:executeDate';

@@ -1,4 +1,26 @@
-import { IResponse, IResponseData } from '@/d.ts';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  ILogicDatabaseChangeExecuteRecord,
+  IResponse,
+  IResponseData,
+  ISqlExecuteResultStatus,
+  LogicDatabaseChangeExecuteRecordStats,
+} from '@/d.ts';
 import { PreviewLogicalTableTopologiesErrorEnum } from '@/d.ts/database';
 import {
   ILogicalDatabase,
@@ -8,6 +30,8 @@ import {
   ITopology,
 } from '@/d.ts/logicalDatabase';
 import request from '@/util/request';
+import { omit } from 'lodash';
+import type { IResponseDataWithStats } from '@/common/network/task';
 
 export async function extractLogicalTables(logicalDatabaseId: number) {
   const res = await request.post(
@@ -121,35 +145,55 @@ export async function previewSqls(
 }
 
 /* 查看某个物理库sql执行详情 */
-/* schedule->task(仅有一个task)->physicalDatabases(逻辑库特殊的资源) */
 export async function getPhysicalExecuteDetails(
-  scheduleTaskId: number,
+  flowInstanceId: number,
   physicalDatabaseId: number,
+  statuses?: ISqlExecuteResultStatus[],
 ): Promise<ISchemaChangeRecord> {
   const res = await request.get(
-    `/api/v2/logicaldatabase/scheduleTasks/${scheduleTaskId}/physicalDatabases/${physicalDatabaseId}`,
+    `/api/v2/logicaldatabase/flowTasks/${flowInstanceId}/physicalDatabases/${physicalDatabaseId}`,
+    {
+      params: { statuses },
+    },
   );
   return res?.data;
 }
 
 /* 终止某个物理库 SQL 执行 */
 export async function stopPhysicalSqlExecute(
-  scheduleTaskId: number,
+  flowInstanceId: number,
   physicalDatabaseId: number,
 ): Promise<boolean> {
   const res = await request.post(
-    `/api/v2/logicaldatabase/scheduleTasks/${scheduleTaskId}/physicalDatabases/${physicalDatabaseId}/terminateCurrentStatement`,
+    `/api/v2/logicaldatabase/flowTasks/${flowInstanceId}/physicalDatabases/${physicalDatabaseId}/terminateCurrentStatement`,
   );
   return res?.data;
 }
 
 /* 跳过某个物理库 SQL 执行 */
 export async function skipPhysicalSqlExecute(
-  scheduleTaskId: number,
+  flowInstanceId: number,
   physicalDatabaseId: number,
 ): Promise<boolean> {
   const res = await request.post(
-    `/api/v2/logicaldatabase/scheduleTasks/${scheduleTaskId}/physicalDatabases/${physicalDatabaseId}/skipCurrentStatement`,
+    `/api/v2/logicaldatabase/flowTasks/${flowInstanceId}/physicalDatabases/${physicalDatabaseId}/skipCurrentStatement`,
   );
+  return res?.data;
+}
+
+export async function getLogicDatabaseChangeExecuteRecordList(params: {
+  id: number;
+  size: number;
+  page: number;
+  statuses?: string[];
+  databaseKeyword?: string;
+  datasourceKeyword?: string;
+}): Promise<
+  IResponseDataWithStats<ILogicDatabaseChangeExecuteRecord, LogicDatabaseChangeExecuteRecordStats>
+> {
+  const { id } = params;
+  const res = await request.get(`api/v2/logicaldatabase/${id}`, {
+    params: omit(params, 'id'),
+  });
   return res?.data;
 }

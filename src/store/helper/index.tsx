@@ -15,7 +15,7 @@
  */
 
 import { ConnectionMode, INlsObject, IResultSet, ISqlExecuteResultStatus } from '@/d.ts';
-import { getNlsValueKey, isNlsColumn } from '@/util/column';
+import { getNlsValueKey, isNlsColumn } from '@/util/database/column';
 import { generateUniqKey } from '@/util/utils';
 
 export function generateResultSetColumns(

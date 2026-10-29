@@ -18,7 +18,7 @@ import { useState } from 'react';
 import { getProjectList } from '@/common/network/task';
 import { IProject } from '@/d.ts/project';
 
-export const useLoadProjects = () => {
+const useLoadProjects = () => {
   const [projects, setProjects] = useState<IProject[]>([]);
   const [projectMap, setProjectMap] = useState<Record<number, string>>({});
   const projectOptions = projects?.map(({ name, id }) => ({
@@ -34,6 +34,10 @@ export const useLoadProjects = () => {
       return pre;
     }, {});
     setProjectMap(rawProjectMap);
+    return res?.contents?.map(({ name, id }) => ({
+      label: name,
+      value: id,
+    }));
   };
 
   return {
@@ -43,3 +47,5 @@ export const useLoadProjects = () => {
     loadProjects,
   };
 };
+
+export default useLoadProjects;

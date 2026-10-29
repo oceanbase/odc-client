@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import RiskLevelLabel from '@/component/RiskLevelLabel';
 import RuleConfigTable from '@/component/Task/modals/DataMockerTask/CreateModal/RuleConfigTable';
 import { convertServerColumnsToFormColumns } from '@/component/Task/modals/DataMockerTask/CreateModal/RuleContent';
 import { MockStrategyTextMap } from '@/component/Task/modals/DataMockerTask/CreateModal/type';
@@ -26,11 +25,13 @@ import {
   TaskExecStrategy,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import Form from 'antd/lib/form/Form';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
+import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult, hasFlow: boolean) {
   if (!task) {
     return [];
@@ -56,6 +57,15 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
         schemaName = table.schemaName;
         taskDetailItems = {
           textItems: [
+            [
+              formatMessage({
+                id: 'odc.component.DetailModal.dataMocker.ExecutionMethod',
+                defaultMessage: '执行方式',
+              }),
+              //执行方式
+              taskExecStrategyMap[task?.executionStrategy],
+            ],
+
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.TargetTable',
@@ -144,15 +154,6 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
               // 清除记录
               result?.clearCount,
             ],
-
-            [
-              formatMessage({
-                id: 'odc.DataMockerTask.DetailContent.Description',
-                defaultMessage: '描述',
-              }),
-              //描述
-              task?.description || '-',
-            ],
           ],
         };
         const { columns } = table;
@@ -184,6 +185,15 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
   } catch (e) {
     console.log(e);
   }
+
+  const flowInfo = [
+    formatMessage({
+      id: 'odc.component.DetailModal.dataMocker.RiskLevel',
+      defaultMessage: '风险等级',
+    }),
+    <ODCRiskLevelLabel iconMode level={task?.riskLevel?.level} levelMap />,
+  ];
+
   const res: {
     sectionName?: string;
     textItems: any[];
@@ -194,54 +204,57 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
   }[] = [
     {
       textItems: [
+        ['ID', task?.id],
         [
           formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.TaskNo',
-            defaultMessage: '任务编号',
+            id: 'src.component.Task.modals.DataMockerTask.DetailContent.FD2C05D8',
+            defaultMessage: '类型',
           }),
-          //任务编号
-          task?.id,
-        ],
 
-        [
-          formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.Database',
-            defaultMessage: '所属数据库',
-          }),
-          //所属数据库
-          <DatabaseLabel database={task?.database} />,
-        ],
-
-        [
-          formatMessage({
-            id: 'odc.src.component.Task.DataMockerTask.DetailContent.DataSource',
-            defaultMessage: '所属数据源',
-          }), //'所属数据源'
-          <EllipsisText content={task?.database?.dataSource?.name} />,
-        ],
-
-        [
-          formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.TaskType',
-            defaultMessage: '任务类型',
-          }),
-          //任务类型
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.AnalogData',
             defaultMessage: '模拟数据',
           }),
-
-          //模拟数据
         ],
+
         [
           formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.ExecutionMethod',
-            defaultMessage: '执行方式',
+            id: 'src.component.Task.modals.DataMockerTask.DetailContent.23118E17',
+            defaultMessage: '数据库',
           }),
-          //执行方式
-          taskExecStrategyMap[task?.executionStrategy],
+
+          <EllipsisText
+            content={<DatabaseLabel database={task?.database} />}
+            needTooltip={false}
+          />,
         ],
-      ],
+
+        [
+          formatMessage({
+            id: 'src.component.Task.modals.DataMockerTask.DetailContent.4E09897B',
+            defaultMessage: '数据源',
+          }),
+          <EllipsisText content={task?.database?.dataSource?.name} />,
+        ],
+        !login.isPrivateSpace()
+          ? [
+              formatMessage({
+                id: 'src.component.Task.modals.DataMockerTask.DetailContent.7A02A0D1',
+                defaultMessage: '项目',
+              }),
+              <EllipsisText content={task?.project?.name} />,
+            ]
+          : null,
+        hasFlow ? flowInfo : null,
+        [
+          formatMessage({
+            id: 'odc.DataMockerTask.DetailContent.Description',
+            defaultMessage: '描述',
+          }),
+          //描述
+          task?.description || '-',
+        ],
+      ].filter(Boolean),
     },
     taskDetailItems,
     columnsItems,
@@ -277,22 +290,6 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
       getFormatDateTime(task?.executionTime),
     ]);
   }
-  if (hasFlow) {
-    const riskLevel = task?.riskLevel;
-    const flowInfo = [
-      [
-        formatMessage({
-          id: 'odc.component.DetailModal.dataMocker.RiskLevel',
-          defaultMessage: '风险等级',
-        }),
-        //风险等级
-        <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
-      ],
-    ];
 
-    flowInfo.forEach((item) => {
-      res[0].textItems.push(item);
-    });
-  }
   return res;
 }

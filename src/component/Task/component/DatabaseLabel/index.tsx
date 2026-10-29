@@ -30,7 +30,7 @@ const DatabaseLabel: React.FC<IProps> = (props) => {
   const dbIcon = getDataSourceStyleByConnectType(database?.dataSource?.type)?.dbIcon;
 
   return (
-    <div style={{ width: '100%', display: 'flex' }}>
+    <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
       {!!database?.environment?.name && (
         <RiskLevelLabel
           content={database?.environment?.name}
@@ -41,7 +41,7 @@ const DatabaseLabel: React.FC<IProps> = (props) => {
         component={dbIcon?.component}
         style={{ fontSize: 16, marginRight: 4, verticalAlign: 'textBottom' }}
       />
-      <div style={{ flex: 1, overflow: 'hidden' }}>
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
         <Tooltip title={database?.name}>
           <div
             style={{
@@ -55,6 +55,14 @@ const DatabaseLabel: React.FC<IProps> = (props) => {
             {database?.name || '-'}
           </div>
         </Tooltip>
+        <span
+          style={{
+            color: 'var(--text-color-secondary)',
+            marginLeft: '4px',
+          }}
+        >
+          {database?.remark}
+        </span>
       </div>
     </div>
   );

@@ -409,6 +409,7 @@ class SQLConfirmPage extends Component<IProps & { session: SessionStore }, IStat
           initialSQL={sql}
           log={logEle}
           onSQLChange={this.handleSqlChange}
+          showLog={true}
           toolbarActions={
             <Space>
               {hasPre && (

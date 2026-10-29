@@ -75,11 +75,15 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
   const [empty, setEmpty] = useState<boolean>(true);
   const [environmentMap, setEnvironmentMap] = useState<{ [key in string | number]: string }>({});
   const [taskTypeIdMap, setTaskTypeIdMap] = useState<{ [key in string | number]: string }>({});
+  const [scheduleTypeIdMap, setScheduleTypeIdMap] = useState<{ [key in string | number]: string }>(
+    {},
+  );
   const [sqlCheckResultIdMap, setSqlCheckResultIdMap] = useState<{
     [key in string | number]: string;
   }>({});
   const [environmentOptions, setEnvironmentOptions] = useState<SelectItemProps[]>([]);
   const [taskTypeOptions, setTaskTypeOptions] = useState<SelectItemProps[]>([]);
+  const [scheduleTypeOptions, setScheduleTypeOptions] = useState<SelectItemProps[]>([]);
   const [sqlCheckResultOptions, setSqlCheckResultOptions] = useState<SelectItemProps[]>([]);
   const [showConditionGroup, setShowConditionGroup] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -154,6 +158,8 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
       setEnvironmentMap,
       setEnvironmentOptions,
       setTaskTypeIdMap,
+      setScheduleTypeIdMap,
+      setScheduleTypeOptions,
       setTaskTypeOptions,
       setSqlCheckResultIdMap,
       setSqlCheckResultOptions,
@@ -394,9 +400,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                                       setShowConditionGroup={setShowConditionGroup}
                                                       environmentMap={taskTypeIdMap}
                                                       taskTypeIdMap={taskTypeIdMap}
+                                                      scheduleTypeIdMap={scheduleTypeIdMap}
                                                       sqlCheckResultIdMap={sqlCheckResultIdMap}
                                                       environmentOptions={environmentOptions}
                                                       taskTypeOptions={taskTypeOptions}
+                                                      scheduleTypeOptions={scheduleTypeOptions}
                                                       sqlCheckResultOptions={sqlCheckResultOptions}
                                                     />
                                                   );
@@ -446,9 +454,11 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                     setShowConditionGroup={setShowConditionGroup}
                                     environmentMap={taskTypeIdMap}
                                     taskTypeIdMap={taskTypeIdMap}
+                                    scheduleTypeIdMap={scheduleTypeIdMap}
                                     sqlCheckResultIdMap={sqlCheckResultIdMap}
                                     environmentOptions={environmentOptions}
                                     taskTypeOptions={taskTypeOptions}
+                                    scheduleTypeOptions={scheduleTypeOptions}
                                     sqlCheckResultOptions={sqlCheckResultOptions}
                                   />
                                 );
@@ -535,6 +545,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
             rootNode={originRootNode}
             environmentMap={environmentMap}
             taskTypeIdMap={taskTypeIdMap}
+            scheduleTypeIdMap={scheduleTypeIdMap}
             sqlCheckResultIdMap={sqlCheckResultIdMap}
             showActionButton={() => {
               return (

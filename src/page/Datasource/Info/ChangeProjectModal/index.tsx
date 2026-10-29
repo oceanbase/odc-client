@@ -19,12 +19,19 @@ import { getProject, listProjects } from '@/common/network/project';
 import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Alert, Form, message, Modal } from 'antd';
+import { Alert, Form, message, Modal, notification, Typography } from 'antd';
 import { isUndefined } from 'lodash';
 import { useEffect, useState } from 'react';
 import ProjectSelect from './ProjectSelect';
 import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect';
 import { IProject } from '@/d.ts/project';
+import RelativeResourceModal from '@/component/RelativeResourceModal';
+import { getResourceDependencies } from '@/common/network/relativeResource';
+import useResourceDepNotification, {
+  EResourceType,
+  EStatus,
+} from '@/util/hooks/useResourceDepNotification';
+import { EEntityType } from '@/d.ts/relativeResource';
 
 interface IProps {
   visible: boolean;
@@ -35,7 +42,10 @@ interface IProps {
 export default function ChangeProjectModal({ visible, database, close, onSuccess }: IProps) {
   const [projectInfo, setProjectInfo] = useState<IProject>();
   const [ownerSelectStatus, setOwnerSelectStatus] = useState<boolean>(false);
+  const [openDepResourceModal, setOpenDepResourceModal] = useState(false);
   const [form] = Form.useForm();
+  const { contextHolder, openNotification } = useResourceDepNotification();
+  const databaseName = database?.name || '-';
 
   const { data, loading, run } = useRequest(listProjects, {
     manual: true,
@@ -67,110 +77,168 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
     setOwnerSelectStatus(false);
     form.resetFields();
   };
+  const handleChangeProjectWithNotification = async (): Promise<void> => {
+    const value = await form.validateFields();
+    const selectedProject = data?.contents?.find((project) => project.id === value.project);
+    openNotification({
+      name: database?.name,
+      type: EResourceType.DATABASE,
+      status: EStatus.LOADING,
+    });
+    const isSuccess = await updateDataBase([database?.id], value.project, value.ownerIds, true);
+    if (isSuccess) {
+      setOpenDepResourceModal(false);
+      openNotification({
+        name: database?.name,
+        type: EResourceType.DATABASE,
+        status: EStatus.SUCCESS,
+        projectName: selectedProject?.name,
+      });
+      onClose();
+      onSuccess();
+    } else {
+      openNotification({
+        name: database?.name,
+        type: EResourceType.DATABASE,
+        status: EStatus.FAILED,
+      });
+    }
+  };
+
+  const handleChangeProject = async (): Promise<void> => {
+    const value = await form.validateFields();
+    const isSuccess = await updateDataBase([database?.id], value.project, value.ownerIds);
+    if (isSuccess) {
+      onClose();
+      onSuccess();
+    }
+  };
+
+  const handleConfirm = async () => {
+    const res = await getResourceDependencies({ databaseIds: database?.id });
+    const data = res?.data;
+    const total =
+      data?.flowDependencies?.length ||
+      0 + data?.scheduleDependencies?.length ||
+      0 + data?.scheduleTaskDependencies?.length ||
+      0;
+    if (total > 0) {
+      setOpenDepResourceModal(true);
+      return;
+    } else {
+      handleChangeProject();
+    }
+  };
+
   return (
-    <Modal
-      title={
-        formatMessage({
-          id: 'odc.src.page.Datasource.Info.ChangeProjectModal.ModifyTheProject',
-          defaultMessage: '修改所属项目',
-        }) //'修改所属项目'
-      }
-      open={visible}
-      onCancel={onClose}
-      onOk={async () => {
-        const value = await form.validateFields();
-        const isSuccess = await updateDataBase([database?.id], value.project, value.ownerIds);
-        if (isSuccess) {
-          message.success(
-            formatMessage({
-              id: 'odc.Info.ChangeProjectModal.OperationSucceeded',
-              defaultMessage: '操作成功',
-            }), //操作成功
-          );
-          onClose();
-          onSuccess();
+    <>
+      {contextHolder}
+      <Modal
+        title={
+          formatMessage({
+            id: 'odc.src.page.Datasource.Info.ChangeProjectModal.ModifyTheProject',
+            defaultMessage: '修改所属项目',
+          }) //'修改所属项目'
         }
-      }}
-    >
-      <Form
-        requiredMark="optional"
-        form={form}
-        layout="vertical"
-        onValuesChange={async (changedValues, allValues) => {
-          if (changedValues.hasOwnProperty('project')) {
-            if (changedValues.project) {
-              getProjectDetail(changedValues.project);
-            } else {
-              setProjectInfo(undefined);
-            }
-            form.setFieldValue('ownerIds', []);
-          }
-        }}
+        open={visible}
+        onCancel={onClose}
+        onOk={handleConfirm}
       >
-        <Form.Item>
-          {
-            formatMessage({
-              id: 'odc.Info.ChangeProjectModal.DatabaseName',
-              defaultMessage: '数据库名称：',
-            }) /*数据库名称：*/
-          }
-
-          {database?.name}
-          <Alert
-            style={{ marginTop: '6px' }}
-            type="info"
-            message={formatMessage({
-              id: 'src.page.Datasource.Info.ChangeProjectModal.1FCE3834',
-              defaultMessage:
-                '通过该入口修改库所属项目或库管理员会导致针对该库的库权限分配失效。若只需修改库管理员且希望库权限分配不受影响，可通过【设置库管理员】入口进行调整。',
-            })}
-            showIcon
-          />
-        </Form.Item>
-        <Form.Item
-          required
-          rules={[
-            {
-              validator(rule, value, callback) {
-                if (isUndefined(value)) {
-                  callback(
-                    formatMessage({
-                      id: 'odc.Info.ChangeProjectModal.PleaseSelectAProject',
-                      defaultMessage: '请选择项目',
-                    }), //请选择项目
-                  );
-
-                  return;
-                }
-                callback();
-              },
-            },
-          ]}
-          label={
-            formatMessage({
-              id: 'odc.src.page.Datasource.Info.ChangeProjectModal.Project',
-              defaultMessage: '项目',
-            }) //'项目'
-          }
-          name={'project'}
-        >
-          <ProjectSelect
-            projects={data?.contents}
-            currentDatabase={database}
-            setDisabledStatus={(status) => setOwnerSelectStatus(status)}
-          />
-        </Form.Item>
-        <DatabaseOwnerSelect
-          projectInfo={projectInfo}
-          hasDefaultSet={false}
-          setFormOwnerIds={(value) => {
-            form.setFieldsValue({
-              ownerIds: value,
-            });
+        <Form
+          requiredMark="optional"
+          form={form}
+          layout="vertical"
+          onValuesChange={async (changedValues, allValues) => {
+            if (changedValues.hasOwnProperty('project')) {
+              if (changedValues.project) {
+                getProjectDetail(changedValues.project);
+              } else {
+                setProjectInfo(undefined);
+              }
+              form.setFieldValue('ownerIds', []);
+            }
           }}
-          disabled={ownerSelectStatus}
+        >
+          <Form.Item>
+            {
+              formatMessage({
+                id: 'odc.Info.ChangeProjectModal.DatabaseName',
+                defaultMessage: '数据库名称：',
+              }) /*数据库名称：*/
+            }
+
+            {database?.name}
+            <Alert
+              style={{ marginTop: '6px' }}
+              type="info"
+              message={formatMessage({
+                id: 'src.page.Datasource.Info.ChangeProjectModal.1FCE3834',
+                defaultMessage:
+                  '通过该入口修改库所属项目或库管理员会导致针对该库的库权限分配失效。若只需修改库管理员且希望库权限分配不受影响，可通过【设置库管理员】入口进行调整。',
+              })}
+              showIcon
+            />
+          </Form.Item>
+          <Form.Item
+            required
+            rules={[
+              {
+                validator(rule, value, callback) {
+                  if (isUndefined(value)) {
+                    callback(
+                      formatMessage({
+                        id: 'odc.Info.ChangeProjectModal.PleaseSelectAProject',
+                        defaultMessage: '请选择项目',
+                      }), //请选择项目
+                    );
+
+                    return;
+                  }
+                  callback();
+                },
+              },
+            ]}
+            label={
+              formatMessage({
+                id: 'odc.src.page.Datasource.Info.ChangeProjectModal.Project',
+                defaultMessage: '项目',
+              }) //'项目'
+            }
+            name={'project'}
+          >
+            <ProjectSelect
+              projects={data?.contents}
+              currentDatabase={database}
+              setDisabledStatus={(status) => setOwnerSelectStatus(status)}
+            />
+          </Form.Item>
+          <DatabaseOwnerSelect
+            projectInfo={projectInfo}
+            hasDefaultSet={false}
+            setFormOwnerIds={(value) => {
+              form.setFieldsValue({
+                ownerIds: value,
+              });
+            }}
+            disabled={ownerSelectStatus}
+          />
+        </Form>
+        <RelativeResourceModal
+          open={openDepResourceModal}
+          id={database?.id}
+          mode={EEntityType.DATABASE}
+          dataSourceName={database?.dataSource?.name}
+          title={formatMessage(
+            {
+              id: 'src.page.Datasource.Info.ChangeProjectModal.299E39A1',
+              defaultMessage: '确定要修改数据库 {databaseName} 的所属项目吗？',
+            },
+            { databaseName },
+          )}
+          onCancel={() => setOpenDepResourceModal(false)}
+          customSuccessHandler={handleChangeProjectWithNotification}
         />
-      </Form>
-    </Modal>
+      </Modal>
+    </>
   );
 }

@@ -41,7 +41,7 @@ import odcSetting, {
 
 import { ModalStore } from '@/store/modal';
 import setting, { getCurrentOrganizationId } from '@/store/setting';
-import { getODCSetting, saveODCSetting } from '@/util/client';
+import { getODCSetting, saveODCSetting } from '@/util/business/client';
 import { isClient } from '@/util/env';
 import { encrypt, safeParseJson } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
@@ -97,7 +97,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       {
         label: formatMessage({ id: 'src.component.ODCSetting.6BCFD6DD', defaultMessage: '用户' }),
         value: ESpaceType.USER,
-        className: styles.user,
       },
     ];
 
@@ -108,7 +107,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           defaultMessage: '个人空间',
         }),
         value: ESpaceType.PERSONAL,
-        className: styles.space,
       });
     } else if (isAdmin) {
       options.push({
@@ -117,7 +115,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           defaultMessage: '团队空间',
         }),
         value: ESpaceType.GROUP,
-        className: styles.space,
       });
     }
 
@@ -488,7 +485,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                   return (
                     <React.Fragment key={group.key}>
                       <Space
-                        style={{ width: '100%', paddingLeft: 8, marginTop: 12 }}
+                        style={{ width: '100%', paddingLeft: 8, paddingRight: 24, marginTop: 12 }}
                         direction="vertical"
                       >
                         {!!group.label && (
@@ -496,10 +493,15 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                             {group.label}
                           </Typography.Text>
                         )}
-                        <Row style={{ paddingLeft: 12 }} gutter={20}>
+                        <Row style={{ paddingLeft: 12 }} gutter={16}>
                           {group.settings.map((set, index) => {
+                            // 如果是奇数个配置项，最后一个占满整行；否则使用设定的 span 或默认 12
+                            const isLastOddItem =
+                              group.settings.length % 2 === 1 &&
+                              index === group.settings.length - 1;
+                            const colSpan = set.span || (isLastOddItem ? 24 : 12);
                             return (
-                              <Col key={index} span={set.span || 10}>
+                              <Col key={index} span={colSpan}>
                                 <Form.Item
                                   label={
                                     <Space direction="vertical" size={2}>
@@ -534,7 +536,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                 })
               ) : (
                 <Space
-                  style={{ width: '100%', paddingLeft: 8, marginTop: 9 }}
+                  style={{ width: '100%', paddingLeft: 8, paddingRight: 24, marginTop: 9 }}
                   direction="vertical"
                   size={'small'}
                 >
@@ -676,15 +678,9 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           className={styles.tabs}
           defaultValue={ESpaceType.USER}
           onChange={(e) => setSpaceType(e.target.value)}
-        >
-          {spaceTypeOptions.map((option) => (
-            <Tooltip key={option.value} title={option.label}>
-              <Radio.Button className={option.className} value={option.value}>
-                {option.label}
-              </Radio.Button>
-            </Tooltip>
-          ))}
-        </Radio.Group>
+          optionType="button"
+          options={spaceTypeOptions}
+        />
         <Search
           className={styles.search}
           placeholder={formatMessage({

@@ -81,9 +81,19 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                 },
               ]}
             >
-              <InputNumber min={minRowLimit} precision={0} max={maxRowLimit} />
+              <InputNumber
+                min={minRowLimit}
+                precision={0}
+                max={maxRowLimit}
+                style={{ width: '150px' }}
+              />
             </Form.Item>
-            <span>Rows/s</span>
+            <span>
+              {formatMessage({
+                id: 'src.component.Task.component.ThrottleFormItem.1ED529BB',
+                defaultMessage: '行/秒',
+              })}
+            </span>
           </Space>
         </Form.Item>
         {isShowDataSizeLimit ? (
@@ -120,9 +130,19 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                 ]}
                 initialValue={initialValue?.dataSizeLimit}
               >
-                <InputNumber min={1} max={maxDataSizeLimit} precision={0} />
+                <InputNumber
+                  min={1}
+                  max={maxDataSizeLimit}
+                  precision={0}
+                  style={{ width: '150px' }}
+                />
               </Form.Item>
-              <span>MB/s</span>
+              <span>
+                {formatMessage({
+                  id: 'src.component.Task.component.ThrottleFormItem.65F49FEB',
+                  defaultMessage: 'MB/秒',
+                })}
+              </span>
             </Space>
           </Form.Item>
         ) : null}

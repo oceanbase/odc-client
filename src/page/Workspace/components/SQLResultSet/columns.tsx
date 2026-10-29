@@ -20,7 +20,7 @@ import { levelMap, RiskLevelEnum, RiskLevelTextMap } from '@/page/Secure/interfa
 import { ReactComponent as alertSvg } from '@/svgr/alert.svg';
 import { ReactComponent as errorSvg } from '@/svgr/error.svg';
 import { ReactComponent as safetySvg } from '@/svgr/safety.svg';
-import utils, { IEditor } from '@/util/editor';
+import utils, { IEditor } from '@/util/ui/editor';
 import Icon from '@ant-design/icons';
 import { Button, Popover, Space, Tooltip } from 'antd';
 import styles from './index.less';

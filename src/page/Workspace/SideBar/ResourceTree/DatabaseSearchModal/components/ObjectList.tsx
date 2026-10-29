@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { DbObjsIcon } from '@/constant';
 import { DbObjectType } from '@/d.ts';
@@ -49,26 +65,33 @@ const ObjectList = ({ modalStore }: Iprops) => {
   const { reloadDatabaseList } = useContext(ResourceTreeContext);
   const getTyepBlock = () => {
     const typeList = objectTypeConfig[dbType];
-    const typeObjectTree = typeList?.map((i) => {
+    const typeObjectTree = [];
+
+    typeList?.forEach((i) => {
       switch (i) {
         case DbObjectType.column:
-          return { key: i, data: objectlist?.dbColumns };
+          typeObjectTree.push({ key: i, data: objectlist?.dbColumns });
+          break;
         case DbObjectType.database:
-          return { key: i, data: objectlist?.databases };
+          typeObjectTree.push({ key: i, data: objectlist?.databases });
+          break;
         case DbObjectType.table:
-          return {
+          typeObjectTree.push({
             key: i,
             data: objectlist?.dbObjects?.filter((obj) =>
               [DbObjectType.table, DbObjectType.logical_table].includes(obj.type),
             ),
-          };
+          });
+          break;
         default:
-          return {
+          typeObjectTree.push({
             key: i,
             data: objectlist?.dbObjects?.filter((obj) => obj.type === i),
-          };
+          });
+          break;
       }
     });
+
     return typeObjectTree;
   };
 
@@ -111,6 +134,7 @@ const ObjectList = ({ modalStore }: Iprops) => {
                 })}
 
                 <a
+                  className={styles.syncMetadata}
                   onClick={async () => {
                     const data = await fetchSyncAll?.();
                     if (data?.data) {
@@ -125,8 +149,8 @@ const ObjectList = ({ modalStore }: Iprops) => {
                   }}
                 >
                   {formatMessage({
-                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.37A2B88B',
-                    defaultMessage: '同步数据库',
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.B042EF62',
+                    defaultMessage: '同步元数据库',
                   })}
                 </a>
                 {formatMessage({
@@ -439,8 +463,9 @@ const ObjectList = ({ modalStore }: Iprops) => {
 
   const renderObjectTypeTabs = (type) => {
     const currentObjectList = typeObjectTree?.find((i) => i.key === type);
-    const isDatabasetab = currentObjectList.key === DbObjectType.database;
-    const isColumntab = currentObjectList.key === DbObjectType.column;
+    const isDatabasetab = currentObjectList?.key === DbObjectType.database;
+    const isColumntab = currentObjectList?.key === DbObjectType.column;
+
     return (
       <Spin spinning={objectloading}>
         {!currentObjectList?.data?.length ? (

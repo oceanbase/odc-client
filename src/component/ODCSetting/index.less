@@ -31,30 +31,25 @@
   }
 }
 .settingHeader {
+  display: flex;
+  align-items: center;
+  gap: 11px;
   margin-bottom: 16px;
-  .search {
-    width: 534px;
-    margin-left: 11px;
+
+  .tabs {
+    flex-shrink: 0;
   }
+
+  .search {
+    flex: 1;
+    min-width: 0;
+  }
+
   :global {
     .ant-radio-button-wrapper {
       padding: 4px 12px;
       font-size: 12px;
       line-height: 20px;
-    }
-  }
-  .tabs {
-    .user {
-      width: 52px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .space {
-      width: 73px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
   }
 }

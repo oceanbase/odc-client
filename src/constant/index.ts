@@ -260,9 +260,8 @@ export const ObDocsUrlMap = {
       'https://en.oceanbase.com/docs/common-odc-10000000002418126',
     '900.enterprise-level-governance-and-control-synergy.html':
       'https://en.oceanbase.com/docs/common-odc-10000000002418128',
-    softwarecenter: 'https://en.oceanbase.com/softwarecenter',
     releaseNote: 'https://www.oceanbase.com/product/oceanbase-developer-center-rn/releaseNote',
-    issues: 'https://github.com/oceanbase/odc/issues',
+    ask: 'https://ask.oceanbase.com/tags/c/advice-feedback/15/odc',
   },
   'zh-cn': {
     '100.sql-development-common-techniques.html':
@@ -281,8 +280,7 @@ export const ObDocsUrlMap = {
       'https://www.oceanbase.com/docs/common-odc-1000000002687241',
     '900.enterprise-level-governance-and-control-synergy.html':
       'https://www.oceanbase.com/docs/common-odc-1000000002687239',
-    softwarecenter: 'https://www.oceanbase.com/softwarecenter',
     releaseNote: 'https://www.oceanbase.com/product/oceanbase-developer-center-rn/releaseNote',
-    issues: 'https://github.com/oceanbase/odc/issues',
+    ask: 'https://ask.oceanbase.com/tags/c/advice-feedback/15/odc',
   },
 };

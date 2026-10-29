@@ -28,7 +28,7 @@ import { listProjects } from '@/common/network/project';
 import { useParams } from '@umijs/max';
 import { toInteger } from 'lodash';
 import datasourceStatus from '@/store/datasourceStatus';
-import { listDatabases } from '@/common/network/database';
+import { listDatabases, listDatabasesParams } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { DBObjectSyncStatus, DatabaseGroup } from '@/d.ts/database';
 import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
@@ -106,7 +106,7 @@ export default function WorkspaceStore({ children }) {
   }, []);
 
   const reloadDatabaseList = useCallback(async () => {
-    const params = {
+    const params: listDatabasesParams = {
       page: 1,
       size: 99999,
       containsUnassigned: true,

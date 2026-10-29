@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import parser from 'cron-parser';
 import { initial, last } from 'lodash';
 import { cronErrorMessage, initCronString, weekOptions } from './const';
@@ -124,17 +124,6 @@ export function getAllHourValue() {
   return Array(24)
     .fill(0)
     .map((item, i) => i);
-}
-
-export function getAllFields() {
-  return [
-    CronInputName.second,
-    CronInputName.minute,
-    CronInputName.hour,
-    CronInputName.dayOfMonth,
-    CronInputName.month,
-    CronInputName.dayOfWeek,
-  ];
 }
 
 export function validateCronFields(value: string) {
@@ -318,6 +307,29 @@ export const getCronExecuteCycleByObject = (
     ];
   }
   return cycleValue?.join(' ');
+};
+
+/**
+ * 将cron表达式转换为分钟间隔
+ * @param cronString cron表达式
+ * @returns 间隔分钟数，如果无法确定则返回null
+ */
+export const convertCronToMinutes = (cronString: string): number | null => {
+  if (!cronString) return null;
+
+  try {
+    const interval = parser.parseExpression(cronString);
+    const next1 = interval.next();
+    const next2 = interval.next();
+
+    const diffMs = next2.getTime() - next1.getTime();
+    const diffMinutes = Math.round(diffMs / (1000 * 60));
+
+    return diffMinutes;
+  } catch (error) {
+    console.warn('Failed to convert cron to minutes:', error);
+    return null;
+  }
 };
 
 export const getCronExecuteCycle = (cronString: string, fieldStrs: string[]) => {

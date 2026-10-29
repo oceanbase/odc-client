@@ -18,7 +18,7 @@ import { formatMessage } from '@/util/intl';
 import { listProjects } from '@/common/network/project';
 import { createTask } from '@/common/network/task';
 import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
-import { TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useRequest } from 'ahooks';
@@ -57,15 +57,17 @@ const defaultValue = {
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore } = props;
+  const { modalStore, reloadList } = props;
   const { applyDatabasePermissionVisible, applyDatabasePermissionData } = modalStore;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [showSelectTip, setShowSelectTip] = useState(false);
   const [showSelectLogicDBTip, setShowSelectLogicDBTip] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const projectId = Form.useWatch('projectId', form);
   const { run: getProjects, data: projects } = useRequest(listProjects, {
     defaultParams: [null, null, null],
     manual: true,
@@ -74,8 +76,6 @@ const CreateModal: React.FC<IProps> = (props) => {
     label: name,
     value: id,
   }));
-  const projectId = Form.useWatch('projectId', form);
-
   const disabledDate = (current) => {
     return current && current < dayjs().subtract(1, 'days').endOf('day');
   };
@@ -136,6 +136,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
+        reloadList?.();
         setConfirmLoading(false);
         if (res) {
           message.success(
@@ -144,10 +145,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               defaultMessage: '工单创建成功',
             }),
           );
-          openTasksPage(
-            TaskPageType.APPLY_DATABASE_PERMISSION,
-            TaskPageScope.CREATED_BY_CURRENT_USER,
-          );
+          openTasksPage(TaskPageType.APPLY_DATABASE_PERMISSION);
         }
       })
       .catch((errorInfo) => {
@@ -158,6 +156,7 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const loadEditData = async () => {
     const { task } = applyDatabasePermissionData;
+    let tempProjectOptions = projectOptions;
     const {
       parameters: {
         project: { id: projectId },
@@ -169,7 +168,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
       executionStrategy,
     } = task;
-    const idProjectActive = projectOptions?.find(({ value }) => value === projectId);
+    const idProjectActive = tempProjectOptions?.find(({ value }) => value === projectId);
     const formData = {
       ...defaultValue,
       projectId: idProjectActive ? projectId : null,

@@ -19,7 +19,7 @@ import { ISqlExecuteResult, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
 import type { SQLStore } from '@/store/sql';
 import { ReactComponent as WaitingSvg } from '@/svgr/Waiting.svg';
 import { formatMessage } from '@/util/intl';
-import { formatTimeTemplate } from '@/util/utils';
+import { formatTimeTemplate } from '@/util/data/dateTime';
 import Icon, {
   CheckCircleFilled,
   CloseCircleFilled,

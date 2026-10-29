@@ -31,11 +31,13 @@ import { DEFALT_WIDTH } from './const';
 import { IDatabase } from '@/d.ts/database';
 import styles from './index.less';
 import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
+import { ScheduleType } from '@/d.ts/schedule';
 import { isNumber } from 'lodash';
 
 interface IProps {
   value?: number;
   taskType?: TaskType;
+  scheduleType?: ScheduleType;
   width?: number | string;
   projectId?: number;
   dataSourceId?: number;
@@ -49,11 +51,13 @@ interface IProps {
   showProject?: boolean;
   popoverWidth?: number;
   manageLinkVisible?: boolean;
+  onInit?: (database?: IDatabase) => void;
 }
 
 const SelectItem: React.FC<IProps> = ({
   value,
   taskType,
+  scheduleType,
   projectId,
   dataSourceId,
   filters = null,
@@ -70,6 +74,7 @@ const SelectItem: React.FC<IProps> = ({
   showProject = true,
   popoverWidth,
   manageLinkVisible = false,
+  onInit,
 }) => {
   const { data: database, run: runDatabase } = useRequest(getDatabase, {
     manual: true,
@@ -82,17 +87,23 @@ const SelectItem: React.FC<IProps> = ({
   const { data: logicalDatabase, run: runLogicalDatabase } = useRequest(logicalDatabaseDetail, {
     manual: true,
   });
+
+  const initDatabase = async () => {
+    if (datasourceMode) {
+      runDataSource(value);
+    } else {
+      if (isLogicalDatabase) {
+        runLogicalDatabase(value);
+      } else {
+        const res = await runDatabase(value);
+        onInit?.(res?.data);
+      }
+    }
+  };
+
   useEffect(() => {
     if (value) {
-      if (datasourceMode) {
-        runDataSource(value);
-      } else {
-        if (isLogicalDatabase) {
-          runLogicalDatabase(value);
-          return;
-        }
-        runDatabase(value);
-      }
+      initDatabase();
     }
   }, [value]);
 
@@ -208,6 +219,7 @@ const SelectItem: React.FC<IProps> = ({
           filters={filters}
           width={popoverWidth || width || DEFALT_WIDTH}
           taskType={taskType}
+          scheduleType={scheduleType}
           disabled={disabled}
           manageLinkVisible={manageLinkVisible}
         >
@@ -228,13 +240,13 @@ const SelectItem: React.FC<IProps> = ({
             }}
           >
             {login.isPrivateSpace() || !showProject ? null : (
-              <span>
+              <div className={styles.item}>
                 {formatMessage({
                   id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.5AC43B24' /*项目：*/,
                   defaultMessage: '项目：',
                 })}
                 {database?.data?.project?.name}
-              </span>
+              </div>
             )}
             {isDatabaseInfoContainerSingleLine && <Divider type="vertical" />}
             <div className={styles.item}>

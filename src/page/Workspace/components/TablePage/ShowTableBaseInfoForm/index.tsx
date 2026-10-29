@@ -28,7 +28,7 @@ import { columnGroupsText } from '@/constant/label';
 import CreateTableBaseInfoForm from '@/page/Workspace/components/CreateTable/BaseInfo';
 import { TablePage } from '@/store/helper/page/pages';
 import page from '@/store/page';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import type { FormInstance } from 'antd/es/form';
 import { cloneDeep } from 'lodash';
 import TableContext from '../../CreateTable/TableContext';

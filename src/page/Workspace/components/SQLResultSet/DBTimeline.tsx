@@ -16,7 +16,7 @@
 
 import { ISqlExecuteResult } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { formatTimeTemplate } from '@/util/utils';
+import { formatTimeTemplate } from '@/util/data/dateTime';
 import { Timeline, Typography } from 'antd';
 import BigNumber from 'bignumber.js';
 import dayjs from 'dayjs';

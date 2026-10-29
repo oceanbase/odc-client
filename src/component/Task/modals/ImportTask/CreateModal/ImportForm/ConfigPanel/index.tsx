@@ -19,7 +19,7 @@ import { getTableListByDatabaseName } from '@/common/network/table';
 import FormItemPanel from '@/component/FormItemPanel';
 import SysFormItem from '@/component/SysFormItem';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import TaskTimer from '@/component/Task/component/TimerSelect';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
 import { ENABLED_SYS_FROM_ITEM } from '@/component/Task/helper';
 import { ConnectionMode, EXPORT_CONTENT, IMPORT_TYPE, TaskType } from '@/d.ts';
 import odc from '@/plugins/odc';
@@ -209,7 +209,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({
                   </FormItem>
                 )}
 
-                <TaskTimer />
+                <TaskExecutionMethodForm />
               </FormItemPanel>
             </>
           );

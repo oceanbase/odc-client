@@ -26,8 +26,8 @@ import { IDebugStackItem } from '@/store/debug/type';
 import SessionStore from '@/store/sessionManager/session';
 import { SettingStore } from '@/store/setting';
 import { default as snippet, default as snippetStore } from '@/store/snippet';
-import editorUtils from '@/util/editor';
-import { getUnWrapedSnippetBody } from '@/util/snippet';
+import editorUtils from '@/util/ui/editor';
+import { getUnWrapedSnippetBody } from '@/util/business/snippet';
 import { Layout, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { PureComponent } from 'react';
@@ -238,6 +238,7 @@ export default class ScriptPage extends PureComponent<IProps> {
               language={language}
               sessionStore={this.props.session}
               onValueChange={this.setStateForEditorValue}
+              actionGroupKey={this.props.toolbar?.actionGroupKey}
             />
           </DropWrapper>
           {this.props.Others}

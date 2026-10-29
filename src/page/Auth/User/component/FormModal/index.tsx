@@ -19,8 +19,9 @@ import { PASSWORD_REGEX, SPACE_REGEX, PASSWORD_VALIDATE_MESSAGE } from '@/consta
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { generateAndDownloadFile, generateRandomPassword } from '@/util/utils';
-import { validTrimEmptyWithWarn } from '@/util/valid';
+import { generateRandomPassword } from '@/util/utils';
+import { generateAndDownloadFile } from '@/util/data/file';
+import { validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import type { RadioChangeEvent } from 'antd';
 import {

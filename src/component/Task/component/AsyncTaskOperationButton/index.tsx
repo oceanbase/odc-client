@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import { Button, Modal, Table, Checkbox, Space, Tooltip, message } from 'antd';
 import useAsyncTaskTable from './hooks/useTaskTable';
@@ -10,11 +26,12 @@ import { ScheduleExportListView } from '@/d.ts/migrateTask';
 import { TaskType } from '@/d.ts';
 import datasourceStatus from '@/store/datasourceStatus';
 import { isScheduleMigrateTask } from './helper';
+import { ScheduleType } from '@/d.ts/schedule';
 
 export interface IAsyncTaskOperationConfig extends AsyncTaskModalConfig {
   buttonText: string;
   buttonDisabledText: string;
-  buttonType: 'primary' | 'default';
+  buttonType: 'primary' | 'default' | 'text';
 }
 
 export function AsyncTaskOperationButton(props: IAsyncTaskOperationConfig) {
@@ -44,14 +61,14 @@ export function AsyncTaskOperationButton(props: IAsyncTaskOperationConfig) {
     if (!props.dataSource?.length) {
       return;
     }
-    const scheduleType = props?.dataSource?.[0]?.type;
+    const scheduleType = props?.dataSource?.[0]?.type as unknown as ScheduleType;
     if (isScheduleMigrateTask(scheduleType)) {
       const res = await getExportListView({
         ids: props?.dataSource?.map((i) => i?.id),
         scheduleType,
       });
       setTaskList(
-        scheduleType === TaskType.PARTITION_PLAN
+        scheduleType === ScheduleType.PARTITION_PLAN
           ? res?.map((i) => {
               return {
                 ...i,

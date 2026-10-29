@@ -25,20 +25,16 @@ import type {
   IResponseData,
   Operation,
   TaskStatus,
-  ICycleTaskRecord,
-  ISqlPlayJobParameters,
-  IDataArchiveJobParameters,
   TaskType,
 } from '@/d.ts';
+import type { Dayjs } from 'dayjs';
 
-export interface IState {
-  detailId: number;
-  detailType: TaskType;
-  detailVisible: boolean;
-  status: TaskStatus;
-  tasks: IResponseData<TaskRecord<TaskRecordParameters>>;
-  cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
+export enum TaskPageMode {
+  COMMON = 'COMMON',
+  PROJECT = 'PROJECT',
+  MULTI_PAGE = 'MULTI_PAGE',
 }
+
 export interface ITaskDetailModalProps {
   visible: boolean;
   taskTools: React.ReactNode;
@@ -46,8 +42,6 @@ export interface ITaskDetailModalProps {
   detailType: TaskDetailType;
   detailId: number;
   task: TaskDetail<TaskRecordParameters>;
-  subTasks: IResponseData<TaskRecord<IAsyncTaskParams>>;
-  opRecord: Operation[];
   hasFlow: boolean;
   result: ITaskResult;
   log: ILog;
@@ -59,12 +53,63 @@ export interface ITaskDetailModalProps {
 }
 
 export enum TaskDetailType {
+  /** 任务信息 */
   INFO = 'info',
+  /** 任务流程 */
   FLOW = 'flow',
+  /** 执行结果 */
   RESULT = 'result',
+  /** 任务日志 */
   LOG = 'log',
+  /** 回滚工单 */
   RECORD = 'record',
-  EXECUTE_RECORD = 'execute_record',
-  OPERATION_RECORD = 'operation_record',
+  /** 执行记录(无锁结构变更、多库变更) */
   PROGRESS = 'progress',
+}
+
+export interface IState {
+  detailId: number;
+  detailType: TaskType;
+  detailVisible: boolean;
+  status: TaskStatus;
+  tasks: IResponseData<TaskRecord<TaskRecordParameters>>;
+  taskDetailType?: TaskDetailType;
+}
+
+export enum TaskCreateTimeSort {
+  ASC = 'createTime,asc',
+  DESC = 'createTime,desc',
+}
+
+export enum TaskSearchType {
+  ID = 'ID',
+  DESCRIPTION = 'DESCRIPTION',
+  CREATOR = 'CREATOR_NAME',
+  DATABASE = 'DATABASE_NAME',
+  DATASOURCE = 'DATASOURCE_NAME',
+  CLUSTER = 'CLUSTER_NAME',
+  TENANT = 'TENANT_NAME',
+}
+
+export enum TaskTab {
+  all = 'all',
+  executionByCurrentUser = 'executionByCurrentUser',
+  approveByCurrentUser = 'approveByCurrentUser',
+}
+
+export interface ITaskParam {
+  searchValue: string;
+  searchType: TaskSearchType;
+  taskTypes: string[];
+  taskStatus: string[];
+  projectId: string[];
+  sort: TaskCreateTimeSort;
+  timeRange: number | string;
+  executeDate?: [Dayjs, Dayjs];
+  tab?: TaskTab;
+}
+
+export interface IPagination {
+  current: number;
+  pageSize: number;
 }

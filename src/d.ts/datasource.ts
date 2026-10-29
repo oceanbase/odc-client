@@ -62,3 +62,12 @@ export enum IForbiddenSQLConsoleDataSourceType {
   AWS = 'AWS',
   OBS = 'OBS',
 }
+
+export enum ConnectionMode {
+  MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
+  ORACLE = 'ORACLE',
+  OB_MYSQL = 'OB_MYSQL',
+  OB_ORACLE = 'OB_ORACLE',
+  ALL = 'ALL',
+}

@@ -16,16 +16,18 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
+import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import type { IResultSetExportTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
 import { IExportResultSetFileType, TaskExecStrategy } from '@/d.ts';
-import { CRLFToSeparatorString, getFormatDateTime } from '@/util/utils';
-import { Divider } from 'antd';
+import { CRLFToSeparatorString } from '@/util/data/string';
+import { getFormatDateTime } from '@/util/data/dateTime';
+import { Descriptions, Divider } from 'antd';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 export const getItems = (
   _task: TaskDetail<IResultSetExportTaskParams>,
   result: ITaskResult,
@@ -67,62 +69,70 @@ export const getItems = (
 
         return (
           <>
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.TaskNumber',
-                  defaultMessage: '任务编号',
-                }) /* 任务编号 */
-              }
-              content={task?.id}
-            />
-
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Database',
-                  defaultMessage: '所属数据库',
-                }) /* 所属数据库 */
-              }
-              content={<DatabaseLabel database={task?.database} />}
-            />
-
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.DataSource',
-                  defaultMessage: '所属数据源',
-                }) /* 所属数据源 */
-              }
-              content={<EllipsisText content={task?.database?.dataSource?.name} />}
-            />
-
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Type',
-                  defaultMessage: '任务类型',
-                }) /* 任务类型 */
-              }
-              content={
-                formatMessage({
+            <Descriptions column={2}>
+              <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.F1E2BECA',
+                  defaultMessage: '类型',
+                })}
+              >
+                {formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ExportResultSet',
                   defaultMessage: '导出结果集',
-                }) /* 导出结果集 */
-              }
-            />
-
-            {hasFlow && (
-              <SimpleTextItem
-                label={
-                  formatMessage({
-                    id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.RiskLevel',
+                })}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.5BD900DD',
+                  defaultMessage: '数据库',
+                })}
+              >
+                <EllipsisText
+                  content={<DatabaseLabel database={task?.database} />}
+                  needTooltip={false}
+                />
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.A35BE7A7',
+                  defaultMessage: '数据源',
+                })}
+              >
+                <EllipsisText content={task?.database?.dataSource?.name} />
+              </Descriptions.Item>
+              {!login.isPrivateSpace() && (
+                <Descriptions.Item
+                  label={formatMessage({
+                    id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.F90030F6',
+                    defaultMessage: '项目',
+                  })}
+                >
+                  <EllipsisText content={task?.project?.name} />
+                </Descriptions.Item>
+              )}
+              {hasFlow && (
+                <Descriptions.Item
+                  span={2}
+                  label={formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.DetailContent.7A621BB2',
                     defaultMessage: '风险等级',
-                  }) /* 风险等级 */
-                }
-                content={<RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />}
-              />
-            )}
+                  })}
+                >
+                  <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
+                </Descriptions.Item>
+              )}
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.B21DB390',
+                  defaultMessage: '描述',
+                })}
+              >
+                {task?.description}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <Divider />
 
             <SimpleTextItem
               label={
@@ -154,204 +164,152 @@ export const getItems = (
               direction="column"
             />
 
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.QueryResultsLimit',
+            <Descriptions column={2}>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.C16234FE',
                   defaultMessage: '查询结果限制',
-                }) /* 查询结果限制 */
-              }
-              content={parameters?.maxRows}
-            />
-
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.FileName',
+                })}
+              >
+                {parameters?.maxRows}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.C9C02270',
                   defaultMessage: '文件名',
-                }) /* 文件名 */
-              }
-              content={parameters?.fileName}
-            />
-
-            <SimpleTextItem
-              label={
-                formatMessage({
+                })}
+              >
+                {parameters?.fileName}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.FileFormat',
                   defaultMessage: '文件格式',
-                }) /* 文件格式 */
-              }
-              content={parameters?.fileFormat}
-            />
+                })}
+              >
+                {parameters?.fileFormat}
+              </Descriptions.Item>
 
-            {parameters?.fileFormat === IExportResultSetFileType.CSV && (
-              <>
-                <SimpleTextItem
-                  label={
-                    formatMessage({
+              {parameters?.fileFormat === IExportResultSetFileType.CSV && (
+                <>
+                  <Descriptions.Item
+                    label={formatMessage({
                       id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.CSVFileSettings',
                       defaultMessage: 'CSV 文件设置',
-                    }) /* CSV 文件设置 */
-                  }
-                  content={csvFormat?.join('、')}
-                />
+                    })}
+                  >
+                    {csvFormat?.join('、')}
+                  </Descriptions.Item>
 
-                <SimpleTextItem
-                  label={
-                    formatMessage({
+                  <Descriptions.Item
+                    label={formatMessage({
                       id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.FieldSeparator',
                       defaultMessage: '字段分隔符',
-                    }) /* 字段分隔符 */
-                  }
-                  content={parameters?.csvFormat?.columnSeparator}
-                />
+                    })}
+                  >
+                    {parameters?.csvFormat?.columnSeparator}
+                  </Descriptions.Item>
 
-                <SimpleTextItem
-                  label={
-                    formatMessage({
+                  <Descriptions.Item
+                    label={formatMessage({
                       id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.TextRecognitionSymbol',
                       defaultMessage: '文本识别符',
-                    }) /* 文本识别符 */
-                  }
-                  content={parameters?.csvFormat?.columnDelimiter}
-                />
+                    })}
+                  >
+                    {parameters?.csvFormat?.columnDelimiter}
+                  </Descriptions.Item>
 
-                <SimpleTextItem
-                  label={
-                    formatMessage({
+                  <Descriptions.Item
+                    label={formatMessage({
                       id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ReplacementSymbol',
                       defaultMessage: '换行符号',
-                    }) /* 换行符号 */
-                  }
-                  content={CRLFToSeparatorString(parameters?.csvFormat?.lineSeparator)}
-                />
-              </>
-            )}
-
-            {parameters?.fileFormat === IExportResultSetFileType.SQL && (
-              <SimpleTextItem
-                label={
-                  formatMessage({
+                    })}
+                  >
+                    {CRLFToSeparatorString(parameters?.csvFormat?.lineSeparator)}
+                  </Descriptions.Item>
+                </>
+              )}
+              {parameters?.fileFormat === IExportResultSetFileType.SQL && (
+                <Descriptions.Item
+                  label={formatMessage({
                     id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.SpecifiedTableName',
                     defaultMessage: '指定表名',
-                  }) /* 指定表名 */
-                }
-                content={parameters?.tableName ?? '-'}
-              />
-            )}
-
-            {parameters?.fileFormat === IExportResultSetFileType.EXCEL && (
-              <>
-                <SimpleTextItem
-                  label={
-                    formatMessage({
-                      id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Contain.1',
-                      defaultMessage: '包含列头',
-                    }) /* 包含列头 */
-                  }
-                  content={
-                    parameters?.csvFormat?.isContainColumnHeader
-                      ? formatMessage({
-                          id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Yes',
-                          defaultMessage: '是',
-                        }) //'是'
-                      : formatMessage({
-                          id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.No',
-                          defaultMessage: '否',
-                        }) //'否'
-                  }
-                />
-
-                <SimpleTextItem
-                  label={
-                    formatMessage({
-                      id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ExportSQLToAnotherSheet',
-                      defaultMessage: '导出 SQL 到另一个 Sheet',
-                    }) /* 导出 SQL 到另一个 Sheet */
-                  }
-                  content={
-                    parameters?.saveSql
-                      ? formatMessage({
-                          id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Yes.1',
-                          defaultMessage: '是',
-                        }) //'是'
-                      : formatMessage({
-                          id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.No.1',
-                          defaultMessage: '否',
-                        }) //'否'
-                  }
-                />
-              </>
-            )}
-
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.FileEncoding',
+                  })}
+                >
+                  {parameters?.tableName ?? '-'}
+                </Descriptions.Item>
+              )}
+              {parameters?.fileFormat === IExportResultSetFileType.EXCEL && (
+                <Descriptions.Item
+                  label={formatMessage({
+                    id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Contain.1',
+                    defaultMessage: '包含列头',
+                  })}
+                >
+                  {parameters?.csvFormat?.isContainColumnHeader
+                    ? formatMessage({
+                        id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Yes',
+                        defaultMessage: '是',
+                      }) //'是'
+                    : formatMessage({
+                        id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.No',
+                        defaultMessage: '否',
+                      })}
+                </Descriptions.Item>
+              )}
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.22E75696',
                   defaultMessage: '文件编码',
-                }) /* 文件编码 */
-              }
-              content={parameters?.fileEncoding}
-            />
-
-            <SimpleTextItem
-              label={
-                formatMessage({
+                })}
+              >
+                {parameters?.fileEncoding}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ImplementationModalities',
                   defaultMessage: '执行方式',
-                }) /* 执行方式 */
-              }
-              content={taskExecStrategyMap[task?.executionStrategy]}
-            />
+                })}
+              >
+                {taskExecStrategyMap[task?.executionStrategy]}
+              </Descriptions.Item>
 
-            {task?.executionStrategy === TaskExecStrategy.TIMER && (
-              <SimpleTextItem
-                label={
-                  formatMessage({
+              {task?.executionStrategy === TaskExecStrategy.TIMER && (
+                <Descriptions.Item
+                  label={formatMessage({
                     id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ExecutionTime',
                     defaultMessage: '执行时间',
-                  }) /* 执行时间 */
-                }
-                content={getFormatDateTime(task?.executionTime)}
-              />
-            )}
-
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.MissionDetails',
-                  defaultMessage: '任务描述',
-                }) /* 任务描述 */
-              }
-              content={task?.description}
-              direction="column"
-            />
+                  })}
+                >
+                  {getFormatDateTime(task?.executionTime)}
+                </Descriptions.Item>
+              )}
+            </Descriptions>
 
             <Divider
               style={{
-                marginTop: 4,
+                marginTop: 12,
               }}
             />
 
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Founder',
+            <Descriptions column={2}>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.87C34066',
                   defaultMessage: '创建人',
-                }) /* 创建人 */
-              }
-              content={task?.creator?.name || '-'}
-            />
-
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.CreationTime',
+                })}
+              >
+                {task?.creator?.name || '-'}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.2E064ECC',
                   defaultMessage: '创建时间',
-                }) /* 创建时间 */
-              }
-              content={getFormatDateTime(task?.createTime)}
-            />
+                })}
+              >
+                {getFormatDateTime(task?.createTime)}
+              </Descriptions.Item>
+            </Descriptions>
           </>
         );
       },

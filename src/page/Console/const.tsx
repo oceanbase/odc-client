@@ -1,15 +1,41 @@
-import { formatMessage } from '@/util/intl';
-import { TaskPageType } from '@/d.ts';
-import { ReactComponent as DownloadSvg } from '@/svgr/download-fill.svg';
-import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
-import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
-import Icon from '@ant-design/icons';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
+import { formatMessage } from '@/util/intl';
+import Icon from '@ant-design/icons';
+import { TaskType } from '@/d.ts';
+import { ScheduleType } from '@/d.ts/schedule';
+import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
+import { ReactComponent as HatSvg } from '@/svgr/hat.svg';
+import { ReactComponent as QuestionSvg } from '@/svgr/question.svg';
+import { ReactComponent as InfoSvg } from '@/svgr/info.svg';
+
+/**
+ * Quick start role types
+ */
 export enum EQuickStartRole {
+  /** Administrator role */
   Admin,
-  Develepor,
+  /** Developer role */
+  Developer,
 }
 
+/**
+ * Database table column keys for recently visited databases
+ */
 export enum EDatabaseTableColumnKey {
   Recently = 'recently',
   DataSource = 'datasource',
@@ -18,26 +44,147 @@ export enum EDatabaseTableColumnKey {
   Operation = 'operation',
 }
 
+/**
+ * Layout section keys for console page
+ */
+export enum ELayoutKey {
+  QuickStart = 'quick-start',
+  TaskOverview = 'task-overview',
+  WorkOrder = 'work-order',
+  Job = 'job',
+  RecentDatabases = 'recent-databases',
+  AboutUs = 'about-us',
+  BestPractices = 'best-practices',
+}
+
+/**
+ * Supported task types for console statistics
+ */
+export const TaskTypes = [
+  TaskType.EXPORT,
+  TaskType.EXPORT_RESULT_SET,
+  TaskType.IMPORT,
+  TaskType.DATAMOCK,
+  TaskType.ASYNC,
+  TaskType.MULTIPLE_ASYNC,
+  TaskType.LOGICAL_DATABASE_CHANGE,
+  TaskType.SHADOW,
+  TaskType.STRUCTURE_COMPARISON,
+  TaskType.ONLINE_SCHEMA_CHANGE,
+];
+
+/**
+ * Task type display titles
+ */
+export const TaskTitle = {
+  [TaskType.EXPORT]: formatMessage({ id: 'src.page.Console.14A62D75', defaultMessage: '导出' }),
+  [TaskType.EXPORT_RESULT_SET]: formatMessage({
+    id: 'src.page.Console.827D70F4',
+    defaultMessage: '导出结果集',
+  }),
+  [TaskType.IMPORT]: formatMessage({ id: 'src.page.Console.7FAA1AC3', defaultMessage: '导入' }),
+  [TaskType.DATAMOCK]: formatMessage({
+    id: 'src.page.Console.BC47035A',
+    defaultMessage: '模拟数据',
+  }),
+  [TaskType.ASYNC]: formatMessage({
+    id: 'src.page.Console.CD787177',
+    defaultMessage: '数据库变更',
+  }),
+  [TaskType.MULTIPLE_ASYNC]: formatMessage({
+    id: 'src.page.Console.083CE811',
+    defaultMessage: '多库变更',
+  }),
+  [TaskType.LOGICAL_DATABASE_CHANGE]: formatMessage({
+    id: 'src.page.Console.095E4794',
+    defaultMessage: '逻辑库变更',
+  }),
+  [TaskType.SHADOW]: formatMessage({
+    id: 'src.page.Console.9B9AA656',
+    defaultMessage: '影子表同步',
+  }),
+  [TaskType.STRUCTURE_COMPARISON]: formatMessage({
+    id: 'src.page.Console.FA7A89B2',
+    defaultMessage: '结构比对',
+  }),
+  [TaskType.ONLINE_SCHEMA_CHANGE]: formatMessage({
+    id: 'src.page.Console.82724F7E',
+    defaultMessage: '无锁结构变更',
+  }),
+};
+
+/**
+ * Schedule type display titles
+ */
+export const ScheduleTitle = {
+  [ScheduleType.DATA_ARCHIVE]: formatMessage({
+    id: 'src.page.Console.B92D6192',
+    defaultMessage: '数据归档',
+  }),
+  [ScheduleType.DATA_DELETE]: formatMessage({
+    id: 'src.page.Console.E2F84D37',
+    defaultMessage: '数据清理',
+  }),
+  [ScheduleType.PARTITION_PLAN]: formatMessage({
+    id: 'src.page.Console.A9C48F30',
+    defaultMessage: '分区计划',
+  }),
+  [ScheduleType.SQL_PLAN]: formatMessage({
+    id: 'src.page.Console.E561DFFF',
+    defaultMessage: 'SQL 计划',
+  }),
+};
+
+/**
+ * Supported schedule types for console statistics
+ */
+export const ScheduleTypes = [
+  ScheduleType.DATA_ARCHIVE,
+  ScheduleType.DATA_DELETE,
+  ScheduleType.PARTITION_PLAN,
+  ScheduleType.SQL_PLAN,
+];
+
+/**
+ * Console text configuration including schedules, quick start, recently visited, and about us sections
+ */
 export const ConsoleTextConfig = {
   schdules: {
     keys: ['dataArchive', 'dataClear', 'partition', 'sqlPlan'],
     status: [
-      formatMessage({ id: 'src.page.Console.4D58E4BD', defaultMessage: '执行成功' }),
-      formatMessage({ id: 'src.page.Console.0DE02703', defaultMessage: '执行失败' }),
       formatMessage({ id: 'src.page.Console.095A8212', defaultMessage: '执行中' }),
-      formatMessage({ id: 'src.page.Console.A46DFDCA', defaultMessage: '待执行' }),
+      formatMessage({ id: 'src.page.Console.4D58E4BD', defaultMessage: '执行成功' }),
+      formatMessage({ id: 'src.page.Console.AC6DADB0', defaultMessage: '执行超时' }),
+      formatMessage({ id: 'src.page.Console.D7644938', defaultMessage: '执行中断' }),
       formatMessage({ id: 'src.page.Console.32807E76', defaultMessage: '其他' }),
     ],
 
-    statusType: [
-      'successExecutionCount',
-      'failedExecutionCount',
-      'executingCount',
-      'waitingExecutionCount',
-      'otherCount',
+    taskStatus: [
+      formatMessage({ id: 'src.page.Console.095A8212', defaultMessage: '执行中' }),
+      formatMessage({ id: 'src.page.Console.4D58E4BD', defaultMessage: '执行成功' }),
+      formatMessage({ id: 'src.page.Console.770CA9E1', defaultMessage: '准入失败' }),
+      formatMessage({ id: 'src.page.Console.ABA79EEA', defaultMessage: '执行中断' }),
+      formatMessage({ id: 'src.page.Console.32807E76', defaultMessage: '其他' }),
     ],
 
-    statusColor: ['#73d13d', '#ff6667', '#40a9ff', '#91d5ff', '#e0e0e0'],
+    taskStatusColor: ['#40a9ff', '#73d13d', '#ffa21a', '#ff6667', '#e0e0e0'],
+    taskStatusType: [
+      'EXECUTING',
+      'EXECUTION_SUCCESS',
+      'ACCESS_FAILURE',
+      'EXECUTION_INTERRUPTION',
+      'OTHER',
+    ],
+
+    statusType: [
+      'EXECUTING',
+      'EXECUTION_SUCCESS',
+      'EXEC_TIMEOUT',
+      'EXECUTION_INTERRUPTION',
+      'OTHER',
+    ],
+
+    statusColor: ['#40a9ff', '#73d13d', '#ffc166', '#ff6667', '#e0e0e0'],
     scheduleTitle: [
       formatMessage({ id: 'src.page.Console.B92D6192', defaultMessage: '数据归档' }),
       formatMessage({ id: 'src.page.Console.E2F84D37', defaultMessage: '数据清理' }),
@@ -46,10 +193,10 @@ export const ConsoleTextConfig = {
     ],
 
     scheduleType: [
-      TaskPageType.DATA_ARCHIVE,
-      TaskPageType.DATA_DELETE,
-      TaskPageType.PARTITION_PLAN,
-      TaskPageType.SQL_PLAN,
+      ScheduleType.DATA_ARCHIVE,
+      ScheduleType.DATA_DELETE,
+      ScheduleType.PARTITION_PLAN,
+      ScheduleType.SQL_PLAN,
     ],
   },
   quickStart: {
@@ -108,22 +255,13 @@ export const ConsoleTextConfig = {
   },
   aboutUs: {
     helps: [
-      {
-        title: formatMessage({ id: 'src.page.Console.D66A7480', defaultMessage: '下载新版' }),
-        url: 'softwarecenter',
-        icon: <Icon component={DownloadSvg} style={{ color: '#006AFF', fontSize: 14 }} />,
-      },
-      {
-        title: formatMessage({ id: 'src.page.Console.B27ADAC6', defaultMessage: '产品动态' }),
-        url: 'releaseNote',
-        icon: <Icon component={SendSvg} style={{ color: '#52c41a', fontSize: 14 }} />,
-      },
-      {
-        title: formatMessage({ id: 'src.page.Console.9B6E647E', defaultMessage: '反馈建议' }),
-        url: 'issues',
-        icon: <Icon component={GithubSvg} style={{ fontSize: 14 }} />,
-      },
+      formatMessage({ id: 'src.page.Console.B27ADAC6', defaultMessage: '产品动态' }),
+      formatMessage({ id: 'src.page.Console.797E70B6', defaultMessage: '社区问答' }),
+      formatMessage({ id: 'src.page.Console.E07BCB43', defaultMessage: '帮助文档' }),
+      formatMessage({ id: 'src.page.Console.4602FA70', defaultMessage: '版本信息' }),
     ],
+
+    urlKeys: ['releaseNote', 'ask', 'helpDocs', 'versions'],
     QRUrl:
       'https://qr.dingtalk.com/action/joingroup?code=v1,k1,HovdSAqfBdRGqRk2jQ0TDu1eMvQ+BB6rt8mFHeIqi/A=&_dt_no_comment=1&origin=11',
   },
@@ -190,6 +328,9 @@ export const ConsoleTextConfig = {
   },
 };
 
+/**
+ * Grid configuration for layout
+ */
 export const gridConfig = {
   left: 16,
   right: 8,
@@ -197,9 +338,41 @@ export const gridConfig = {
   hide: 0,
 };
 
+/**
+ * Area layout configuration for different console sections
+ */
 export const areaLayout = {
   schedules: { schedule: gridConfig.all, guide: 0 },
   both: { schedule: gridConfig.left, guide: gridConfig.right },
   quickStart: { schedule: 0, guide: gridConfig.all },
   hideTop: { schedule: 0, guide: 0 },
 };
+
+// 状态映射：Console状态 -> 任务页面状态
+export const statusMapping = {
+  EXECUTING: ['EXECUTING'],
+  EXECUTION_SUCCESS: ['EXECUTION_SUCCEEDED', 'EXECUTION_SUCCEEDED_WITH_ERRORS'],
+  ACCESS_FAILURE: [
+    'PRE_CHECK_FAILED',
+    'REJECTED',
+    'APPROVAL_EXPIRED',
+    'WAIT_FOR_EXECUTION_EXPIRED',
+  ],
+
+  EXECUTION_INTERRUPTION: ['EXECUTION_ABNORMAL', 'EXECUTION_FAILED', 'EXECUTION_EXPIRED'],
+  OTHER: [
+    'CREATED',
+    'PRE_CHECK_EXECUTING',
+    'APPROVING',
+    'WAIT_FOR_SCHEDULE_EXECUTION',
+    'WAIT_FOR_EXECUTION',
+    'CANCELLED',
+  ],
+};
+
+export const aboutUsIcons = [
+  <Icon component={SendSvg} style={{ color: '#52c41a', fontSize: 13 }} />,
+  <Icon component={QuestionSvg} style={{ fontSize: 13 }} />,
+  <Icon component={HatSvg} style={{ fontSize: 13 }} />,
+  <Icon component={InfoSvg} style={{ fontSize: 13 }} />,
+];

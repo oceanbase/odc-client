@@ -24,7 +24,7 @@ import {
   flatTableByGroupedParams,
   groupTableByDataBase,
 } from '@/component/Task/component/TableSelecter/util';
-import { TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { TaskPageType, TaskType } from '@/d.ts';
 import { TablePermissionType } from '@/d.ts/table';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
@@ -161,9 +161,10 @@ export const expireTimeOptions = [
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore } = props;
+  const { modalStore, reloadList } = props;
   const { applyTablePermissionVisible, applyTablePermissionData } = modalStore;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
@@ -187,7 +188,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     if (applyTablePermissionVisible) {
       getProjects(null, null, null);
     }
-  }, [applyTablePermissionVisible, getProjects]);
+  }, [applyTablePermissionVisible]);
+
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
@@ -241,6 +243,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
+        reloadList?.();
         setConfirmLoading(false);
         if (res) {
           message.success(
@@ -249,7 +252,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               defaultMessage: '工单创建成功',
             }),
           );
-          openTasksPage(TaskPageType.APPLY_TABLE_PERMISSION, TaskPageScope.CREATED_BY_CURRENT_USER);
+          openTasksPage(TaskPageType.APPLY_TABLE_PERMISSION);
         }
       })
       .catch((errorInfo) => {
@@ -331,7 +334,7 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const applyProjectPermission = () => {
     handleCancel(hasEdit);
-    openTasksPage(TaskPageType.APPLY_PROJECT_PERMISSION, TaskPageScope.CREATED_BY_CURRENT_USER);
+    openTasksPage(TaskPageType.APPLY_PROJECT_PERMISSION);
   };
 
   const projectEmptyRender = () => {

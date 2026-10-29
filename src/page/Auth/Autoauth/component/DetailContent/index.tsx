@@ -19,7 +19,7 @@ import { useRoleListByIds } from '@/component/Manage/RoleList';
 import Status from '@/component/Manage/Status';
 import type { IAutoAuthRule } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Divider, Space } from 'antd';
 import React, { useContext } from 'react';
 import { actionLabelMap } from '../..';

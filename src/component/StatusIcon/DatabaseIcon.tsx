@@ -22,7 +22,7 @@ import { Tooltip } from 'antd';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { IDatabase } from '@/d.ts/database';
 import datasourceStatus from '@/store/datasourceStatus';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { observer } from 'mobx-react';
 import LogicIcon from '../logicIcon';
 

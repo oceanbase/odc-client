@@ -16,7 +16,7 @@
 
 import { IProcedure } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { PureComponent } from 'react';
 import styles from './index.less';
 

@@ -1,6 +1,22 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { IDataSourceModeConfig } from '@/common/datasource/interface';
-import { listDatabases } from '@/common/network/database';
+import { listDatabases, listDatabasesParams } from '@/common/network/database';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { ConnectionMode, TaskType, IDatabaseHistoriesParam } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
@@ -14,12 +30,12 @@ import { DataNode } from 'antd/lib/tree';
 import { toInteger } from 'lodash';
 import login, { UserStore } from '@/store/login';
 import { inject, observer } from 'mobx-react';
-import { isConnectTypeBeFileSystemGroup, isPgDataDataSource } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup, isPgDataDataSource } from '@/util/database/connection';
 import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import SessionContext from '../../context';
 import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
 import styles from './index.less';
-import Search, { SearchType } from './components/Search';
+import Search from './components/Search';
 import Group from '@/page/Workspace/SideBar/ResourceTree/DatabaseGroup';
 import { DatabaseGroup } from '@/d.ts/database';
 import useGroupData from '@/page/Workspace/SideBar/ResourceTree/DatabaseTree/useGroupData';
@@ -27,6 +43,7 @@ import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import DatabaseSelectTab from './components/Tab';
 import { GroupNodeTitle } from './components/DatabasesTitle';
 import RecentlyDatabaseEmpty from '@/component/Empty/RecentlyDatabaseEmpty';
+import { DatabaseSearchType } from '@/d.ts/database';
 import { getDatabasesHistories } from '@/common/network/task';
 import {
   NodeType,
@@ -44,6 +61,7 @@ import DatasourceSelectEmpty from '@/component/Empty/DatasourceSelectEmpty';
 import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
 import renderDatabaseNode from './renderDatabaseNode';
 import { ExportOutlined } from '@ant-design/icons';
+import { ScheduleType } from '@/d.ts/schedule';
 
 export interface IDatabasesTitleProps {
   db: IDatabase;
@@ -70,6 +88,7 @@ export enum TabsType {
 interface IProps {
   width?: number | string;
   taskType?: TaskType;
+  scheduleType?: ScheduleType;
   projectId?: number;
   dataSourceId?: number;
   filters?: ISessionDropdownFiltersProps;
@@ -89,6 +108,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
     dataSourceId,
     filters = null,
     taskType,
+    scheduleType,
     dataSourceStatusStore,
     disabled = false,
     userStore,
@@ -118,7 +138,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
   const { datasourceId } = useParams<{
     datasourceId: string;
   }>();
-  const [searchValue, setSearchValue] = useState<{ value: string; type: SearchType }>({
+  const [searchValue, setSearchValue] = useState<{ value: string; type: DatabaseSearchType }>({
     value: null,
     type: null,
   });
@@ -172,7 +192,19 @@ const SessionDropdown: React.FC<IProps> = (props) => {
     if (!support) {
       return false;
     }
-    if (!taskType && !getDataSourceModeConfig(database?.dataSource?.type)?.features?.sqlconsole) {
+    if (
+      scheduleType &&
+      !getDataSourceModeConfig(database?.dataSource?.type)?.features?.schedule?.includes(
+        scheduleType,
+      )
+    ) {
+      return false;
+    }
+    if (
+      !taskType &&
+      !scheduleType &&
+      !getDataSourceModeConfig(database?.dataSource?.type)?.features?.sqlconsole
+    ) {
       return false;
     }
     if (
@@ -203,18 +235,16 @@ const SessionDropdown: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     if (isOpen) {
-      const params = {
+      const params: listDatabasesParams = {
         projectId,
         dataSourceId: datasourceId ? toInteger(datasourceId) : dataSourceId,
         page: 1,
         size: 99999,
-        name: searchValue?.value,
+        fuzzyKeyword: searchValue?.value,
         containsUnassigned: userStore.isPrivateSpace(),
         existed: true,
         includesPermittedAction: true,
-        dataSourceName: searchValue?.type === SearchType.DATASOURCE ? searchValue?.value : null,
-        clusterName: searchValue?.type === SearchType.CLUSTER ? searchValue?.value : null,
-        tenantName: searchValue?.type === SearchType.TENANT ? searchValue?.value : null,
+        searchType: searchValue?.type,
       };
       // 个人空间不需要获取数据库的权限
       if (userStore?.isPrivateSpace()) {
@@ -625,7 +655,6 @@ const SessionDropdown: React.FC<IProps> = (props) => {
                 {treeData?.length > 0 ? TreeRender() : empty}
               </div>
             </div>
-
             {footerRender()}
           </Spin>
         )

@@ -1,0 +1,777 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { useEffect, useRef, useState } from 'react';
+
+import { useRequest } from 'ahooks';
+import { observer } from 'mobx-react';
+import { history } from '@umijs/max';
+import * as monaco from 'monaco-editor';
+import classNames from 'classnames';
+import {
+  Button,
+  Dropdown,
+  Input,
+  InputRef,
+  Select,
+  Space,
+  Tag,
+  Tooltip,
+  Typography,
+  message,
+} from 'antd';
+import Icon, {
+  CloseOutlined,
+  InfoCircleFilled,
+  PauseCircleOutlined,
+  SearchOutlined,
+  SendOutlined,
+} from '@ant-design/icons';
+
+import { formatMessage } from '@/util/intl';
+import { createEditorDiffDecorator, EditorDiffDecorator } from '@/util/ui/editor/editorDiff';
+
+import { modifySync } from '@/common/network/ai';
+
+import { AIQuestionType } from '@/d.ts/ai';
+import { IModel } from '@/d.ts/llm';
+
+import { IEditor, IFullEditor } from '@/component/MonacoEditor';
+import { getDefaultValue } from './util';
+
+import login from '@/store/login';
+import SessionStore from '@/store/sessionManager/session';
+import setting from '@/store/setting';
+
+import styles from './index.less';
+import { VendorsConfig } from '@/constant/llm';
+
+interface IProps {
+  dispose: () => void;
+  editor: IEditor;
+  session: SessionStore;
+  mode: AIQuestionType;
+  fullEditor: IFullEditor;
+  initialValue?: string;
+  onRefreshModels?: () => void;
+}
+
+const InlineChat = observer(function InlineChat({
+  dispose,
+  editor,
+  session,
+  mode: propMode,
+  fullEditor,
+  initialValue,
+  onRefreshModels,
+}: IProps) {
+  const inputRef = React.useRef<InputRef>(null);
+  const [mode, setMode] = useState(propMode);
+  const [value, setValue] = useState<string>(initialValue || getDefaultValue(propMode));
+  const [applied, setApplied] = useState(false);
+  const [isShowMode, setIsShowMode] = useState(false);
+  const needRollback = useRef(false);
+  const isAdmin = login.user?.roles?.some((role) => role.type === 'admin');
+  // 判断当前是否输入法正在输入拼音
+  const [lock, setLock] = useState(false);
+  const [isShowModelSelect, setIsShowModelSelect] = useState(false);
+
+  // diff展示相关状态
+  const [originalSelectedText, setOriginalSelectedText] = useState<string>('');
+  const [originalSelectionRange, setOriginalSelectionRange] = useState<monaco.IRange | null>(null);
+  const diffDecoratorRef = useRef<EditorDiffDecorator | null>(null);
+  const [separatedDiffApplied, setSeparatedDiffApplied] = useState<boolean>(false);
+
+  const allModels: IModel[] = setting?.allModels ?? [];
+  const modelsLoading: boolean = setting?.modelsLoading ?? false;
+
+  const [selectedModel, setSelectedModel] = useState<string>(
+    setting.AIConfig?.defaultLlmModel || '',
+  );
+  const [searchValue, setSearchValue] = useState<string>('');
+
+  const {
+    run: fetchCompletion,
+    loading,
+    cancel,
+  } = useRequest(modifySync, {
+    manual: true,
+  });
+
+  useEffect(() => {
+    // 初始化diff装饰器
+    if (editor && !diffDecoratorRef.current) {
+      diffDecoratorRef.current = createEditorDiffDecorator(editor);
+    }
+
+    if (mode === AIQuestionType.SQL_MODIFIER || mode === AIQuestionType.NL_2_SQL) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 200);
+    } else {
+      send();
+    }
+    return () => {
+      if (needRollback.current) {
+        rollback();
+      }
+      // 清理diff装饰器
+      if (diffDecoratorRef.current) {
+        diffDecoratorRef.current.dispose();
+        diffDecoratorRef.current = null;
+      }
+    };
+  }, []);
+
+  async function send() {
+    const tip = renderLargeModelTip();
+    if (tip) {
+      message.warning(tip);
+    }
+    if (editor.getValue()?.length > 5000) {
+      message.error(
+        formatMessage({
+          id: 'src.page.Workspace.components.SQLPage.InlineChat.53B70A41',
+          defaultMessage: '超过最大长度限制',
+        }),
+      );
+      return;
+    }
+    const selection = editor.getSelection();
+    const start = editor.getModel()?.getOffsetAt(selection?.getStartPosition());
+    const end = Math.max(editor.getModel()?.getOffsetAt(selection?.getEndPosition()) - 1, 0);
+    const selectedText = editor.getModel()?.getValueInRange(selection) || '';
+    let submitMode = mode;
+    if (
+      submitMode === AIQuestionType.SQL_MODIFIER &&
+      selection?.getStartPosition().equals(selection?.getEndPosition())
+    ) {
+      submitMode = AIQuestionType.NL_2_SQL;
+    }
+
+    // 保存原始选择范围，用于diff装饰
+    const selectionRange = selection
+      ? new monaco.Range(
+          selection.startLineNumber,
+          selection.startColumn,
+          selection.endLineNumber,
+          selection.endColumn,
+        )
+      : null;
+
+    const data = await fetchCompletion({
+      input: value,
+      fileName: '',
+      fileContent: editor.getValue(),
+      databaseId: session?.odcDatabase?.id,
+      startPosition: start,
+      endPosition: end,
+      questionType: submitMode,
+      sid: session?.sessionId,
+      model: selectedModel,
+    });
+    if (data) {
+      needRollback.current = true;
+      const oldModel = editor.getModel();
+      const newModel = monaco.editor.createModel(oldModel.getValue(), oldModel.getLanguageId());
+      fullEditor?.getOriginalEditor()?.setModel(newModel);
+
+      // 保存diff展示需要的数据
+      setOriginalSelectedText(selectedText);
+      setOriginalSelectionRange(selectionRange);
+
+      // 应用分离的diff展示（仅在修改场景下）
+      if (
+        diffDecoratorRef.current &&
+        selectedText &&
+        data &&
+        selectedText !== data &&
+        submitMode !== AIQuestionType.NL_2_SQL &&
+        selectionRange
+      ) {
+        // 使用分离的diff展示
+        const diffInfo = diffDecoratorRef.current.insertSeparatedDiff(
+          selectedText,
+          data,
+          selectionRange,
+        );
+        if (diffInfo) {
+          setSeparatedDiffApplied(true);
+        }
+      } else {
+        // 对于补全场景（NL_2_SQL），直接替换内容
+        editor.executeEdits('source', [
+          {
+            range: editor.getSelection(),
+            text: data,
+          },
+        ]);
+      }
+
+      setApplied(true);
+    }
+  }
+  function rollback() {
+    if (separatedDiffApplied && diffDecoratorRef.current) {
+      const diffInfo = diffDecoratorRef.current.getSeparatedDiffInfo();
+      if (diffInfo && originalSelectionRange) {
+        const model = editor.getModel();
+        if (model) {
+          let rollbackRange: monaco.Range;
+
+          if (diffInfo?.lineInfo?.length > 0) {
+            const lineNumbers = diffInfo.lineInfo.map((line) => line.lineNumber);
+            const minLineNumber = Math.min(...lineNumbers);
+            const maxLineNumber = Math.max(...lineNumbers);
+
+            rollbackRange = new monaco.Range(minLineNumber, 1, maxLineNumber + 1, 1);
+          }
+
+          editor.executeEdits('rollback-separated-diff', [
+            {
+              range: rollbackRange,
+              text: originalSelectedText,
+            },
+          ]);
+        }
+      }
+      setSeparatedDiffApplied(false);
+    } else {
+      // 常规的undo操作
+      editor.trigger('myapp', 'undo', null);
+    }
+
+    fullEditor?.getOriginalEditor()?.setModel(editor.getModel());
+    setApplied(false);
+    needRollback.current = false;
+    // 清空diff展示数据
+    setOriginalSelectedText('');
+    setOriginalSelectionRange(null);
+    // 清除编辑器装饰
+    if (diffDecoratorRef.current) {
+      diffDecoratorRef.current.clearDecorations();
+    }
+  }
+  function submit() {
+    if (separatedDiffApplied && diffDecoratorRef.current) {
+      // 对于分离的diff，DELETE行是虚拟的，不需要删除操作
+      // ADD和ORIGINAL行已经在编辑器中，直接清理装饰即可
+      setSeparatedDiffApplied(false);
+    }
+
+    const model = editor.getModel();
+    fullEditor?.getOriginalEditor()?.getModel().setValue(model.getValue());
+    fullEditor?.getOriginalEditor()?.setModel(model);
+    needRollback.current = false;
+    // 清空diff展示数据
+    setOriginalSelectedText('');
+    setOriginalSelectionRange(null);
+    // 清除编辑器装饰
+    if (diffDecoratorRef.current) {
+      diffDecoratorRef.current.clearDecorations();
+    }
+    dispose();
+  }
+
+  function renderInputAction() {
+    if (applied) {
+      return null;
+    } else if (loading) {
+      return (
+        <Button
+          type="text"
+          onClick={() => {
+            cancel();
+          }}
+          className={styles.button}
+        >
+          <PauseCircleOutlined className={styles.iconNormal} />
+        </Button>
+      );
+    } else {
+      return (
+        <Button
+          disabled={mode === AIQuestionType.SQL_MODIFIER && !value}
+          className={styles.button}
+          onClick={() => send()}
+          type="text"
+        >
+          <SendOutlined
+            className={
+              mode === AIQuestionType.SQL_MODIFIER && !value
+                ? styles.sendButtonDisabled
+                : styles.sendButton
+            }
+          />
+        </Button>
+      );
+    }
+  }
+
+  // 根据搜索值过滤模型
+  const filteredModels = allModels.filter(
+    (model) => !searchValue || model.modelName.toLowerCase().includes(searchValue.toLowerCase()),
+  );
+
+  // 按提供商分组模型
+  const groupedModels = filteredModels.reduce((acc, model) => {
+    const providerName = model.providerName;
+    if (!acc[providerName]) {
+      acc[providerName] = [];
+    }
+    acc[providerName].push(model);
+    return acc;
+  }, {} as Record<string, IModel[]>);
+
+  // 生成 Select 的 options
+  const selectOptions = Object.entries(groupedModels).map(([providerName, models]) => ({
+    label: <span className={styles.providerLabel}>{providerName}</span>,
+    options: models.map((model) => ({
+      label: (
+        <span className={styles.optionContainer}>
+          <Icon className={styles.iconLarge} component={VendorsConfig[providerName]?.icon} />
+          <span className={styles.modelNameText}>{model.modelName}</span>
+        </span>
+      ),
+
+      value: `${providerName}/${model.modelName}`,
+      disabled: !model.enabled,
+    })),
+  }));
+
+  const isInitialized = useRef(false);
+
+  useEffect(() => {
+    // 只在第一次加载模型时设置默认值，避免覆盖用户选择
+    if (!isInitialized.current && allModels.length > 0) {
+      isInitialized.current = true;
+      if (setting.AIConfig?.defaultLlmModel) {
+        setSelectedModel(setting.AIConfig.defaultLlmModel);
+      } else {
+        // 选择第一个可用的模型
+        const firstEnabledModel = allModels.find((model) => model.enabled);
+        if (firstEnabledModel) {
+          setSelectedModel(`${firstEnabledModel.providerName}/${firstEnabledModel.modelName}`);
+        }
+      }
+    }
+  }, [allModels.length, setting.AIConfig?.defaultLlmModel]);
+
+  const renderLargeModelSelect = () => {
+    if (modelsLoading) {
+      return (
+        <div className={styles.modelSelect}>
+          <Typography.Text className={styles.textSecondarySmall} type="secondary">
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.D511B31A',
+              defaultMessage: '正在加载模型列表...',
+            })}
+          </Typography.Text>
+        </div>
+      );
+    }
+
+    if (allModels?.length === 0) {
+      return (
+        <div className={styles.modelSelect}>
+          <Typography.Text className={styles.textSecondarySmall} type="secondary">
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.0151BFDE',
+              defaultMessage: '暂无可用模型',
+            })}
+          </Typography.Text>
+          {onRefreshModels && (
+            <Button
+              size="small"
+              type="link"
+              onClick={onRefreshModels}
+              className={styles.refreshButton}
+            >
+              {formatMessage({
+                id: 'src.page.Workspace.components.SQLPage.InlineChat.9E9FF69B',
+                defaultMessage: '重试',
+              })}
+            </Button>
+          )}
+        </div>
+      );
+    }
+
+    const selectedModelInfo = allModels.find(
+      (m) => `${m.providerName}/${m.modelName}` === selectedModel,
+    );
+    const isSelectedModelAvailable = selectedModelInfo?.enabled;
+
+    return (
+      <div className={styles.modelSelect}>
+        <div className={styles.leftWrapper}>
+          <Tooltip
+            trigger={isShowModelSelect ? 'click' : 'hover'}
+            title={selectedModelInfo ? `${selectedModelInfo.modelName}` : ''}
+          >
+            <Select
+              variant="borderless"
+              dropdownAlign={{ offset: [0, 0] }}
+              value={selectedModel}
+              onChange={setSelectedModel}
+              onOpenChange={(open) => {
+                setIsShowModelSelect(open);
+              }}
+              dropdownMatchSelectWidth={false}
+              popupRender={(menu) => (
+                <div className={styles.dropdownContainer}>
+                  {/* 搜索框 */}
+                  <div className={styles.dropdownSearchWrapper}>
+                    <Input
+                      placeholder={formatMessage({
+                        id: 'src.page.Workspace.components.SQLPage.InlineChat.9AF9D40F',
+                        defaultMessage: '搜索模型名称',
+                      })}
+                      size="small"
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                      allowClear
+                      suffix={<SearchOutlined className={styles.iconNormal} />}
+                    />
+                  </div>
+                  {menu}
+                </div>
+              )}
+              placeholder={formatMessage({
+                id: 'src.page.Workspace.components.SQLPage.InlineChat.61CA189B',
+                defaultMessage: '请选择模型',
+              })}
+              className={styles.modelSelectDropdown}
+              options={selectOptions}
+              loading={modelsLoading}
+              showSearch={false}
+              filterOption={false}
+            />
+          </Tooltip>
+          {selectedModel && !isSelectedModelAvailable && (
+            <Tooltip
+              title={formatMessage({
+                id: 'src.page.Workspace.components.SQLPage.InlineChat.7C8DE344',
+                defaultMessage: '当前模型不可用',
+              })}
+            >
+              <InfoCircleFilled className={styles.warningIcon} />
+            </Tooltip>
+          )}
+        </div>
+        <Typography.Text className={styles.textSecondarySmall} type="secondary">
+          {formatMessage({
+            id: 'src.page.Workspace.components.SQLPage.InlineChat.EC78C950',
+            defaultMessage: 'AI 助手生成内容的准确性和完整性无法保证，仅供参考',
+          })}
+        </Typography.Text>
+      </div>
+    );
+  };
+
+  const renderLargeModelTip = (type?: string) => {
+    const icon = type && <InfoCircleFilled className={styles[type]} />;
+    if (allModels?.length > 0) {
+      return null;
+    }
+    if (isAdmin) {
+      return (
+        <div className={styles.largeModelTip}>
+          {icon}
+          <span>
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.ECFC46AD',
+              defaultMessage: '暂无可用模型，请前往',
+            })}
+            <span
+              className={styles.tab}
+              onClick={() => {
+                if (login.isPrivateSpace()) {
+                  message.warning(
+                    formatMessage({
+                      id: 'src.page.Workspace.components.SQLPage.InlineChat.49146309',
+                      defaultMessage: '请前往团队空间',
+                    }),
+                  );
+                  return;
+                }
+                history.push('/externalIntegration/approval');
+              }}
+            >
+              {formatMessage({
+                id: 'src.page.Workspace.components.SQLPage.InlineChat.E86DFDC7',
+                defaultMessage: '外部集成&gt;大模型集成',
+              })}
+            </span>{' '}
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.15F56B34',
+              defaultMessage: '进行模型设置',
+            })}
+          </span>
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.largeModelTip}>
+          {icon}
+          <span>
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.E5E5864B',
+              defaultMessage: '暂无可用模型，请联系系统管理员进行模型设置',
+            })}
+          </span>
+        </div>
+      );
+    }
+  };
+  function renderTip() {
+    if (applied) {
+      return (
+        <Space>
+          <Button className={styles.acceptButton} type="primary" onClick={submit}>
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.E2B52A80',
+              defaultMessage: '接受',
+            })}
+          </Button>
+          <Button className={styles.rejectButton} onClick={rollback}>
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.A304E20C',
+              defaultMessage: '忽略',
+            })}
+          </Button>
+        </Space>
+      );
+    }
+    if (!loading) {
+      if (allModels?.length === 0 && !modelsLoading) {
+        return renderLargeModelTip('info');
+      } else {
+        return renderLargeModelSelect();
+      }
+    }
+    return (
+      <Typography.Text className={styles.textSecondaryMedium} type="secondary">
+        {formatMessage({
+          id: 'src.page.Workspace.components.SQLPage.InlineChat.BABDDD80',
+          defaultMessage: 'AI 生成中...',
+        })}
+      </Typography.Text>
+    );
+  }
+  function getModeTag() {
+    switch (mode) {
+      case AIQuestionType.SQL_OPTIMIZER: {
+        return (
+          <Tag
+            className={classNames(styles.tag, {
+              [styles.active]: isShowMode,
+            })}
+            bordered={false}
+          >
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.D3BE280E',
+              defaultMessage: 'SQL 优化',
+            })}
+          </Tag>
+        );
+      }
+      case AIQuestionType.SQL_DEBUGGING: {
+        return (
+          <Tag
+            bordered={false}
+            className={classNames(styles.tag, {
+              [styles.active]: isShowMode,
+            })}
+          >
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.E802098E',
+              defaultMessage: 'SQL 纠错',
+            })}
+          </Tag>
+        );
+      }
+      case AIQuestionType.SQL_MODIFIER: {
+        return (
+          <Tag
+            bordered={false}
+            className={classNames(styles.tag, {
+              [styles.active]: isShowMode,
+            })}
+          >
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.0F856913',
+              defaultMessage: 'SQL 改写',
+            })}
+          </Tag>
+        );
+      }
+      case AIQuestionType.NL_2_SQL: {
+        return (
+          <Tag
+            bordered={false}
+            className={classNames(styles.tag, {
+              [styles.active]: isShowMode,
+            })}
+          >
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.97144878',
+              defaultMessage: 'SQL 生成',
+            })}
+          </Tag>
+        );
+      }
+      default: {
+        return null;
+      }
+    }
+  }
+  return (
+    <Space direction="vertical" className={styles.inlineChatWrapper}>
+      <div className={styles.sqlInputWrapper}>
+        <span className={styles.inputDecarationBorder}>
+          <Dropdown
+            trigger={['click']}
+            open={isShowMode}
+            placement="bottomLeft"
+            onOpenChange={(open) => {
+              if (open) {
+                return;
+              }
+              setIsShowMode(open);
+            }}
+            destroyOnHidden
+            autoFocus
+            menu={{
+              autoFocus: true,
+              activeKey: mode,
+              onClick(info) {
+                if (!mode) {
+                  setValue('');
+                }
+                setMode(info.key as AIQuestionType);
+                setIsShowMode(false);
+                inputRef.current?.focus();
+              },
+              items: [
+                {
+                  type: 'group',
+                  key: 'instruction',
+                  label: formatMessage({
+                    id: 'src.page.Workspace.components.SQLPage.InlineChat.C92A1DA8',
+                    defaultMessage: '指令',
+                  }),
+                  children: [
+                    {
+                      label: formatMessage({
+                        id: 'src.page.Workspace.components.SQLPage.InlineChat.99A3D8A6',
+                        defaultMessage: 'SQL 生成',
+                      }),
+                      key: AIQuestionType.NL_2_SQL,
+                      onClick() {
+                        console.log('click n2 sql');
+                      },
+                    },
+                    {
+                      label: formatMessage({
+                        id: 'src.page.Workspace.components.SQLPage.InlineChat.1BE5C0BD',
+                        defaultMessage: 'SQL 纠错',
+                      }),
+                      key: AIQuestionType.SQL_DEBUGGING,
+                    },
+                    {
+                      label: formatMessage({
+                        id: 'src.page.Workspace.components.SQLPage.InlineChat.0B4815AF',
+                        defaultMessage: 'SQL 改写',
+                      }),
+                      key: AIQuestionType.SQL_MODIFIER,
+                    },
+                    {
+                      label: formatMessage({
+                        id: 'src.page.Workspace.components.SQLPage.InlineChat.49EE8FD5',
+                        defaultMessage: 'SQL 优化',
+                      }),
+                      key: AIQuestionType.SQL_OPTIMIZER,
+                    },
+                  ],
+                },
+              ],
+            }}
+          >
+            <Input
+              className={classNames(styles.sqlInput, {
+                [styles.loadingInput]: loading,
+              })}
+              disabled={loading}
+              prefix={
+                <span
+                  onClick={() => {
+                    setIsShowMode(true);
+                  }}
+                >
+                  {getModeTag()}
+                </span>
+              }
+              ref={inputRef}
+              suffix={renderInputAction()}
+              value={value}
+              onChange={(e) => {
+                if (!value && e.target.value && !mode && e.target.value === '/') {
+                  setIsShowMode(true);
+                }
+                setValue(e.target.value);
+              }}
+              placeholder={formatMessage({
+                id: 'src.page.Workspace.components.SQLPage.InlineChat.2BB5093F',
+                defaultMessage: '请输入消息',
+              })}
+              onCompositionStart={() => setLock(true)}
+              onCompositionEnd={() => setLock(false)}
+              onPressEnter={(e) => {
+                if (!applied && !loading && value && !lock) {
+                  send();
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  if (loading) {
+                    cancel();
+                  }
+                  dispose();
+                }
+                if (lock) {
+                  return;
+                }
+                if (e.key === 'Delete' && mode) {
+                  setMode(undefined);
+                } else if (e.key === 'Backspace' && !value) {
+                  setMode(undefined);
+                }
+              }}
+            />
+          </Dropdown>
+        </span>
+        <Button className={styles.close} onClick={() => dispose()} size="small" type="text">
+          <CloseOutlined />
+        </Button>
+      </div>
+
+      {renderTip()}
+    </Space>
+  );
+});
+
+export default InlineChat;

@@ -25,7 +25,7 @@ import { IResponseData } from '@/d.ts';
 import { IMessage } from '@/d.ts/projectNotification';
 import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Drawer } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { getMessageColumns } from './columns';
